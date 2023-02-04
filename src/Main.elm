@@ -80,7 +80,6 @@ update msg model =
             )
 
         GpxLoaded content ->
-            --TODO: Send to main.
             let
                 gpxPoints =
                     GpxParser.parseSegments content
@@ -96,12 +95,6 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    layout
-        [ Background.color model.backgroundColour ]
-        (topLoadingBar model)
-
-
-topLoadingBar model =
     let
         loadGpxButton =
             button
@@ -114,12 +107,15 @@ topLoadingBar model =
                 , label = text "Load GPX"
                 }
     in
-    wrappedRow
-        []
-        [ loadGpxButton
+    layout
+        [ Background.color model.backgroundColour ]
+    <|
+        wrappedRow
+            [ centerX, centerY ]
+            [ loadGpxButton
 
-        --, buyMeACoffeeButton
-        ]
+            --, buyMeACoffeeButton
+            ]
 
 
 buyMeACoffeeButton =
