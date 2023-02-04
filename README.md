@@ -15,8 +15,7 @@ Let's break these down somewhat.
 2. Multiple windows, work on multiple monitors.
 3. There is still a 4GB memory limit on renderers, but...
 4. We could have specialised renderers (Map, 3D, Chart, Route, Plan),
-5. Each renderer only needs its own index (e.g. quadtree, distance),
-6. Could just pass elided model down to each renderer (renderer chooses),
+6. Pass elided model down to each renderer (renderer chooses level of detail),
 7. If (at worst) each renderer has full model, can just pass deltas (like Redo).
 
 ## Code clean-up
