@@ -58,6 +58,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.yarn/unplugged/electron-npm-22.1.0-8d13a440c2/node_modules/electron/dist/Electron.app/Contents/Resources/vi.lproj" />
       <excludeFolder url="file://$MODULE_DIR$/.yarn/unplugged/electron-npm-22.1.0-8d13a440c2/node_modules/electron/dist/Electron.app/Contents/Resources/zh_CN.lproj" />
       <excludeFolder url="file://$MODULE_DIR$/.yarn/unplugged/electron-npm-22.1.0-8d13a440c2/node_modules/electron/dist/Electron.app/Contents/Resources/zh_TW.lproj" />
+      <excludeFolder url="file://$MODULE_DIR$/.yarn" />
       <excludePattern pattern="elm-stuff" />
     </content>
     <orderEntry type="inheritedJdk" />
