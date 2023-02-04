@@ -36,8 +36,8 @@ app.on('ready',
 function() {
     // Create the browser window.
     mainWindow = new BrowserWindow({
-        width: 1000,
-        height: 800,
+        width: 300,
+        height: 100,
         webPreferences: {
 //            preload: path.join(__dirname, 'preload.js')
             preload: (__dirname + '/preload.js')
@@ -62,16 +62,16 @@ function() {
     // Entry point for a renderer to trigger OAuth login with Strava.
     // This typifies our likely API, being a pair of messages exchanged.
     // Arguably should try to get invoke to work but our model is asynch anyway.
-    ipcMain.on('requestAuth', (event, config) = >{
+    ipcMain.on('requestAuth', (event, config) => {
 
         const stravaOAuth = OAuth(config, windowParams);
         const options = config.scope;
 
-        stravaOAuth.getAuthorizationCode(options).then(code = >{
+        stravaOAuth.getAuthorizationCode(options).then(code => {
             //console.log("Got token" + token)
             event.sender.send('code', code);
         },
-        err = >{
+        err => {
             //console.log('Error while getting token', err);
             event.sender.send('code', null);
         });

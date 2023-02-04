@@ -1,0 +1,16 @@
+{
+  "name": "GPXmagic",
+  "version": "4.0.0",
+  "description": "The famous GPX file smoother",
+  "author": "Peter Ward",
+  "license": "CC0 1.0 Universal",
+  "main": "electron-start.js",
+  "dependencies": {
+    "electron-oauth2": "^3.0.0",
+    "electron-squirrel-startup": "^1.0.0",
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "electron": "22.1.0"
+  }
+}
