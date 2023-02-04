@@ -6,7 +6,7 @@
 Create a server "app" in Elm with no view, only messages in and out.
 Put the Tree and Indexes here. (Not strictly required for POC.)
 
-Create a file loader Elm app that reads and parses, sends GPX data to server as JSON.
+(DONE) Create a file loader Elm app that reads and parses, sends GPX data to server as JSON.
 Create a 3D renderer Elm app that receives elided model from server and renders.
 
 Server sends elided model to all renderers. (Maybe renderer specified eilsion when it registers.)
@@ -16,7 +16,8 @@ Traffic is two-way, so Toolbox is also a renderer, sends updates to server, whil
 
 Not sure where click detect happens; needs to be in server if renderers do not have full model but is that an abstraction leak?
 (It may not be if we're communicating in terms of (lon, lat) or 3D "rays". 
-But couple of funny cases such as requesting elevatiom from Map, which at least requires that there is one Map. 
+
+Couple of funny cases such as requesting altitudes from Map, which at least requires that there is one Map. 
 I guess server could spawn an invisible worker if needed, or that tool is only enabled if there is a Map loaded (better).)
 
 Anyway, that's the concept. Then tools and views migrate without baggage (no Actions).

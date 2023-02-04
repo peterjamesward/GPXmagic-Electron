@@ -5708,6 +5708,7 @@ var $elm$file$File$Select$file = F2(
 			_File_uploadOne(mimes));
 	});
 var $elm$json$Json$Encode$float = _Json_wrap;
+var $elm$json$Json$Encode$int = _Json_wrap;
 var $elm$json$Json$Encode$object = function (pairs) {
 	return _Json_wrap(
 		A3(
@@ -5721,20 +5722,46 @@ var $elm$json$Json$Encode$object = function (pairs) {
 			_Json_emptyObject(_Utils_Tuple0),
 			pairs));
 };
+var $elm$time$Time$posixToMillis = function (_v0) {
+	var millis = _v0.a;
+	return millis;
+};
 var $author$project$GpxPoint$gpxPointAsJSON = function (point) {
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'lon',
-				$elm$json$Json$Encode$float(point.longitude)),
-				_Utils_Tuple2(
-				'lat',
-				$elm$json$Json$Encode$float(point.latitude)),
-				_Utils_Tuple2(
-				'alt',
-				$elm$json$Json$Encode$float(point.altitude))
-			]));
+	var _v0 = point.timestamp;
+	if (_v0.$ === 'Just') {
+		var timestamp = _v0.a;
+		return $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'lon',
+					$elm$json$Json$Encode$float(point.longitude)),
+					_Utils_Tuple2(
+					'lat',
+					$elm$json$Json$Encode$float(point.latitude)),
+					_Utils_Tuple2(
+					'alt',
+					$elm$json$Json$Encode$float(point.altitude)),
+					_Utils_Tuple2(
+					'time',
+					$elm$json$Json$Encode$int(
+						$elm$time$Time$posixToMillis(timestamp)))
+				]));
+	} else {
+		return $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'lon',
+					$elm$json$Json$Encode$float(point.longitude)),
+					_Utils_Tuple2(
+					'lat',
+					$elm$json$Json$Encode$float(point.latitude)),
+					_Utils_Tuple2(
+					'alt',
+					$elm$json$Json$Encode$float(point.altitude))
+				]));
+	}
 };
 var $elm$json$Json$Encode$list = F2(
 	function (func, entries) {

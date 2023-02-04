@@ -15,8 +15,18 @@ type alias GpxPoint =
 gpxPointAsJSON : GpxPoint -> E.Value
 gpxPointAsJSON point =
     --TODO: optional timestamp
-    E.object
-        [ ( "lon", E.float point.longitude )
-        , ( "lat", E.float point.latitude )
-        , ( "alt", E.float point.altitude )
-        ]
+    case point.timestamp of
+        Just timestamp ->
+            E.object
+                [ ( "lon", E.float point.longitude )
+                , ( "lat", E.float point.latitude )
+                , ( "alt", E.float point.altitude )
+                , ( "time", E.int <| Time.posixToMillis timestamp )
+                ]
+
+        Nothing ->
+            E.object
+                [ ( "lon", E.float point.longitude )
+                , ( "lat", E.float point.latitude )
+                , ( "alt", E.float point.altitude )
+                ]
