@@ -4581,6 +4581,237 @@ function _File_toUrl(blob)
 
 
 
+// CREATE
+
+var _Regex_never = /.^/;
+
+var _Regex_fromStringWith = F2(function(options, string)
+{
+	var flags = 'g';
+	if (options.multiline) { flags += 'm'; }
+	if (options.caseInsensitive) { flags += 'i'; }
+
+	try
+	{
+		return $elm$core$Maybe$Just(new RegExp(string, flags));
+	}
+	catch(error)
+	{
+		return $elm$core$Maybe$Nothing;
+	}
+});
+
+
+// USE
+
+var _Regex_contains = F2(function(re, string)
+{
+	return string.match(re) !== null;
+});
+
+
+var _Regex_findAtMost = F3(function(n, re, str)
+{
+	var out = [];
+	var number = 0;
+	var string = str;
+	var lastIndex = re.lastIndex;
+	var prevLastIndex = -1;
+	var result;
+	while (number++ < n && (result = re.exec(string)))
+	{
+		if (prevLastIndex == re.lastIndex) break;
+		var i = result.length - 1;
+		var subs = new Array(i);
+		while (i > 0)
+		{
+			var submatch = result[i];
+			subs[--i] = submatch
+				? $elm$core$Maybe$Just(submatch)
+				: $elm$core$Maybe$Nothing;
+		}
+		out.push(A4($elm$regex$Regex$Match, result[0], result.index, number, _List_fromArray(subs)));
+		prevLastIndex = re.lastIndex;
+	}
+	re.lastIndex = lastIndex;
+	return _List_fromArray(out);
+});
+
+
+var _Regex_replaceAtMost = F4(function(n, re, replacer, string)
+{
+	var count = 0;
+	function jsReplacer(match)
+	{
+		if (count++ >= n)
+		{
+			return match;
+		}
+		var i = arguments.length - 3;
+		var submatches = new Array(i);
+		while (i > 0)
+		{
+			var submatch = arguments[i];
+			submatches[--i] = submatch
+				? $elm$core$Maybe$Just(submatch)
+				: $elm$core$Maybe$Nothing;
+		}
+		return replacer(A4($elm$regex$Regex$Match, match, arguments[arguments.length - 2], count, _List_fromArray(submatches)));
+	}
+	return string.replace(re, jsReplacer);
+});
+
+var _Regex_splitAtMost = F3(function(n, re, str)
+{
+	var string = str;
+	var out = [];
+	var start = re.lastIndex;
+	var restoreLastIndex = re.lastIndex;
+	while (n--)
+	{
+		var result = re.exec(string);
+		if (!result) break;
+		out.push(string.slice(start, result.index));
+		start = re.lastIndex;
+	}
+	out.push(string.slice(start));
+	re.lastIndex = restoreLastIndex;
+	return _List_fromArray(out);
+});
+
+var _Regex_infinity = Infinity;
+
+
+
+
+// STRINGS
+
+
+var _Parser_isSubString = F5(function(smallString, offset, row, col, bigString)
+{
+	var smallLength = smallString.length;
+	var isGood = offset + smallLength <= bigString.length;
+
+	for (var i = 0; isGood && i < smallLength; )
+	{
+		var code = bigString.charCodeAt(offset);
+		isGood =
+			smallString[i++] === bigString[offset++]
+			&& (
+				code === 0x000A /* \n */
+					? ( row++, col=1 )
+					: ( col++, (code & 0xF800) === 0xD800 ? smallString[i++] === bigString[offset++] : 1 )
+			)
+	}
+
+	return _Utils_Tuple3(isGood ? offset : -1, row, col);
+});
+
+
+
+// CHARS
+
+
+var _Parser_isSubChar = F3(function(predicate, offset, string)
+{
+	return (
+		string.length <= offset
+			? -1
+			:
+		(string.charCodeAt(offset) & 0xF800) === 0xD800
+			? (predicate(_Utils_chr(string.substr(offset, 2))) ? offset + 2 : -1)
+			:
+		(predicate(_Utils_chr(string[offset]))
+			? ((string[offset] === '\n') ? -2 : (offset + 1))
+			: -1
+		)
+	);
+});
+
+
+var _Parser_isAsciiCode = F3(function(code, offset, string)
+{
+	return string.charCodeAt(offset) === code;
+});
+
+
+
+// NUMBERS
+
+
+var _Parser_chompBase10 = F2(function(offset, string)
+{
+	for (; offset < string.length; offset++)
+	{
+		var code = string.charCodeAt(offset);
+		if (code < 0x30 || 0x39 < code)
+		{
+			return offset;
+		}
+	}
+	return offset;
+});
+
+
+var _Parser_consumeBase = F3(function(base, offset, string)
+{
+	for (var total = 0; offset < string.length; offset++)
+	{
+		var digit = string.charCodeAt(offset) - 0x30;
+		if (digit < 0 || base <= digit) break;
+		total = base * total + digit;
+	}
+	return _Utils_Tuple2(offset, total);
+});
+
+
+var _Parser_consumeBase16 = F2(function(offset, string)
+{
+	for (var total = 0; offset < string.length; offset++)
+	{
+		var code = string.charCodeAt(offset);
+		if (0x30 <= code && code <= 0x39)
+		{
+			total = 16 * total + code - 0x30;
+		}
+		else if (0x41 <= code && code <= 0x46)
+		{
+			total = 16 * total + code - 55;
+		}
+		else if (0x61 <= code && code <= 0x66)
+		{
+			total = 16 * total + code - 87;
+		}
+		else
+		{
+			break;
+		}
+	}
+	return _Utils_Tuple2(offset, total);
+});
+
+
+
+// FIND STRING
+
+
+var _Parser_findSubString = F5(function(smallString, offset, row, col, bigString)
+{
+	var newOffset = bigString.indexOf(smallString, offset);
+	var target = newOffset < 0 ? bigString.length : newOffset + smallString.length;
+
+	while (offset < target)
+	{
+		var code = bigString.charCodeAt(offset++);
+		code === 0x000A /* \n */
+			? ( col=1, row++ )
+			: ( col++, (code & 0xF800) === 0xD800 && offset++ )
+	}
+
+	return _Utils_Tuple3(newOffset, row, col);
+});
+
+
 
 var _Bitwise_and = F2(function(a, b)
 {
@@ -5450,10 +5681,18 @@ var $author$project$Main$init = function (_v0) {
 					A2($elm$core$Task$perform, $author$project$Main$AdjustTimeZone, $elm$time$Time$here)
 				])));
 };
+var $author$project$Main$MessageFromMainProcess = function (a) {
+	return {$: 'MessageFromMainProcess', a: a};
+};
 var $elm$core$Platform$Sub$batch = _Platform_batch;
-var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$Main$subscriptions = function (model) {
-	return $elm$core$Platform$Sub$none;
+var $elm$json$Json$Decode$value = _Json_decodeValue;
+var $author$project$IpcStubs$ipcMainToRenderer = _Platform_incomingPort('ipcMainToRenderer', $elm$json$Json$Decode$value);
+var $author$project$Main$subscriptions = function (_v0) {
+	return $elm$core$Platform$Sub$batch(
+		_List_fromArray(
+			[
+				$author$project$IpcStubs$ipcMainToRenderer($author$project$Main$MessageFromMainProcess)
+			]));
 };
 var $author$project$Main$GpxLoaded = function (a) {
 	return {$: 'GpxLoaded', a: a};
@@ -5468,7 +5707,2020 @@ var $elm$file$File$Select$file = F2(
 			toMsg,
 			_File_uploadOne(mimes));
 	});
+var $elm$json$Json$Encode$float = _Json_wrap;
+var $elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, obj) {
+					var k = _v0.a;
+					var v = _v0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(_Utils_Tuple0),
+			pairs));
+};
+var $author$project$GpxPoint$gpxPointAsJSON = function (point) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'lon',
+				$elm$json$Json$Encode$float(point.longitude)),
+				_Utils_Tuple2(
+				'lat',
+				$elm$json$Json$Encode$float(point.latitude)),
+				_Utils_Tuple2(
+				'alt',
+				$elm$json$Json$Encode$float(point.altitude))
+			]));
+};
+var $elm$json$Json$Encode$list = F2(
+	function (func, entries) {
+		return _Json_wrap(
+			A3(
+				$elm$core$List$foldl,
+				_Json_addEntry(func),
+				_Json_emptyArray(_Utils_Tuple0),
+				entries));
+	});
+var $author$project$IpcStubs$ipcRendererToMain = _Platform_outgoingPort('ipcRendererToMain', $elm$core$Basics$identity);
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $author$project$IpcStubs$loadNewGpx = function (pointsAsJSON) {
+	return $author$project$IpcStubs$ipcRendererToMain(
+		$elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'cmd',
+					$elm$json$Json$Encode$string('newgpx')),
+					_Utils_Tuple2('content', pointsAsJSON)
+				])));
+};
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $elm$regex$Regex$Match = F4(
+	function (match, index, number, submatches) {
+		return {index: index, match: match, number: number, submatches: submatches};
+	});
+var $elm$regex$Regex$fromStringWith = _Regex_fromStringWith;
+var $elm$regex$Regex$fromString = function (string) {
+	return A2(
+		$elm$regex$Regex$fromStringWith,
+		{caseInsensitive: false, multiline: false},
+		string);
+};
+var $elm$regex$Regex$never = _Regex_never;
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var $author$project$GpxParser$asRegex = function (t) {
+	return A2(
+		$elm$core$Maybe$withDefault,
+		$elm$regex$Regex$never,
+		$elm$regex$Regex$fromString(t));
+};
+var $elm$regex$Regex$find = _Regex_findAtMost(_Regex_infinity);
+var $elm_community$list_extra$List$Extra$findIndexHelp = F3(
+	function (index, predicate, list) {
+		findIndexHelp:
+		while (true) {
+			if (!list.b) {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (predicate(x)) {
+					return $elm$core$Maybe$Just(index);
+				} else {
+					var $temp$index = index + 1,
+						$temp$predicate = predicate,
+						$temp$list = xs;
+					index = $temp$index;
+					predicate = $temp$predicate;
+					list = $temp$list;
+					continue findIndexHelp;
+				}
+			}
+		}
+	});
+var $elm_community$list_extra$List$Extra$findIndex = $elm_community$list_extra$List$Extra$findIndexHelp(0);
+var $elm$core$List$drop = F2(
+	function (n, list) {
+		drop:
+		while (true) {
+			if (n <= 0) {
+				return list;
+			} else {
+				if (!list.b) {
+					return list;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs;
+					n = $temp$n;
+					list = $temp$list;
+					continue drop;
+				}
+			}
+		}
+	});
+var $elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(x);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $elm_community$list_extra$List$Extra$getAt = F2(
+	function (idx, xs) {
+		return (idx < 0) ? $elm$core$Maybe$Nothing : $elm$core$List$head(
+			A2($elm$core$List$drop, idx, xs));
+	});
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var $author$project$GpxPoint$GpxPoint = F4(
+	function (longitude, latitude, altitude, timestamp) {
+		return {altitude: altitude, latitude: latitude, longitude: longitude, timestamp: timestamp};
+	});
+var $elm$core$Maybe$andThen = F2(
+	function (callback, maybeValue) {
+		if (maybeValue.$ === 'Just') {
+			var value = maybeValue.a;
+			return callback(value);
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $elm$core$Basics$composeR = F3(
+	function (f, g, x) {
+		return g(
+			f(x));
+	});
+var $author$project$GpxParser$deDupe = F2(
+	function (areSame, inputList) {
+		var helper = F2(
+			function (inputs, outputs) {
+				helper:
+				while (true) {
+					var _v0 = _Utils_Tuple2(inputs, outputs);
+					if (!_v0.a.b) {
+						return outputs;
+					} else {
+						if (!_v0.b.b) {
+							var _v1 = _v0.a;
+							var firstInput = _v1.a;
+							var moreInputs = _v1.b;
+							var $temp$inputs = moreInputs,
+								$temp$outputs = _List_fromArray(
+								[firstInput]);
+							inputs = $temp$inputs;
+							outputs = $temp$outputs;
+							continue helper;
+						} else {
+							if (!_v0.a.b.b) {
+								var _v2 = _v0.a;
+								var finalInput = _v2.a;
+								var _v3 = _v0.b;
+								var previousOutput = _v3.a;
+								return A2(areSame, finalInput, previousOutput) ? outputs : A2($elm$core$List$cons, finalInput, outputs);
+							} else {
+								var _v4 = _v0.a;
+								var someInput = _v4.a;
+								var moreInputs = _v4.b;
+								var _v5 = _v0.b;
+								var previousOutput = _v5.a;
+								if (A2(areSame, someInput, previousOutput)) {
+									var $temp$inputs = moreInputs,
+										$temp$outputs = outputs;
+									inputs = $temp$inputs;
+									outputs = $temp$outputs;
+									continue helper;
+								} else {
+									var $temp$inputs = moreInputs,
+										$temp$outputs = A2($elm$core$List$cons, someInput, outputs);
+									inputs = $temp$inputs;
+									outputs = $temp$outputs;
+									continue helper;
+								}
+							}
+						}
+					}
+				}
+			});
+		return $elm$core$List$reverse(
+			A2(helper, inputList, _List_Nil));
+	});
+var $elm$core$List$maybeCons = F3(
+	function (f, mx, xs) {
+		var _v0 = f(mx);
+		if (_v0.$ === 'Just') {
+			var x = _v0.a;
+			return A2($elm$core$List$cons, x, xs);
+		} else {
+			return xs;
+		}
+	});
+var $elm$core$List$filterMap = F2(
+	function (f, xs) {
+		return A3(
+			$elm$core$List$foldr,
+			$elm$core$List$maybeCons(f),
+			_List_Nil,
+			xs);
+	});
+var $elm_community$maybe_extra$Maybe$Extra$join = function (mx) {
+	if (mx.$ === 'Just') {
+		var x = mx.a;
+		return x;
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return $elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $elm$core$String$toFloat = _String_toFloat;
+var $elm$core$Result$toMaybe = function (result) {
+	if (result.$ === 'Ok') {
+		var v = result.a;
+		return $elm$core$Maybe$Just(v);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $elm$parser$Parser$Advanced$Bad = F2(
+	function (a, b) {
+		return {$: 'Bad', a: a, b: b};
+	});
+var $elm$parser$Parser$Advanced$Good = F3(
+	function (a, b, c) {
+		return {$: 'Good', a: a, b: b, c: c};
+	});
+var $elm$parser$Parser$Advanced$Parser = function (a) {
+	return {$: 'Parser', a: a};
+};
+var $elm$parser$Parser$Advanced$andThen = F2(
+	function (callback, _v0) {
+		var parseA = _v0.a;
+		return $elm$parser$Parser$Advanced$Parser(
+			function (s0) {
+				var _v1 = parseA(s0);
+				if (_v1.$ === 'Bad') {
+					var p = _v1.a;
+					var x = _v1.b;
+					return A2($elm$parser$Parser$Advanced$Bad, p, x);
+				} else {
+					var p1 = _v1.a;
+					var a = _v1.b;
+					var s1 = _v1.c;
+					var _v2 = callback(a);
+					var parseB = _v2.a;
+					var _v3 = parseB(s1);
+					if (_v3.$ === 'Bad') {
+						var p2 = _v3.a;
+						var x = _v3.b;
+						return A2($elm$parser$Parser$Advanced$Bad, p1 || p2, x);
+					} else {
+						var p2 = _v3.a;
+						var b = _v3.b;
+						var s2 = _v3.c;
+						return A3($elm$parser$Parser$Advanced$Good, p1 || p2, b, s2);
+					}
+				}
+			});
+	});
+var $elm$parser$Parser$andThen = $elm$parser$Parser$Advanced$andThen;
+var $elm$parser$Parser$ExpectingEnd = {$: 'ExpectingEnd'};
+var $elm$parser$Parser$Advanced$AddRight = F2(
+	function (a, b) {
+		return {$: 'AddRight', a: a, b: b};
+	});
+var $elm$parser$Parser$Advanced$DeadEnd = F4(
+	function (row, col, problem, contextStack) {
+		return {col: col, contextStack: contextStack, problem: problem, row: row};
+	});
+var $elm$parser$Parser$Advanced$Empty = {$: 'Empty'};
+var $elm$parser$Parser$Advanced$fromState = F2(
+	function (s, x) {
+		return A2(
+			$elm$parser$Parser$Advanced$AddRight,
+			$elm$parser$Parser$Advanced$Empty,
+			A4($elm$parser$Parser$Advanced$DeadEnd, s.row, s.col, x, s.context));
+	});
+var $elm$parser$Parser$Advanced$end = function (x) {
+	return $elm$parser$Parser$Advanced$Parser(
+		function (s) {
+			return _Utils_eq(
+				$elm$core$String$length(s.src),
+				s.offset) ? A3($elm$parser$Parser$Advanced$Good, false, _Utils_Tuple0, s) : A2(
+				$elm$parser$Parser$Advanced$Bad,
+				false,
+				A2($elm$parser$Parser$Advanced$fromState, s, x));
+		});
+};
+var $elm$parser$Parser$end = $elm$parser$Parser$Advanced$end($elm$parser$Parser$ExpectingEnd);
+var $elm$parser$Parser$Advanced$isSubChar = _Parser_isSubChar;
+var $elm$parser$Parser$Advanced$chompWhileHelp = F5(
+	function (isGood, offset, row, col, s0) {
+		chompWhileHelp:
+		while (true) {
+			var newOffset = A3($elm$parser$Parser$Advanced$isSubChar, isGood, offset, s0.src);
+			if (_Utils_eq(newOffset, -1)) {
+				return A3(
+					$elm$parser$Parser$Advanced$Good,
+					_Utils_cmp(s0.offset, offset) < 0,
+					_Utils_Tuple0,
+					{col: col, context: s0.context, indent: s0.indent, offset: offset, row: row, src: s0.src});
+			} else {
+				if (_Utils_eq(newOffset, -2)) {
+					var $temp$isGood = isGood,
+						$temp$offset = offset + 1,
+						$temp$row = row + 1,
+						$temp$col = 1,
+						$temp$s0 = s0;
+					isGood = $temp$isGood;
+					offset = $temp$offset;
+					row = $temp$row;
+					col = $temp$col;
+					s0 = $temp$s0;
+					continue chompWhileHelp;
+				} else {
+					var $temp$isGood = isGood,
+						$temp$offset = newOffset,
+						$temp$row = row,
+						$temp$col = col + 1,
+						$temp$s0 = s0;
+					isGood = $temp$isGood;
+					offset = $temp$offset;
+					row = $temp$row;
+					col = $temp$col;
+					s0 = $temp$s0;
+					continue chompWhileHelp;
+				}
+			}
+		}
+	});
+var $elm$parser$Parser$Advanced$chompWhile = function (isGood) {
+	return $elm$parser$Parser$Advanced$Parser(
+		function (s) {
+			return A5($elm$parser$Parser$Advanced$chompWhileHelp, isGood, s.offset, s.row, s.col, s);
+		});
+};
+var $elm$parser$Parser$chompWhile = $elm$parser$Parser$Advanced$chompWhile;
+var $elm$core$Basics$always = F2(
+	function (a, _v0) {
+		return a;
+	});
+var $elm$parser$Parser$Advanced$mapChompedString = F2(
+	function (func, _v0) {
+		var parse = _v0.a;
+		return $elm$parser$Parser$Advanced$Parser(
+			function (s0) {
+				var _v1 = parse(s0);
+				if (_v1.$ === 'Bad') {
+					var p = _v1.a;
+					var x = _v1.b;
+					return A2($elm$parser$Parser$Advanced$Bad, p, x);
+				} else {
+					var p = _v1.a;
+					var a = _v1.b;
+					var s1 = _v1.c;
+					return A3(
+						$elm$parser$Parser$Advanced$Good,
+						p,
+						A2(
+							func,
+							A3($elm$core$String$slice, s0.offset, s1.offset, s0.src),
+							a),
+						s1);
+				}
+			});
+	});
+var $elm$parser$Parser$Advanced$getChompedString = function (parser) {
+	return A2($elm$parser$Parser$Advanced$mapChompedString, $elm$core$Basics$always, parser);
+};
+var $elm$parser$Parser$getChompedString = $elm$parser$Parser$Advanced$getChompedString;
+var $elm$parser$Parser$Problem = function (a) {
+	return {$: 'Problem', a: a};
+};
+var $elm$parser$Parser$Advanced$problem = function (x) {
+	return $elm$parser$Parser$Advanced$Parser(
+		function (s) {
+			return A2(
+				$elm$parser$Parser$Advanced$Bad,
+				false,
+				A2($elm$parser$Parser$Advanced$fromState, s, x));
+		});
+};
+var $elm$parser$Parser$problem = function (msg) {
+	return $elm$parser$Parser$Advanced$problem(
+		$elm$parser$Parser$Problem(msg));
+};
+var $elm$core$Basics$round = _Basics_round;
+var $elm$parser$Parser$Advanced$succeed = function (a) {
+	return $elm$parser$Parser$Advanced$Parser(
+		function (s) {
+			return A3($elm$parser$Parser$Advanced$Good, false, a, s);
+		});
+};
+var $elm$parser$Parser$succeed = $elm$parser$Parser$Advanced$succeed;
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$fractionsOfASecondInMs = A2(
+	$elm$parser$Parser$andThen,
+	function (str) {
+		if ($elm$core$String$length(str) <= 9) {
+			var _v0 = $elm$core$String$toFloat('0.' + str);
+			if (_v0.$ === 'Just') {
+				var floatVal = _v0.a;
+				return $elm$parser$Parser$succeed(
+					$elm$core$Basics$round(floatVal * 1000));
+			} else {
+				return $elm$parser$Parser$problem('Invalid float: \"' + (str + '\"'));
+			}
+		} else {
+			return $elm$parser$Parser$problem(
+				'Expected at most 9 digits, but got ' + $elm$core$String$fromInt(
+					$elm$core$String$length(str)));
+		}
+	},
+	$elm$parser$Parser$getChompedString(
+		$elm$parser$Parser$chompWhile($elm$core$Char$isDigit)));
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$fromParts = F6(
+	function (monthYearDayMs, hour, minute, second, ms, utcOffsetMinutes) {
+		return $elm$time$Time$millisToPosix((((monthYearDayMs + (((hour * 60) * 60) * 1000)) + (((minute - utcOffsetMinutes) * 60) * 1000)) + (second * 1000)) + ms);
+	});
+var $elm$parser$Parser$Advanced$map2 = F3(
+	function (func, _v0, _v1) {
+		var parseA = _v0.a;
+		var parseB = _v1.a;
+		return $elm$parser$Parser$Advanced$Parser(
+			function (s0) {
+				var _v2 = parseA(s0);
+				if (_v2.$ === 'Bad') {
+					var p = _v2.a;
+					var x = _v2.b;
+					return A2($elm$parser$Parser$Advanced$Bad, p, x);
+				} else {
+					var p1 = _v2.a;
+					var a = _v2.b;
+					var s1 = _v2.c;
+					var _v3 = parseB(s1);
+					if (_v3.$ === 'Bad') {
+						var p2 = _v3.a;
+						var x = _v3.b;
+						return A2($elm$parser$Parser$Advanced$Bad, p1 || p2, x);
+					} else {
+						var p2 = _v3.a;
+						var b = _v3.b;
+						var s2 = _v3.c;
+						return A3(
+							$elm$parser$Parser$Advanced$Good,
+							p1 || p2,
+							A2(func, a, b),
+							s2);
+					}
+				}
+			});
+	});
+var $elm$parser$Parser$Advanced$ignorer = F2(
+	function (keepParser, ignoreParser) {
+		return A3($elm$parser$Parser$Advanced$map2, $elm$core$Basics$always, keepParser, ignoreParser);
+	});
+var $elm$parser$Parser$ignorer = $elm$parser$Parser$Advanced$ignorer;
+var $elm$parser$Parser$Advanced$keeper = F2(
+	function (parseFunc, parseArg) {
+		return A3($elm$parser$Parser$Advanced$map2, $elm$core$Basics$apL, parseFunc, parseArg);
+	});
+var $elm$parser$Parser$keeper = $elm$parser$Parser$Advanced$keeper;
+var $elm$parser$Parser$Advanced$Append = F2(
+	function (a, b) {
+		return {$: 'Append', a: a, b: b};
+	});
+var $elm$parser$Parser$Advanced$oneOfHelp = F3(
+	function (s0, bag, parsers) {
+		oneOfHelp:
+		while (true) {
+			if (!parsers.b) {
+				return A2($elm$parser$Parser$Advanced$Bad, false, bag);
+			} else {
+				var parse = parsers.a.a;
+				var remainingParsers = parsers.b;
+				var _v1 = parse(s0);
+				if (_v1.$ === 'Good') {
+					var step = _v1;
+					return step;
+				} else {
+					var step = _v1;
+					var p = step.a;
+					var x = step.b;
+					if (p) {
+						return step;
+					} else {
+						var $temp$s0 = s0,
+							$temp$bag = A2($elm$parser$Parser$Advanced$Append, bag, x),
+							$temp$parsers = remainingParsers;
+						s0 = $temp$s0;
+						bag = $temp$bag;
+						parsers = $temp$parsers;
+						continue oneOfHelp;
+					}
+				}
+			}
+		}
+	});
+var $elm$parser$Parser$Advanced$oneOf = function (parsers) {
+	return $elm$parser$Parser$Advanced$Parser(
+		function (s) {
+			return A3($elm$parser$Parser$Advanced$oneOfHelp, s, $elm$parser$Parser$Advanced$Empty, parsers);
+		});
+};
+var $elm$parser$Parser$oneOf = $elm$parser$Parser$Advanced$oneOf;
+var $elm$parser$Parser$Done = function (a) {
+	return {$: 'Done', a: a};
+};
+var $elm$parser$Parser$Loop = function (a) {
+	return {$: 'Loop', a: a};
+};
+var $elm$core$String$append = _String_append;
+var $elm$parser$Parser$UnexpectedChar = {$: 'UnexpectedChar'};
+var $elm$parser$Parser$Advanced$chompIf = F2(
+	function (isGood, expecting) {
+		return $elm$parser$Parser$Advanced$Parser(
+			function (s) {
+				var newOffset = A3($elm$parser$Parser$Advanced$isSubChar, isGood, s.offset, s.src);
+				return _Utils_eq(newOffset, -1) ? A2(
+					$elm$parser$Parser$Advanced$Bad,
+					false,
+					A2($elm$parser$Parser$Advanced$fromState, s, expecting)) : (_Utils_eq(newOffset, -2) ? A3(
+					$elm$parser$Parser$Advanced$Good,
+					true,
+					_Utils_Tuple0,
+					{col: 1, context: s.context, indent: s.indent, offset: s.offset + 1, row: s.row + 1, src: s.src}) : A3(
+					$elm$parser$Parser$Advanced$Good,
+					true,
+					_Utils_Tuple0,
+					{col: s.col + 1, context: s.context, indent: s.indent, offset: newOffset, row: s.row, src: s.src}));
+			});
+	});
+var $elm$parser$Parser$chompIf = function (isGood) {
+	return A2($elm$parser$Parser$Advanced$chompIf, isGood, $elm$parser$Parser$UnexpectedChar);
+};
+var $elm$parser$Parser$Advanced$loopHelp = F4(
+	function (p, state, callback, s0) {
+		loopHelp:
+		while (true) {
+			var _v0 = callback(state);
+			var parse = _v0.a;
+			var _v1 = parse(s0);
+			if (_v1.$ === 'Good') {
+				var p1 = _v1.a;
+				var step = _v1.b;
+				var s1 = _v1.c;
+				if (step.$ === 'Loop') {
+					var newState = step.a;
+					var $temp$p = p || p1,
+						$temp$state = newState,
+						$temp$callback = callback,
+						$temp$s0 = s1;
+					p = $temp$p;
+					state = $temp$state;
+					callback = $temp$callback;
+					s0 = $temp$s0;
+					continue loopHelp;
+				} else {
+					var result = step.a;
+					return A3($elm$parser$Parser$Advanced$Good, p || p1, result, s1);
+				}
+			} else {
+				var p1 = _v1.a;
+				var x = _v1.b;
+				return A2($elm$parser$Parser$Advanced$Bad, p || p1, x);
+			}
+		}
+	});
+var $elm$parser$Parser$Advanced$loop = F2(
+	function (state, callback) {
+		return $elm$parser$Parser$Advanced$Parser(
+			function (s) {
+				return A4($elm$parser$Parser$Advanced$loopHelp, false, state, callback, s);
+			});
+	});
+var $elm$parser$Parser$Advanced$map = F2(
+	function (func, _v0) {
+		var parse = _v0.a;
+		return $elm$parser$Parser$Advanced$Parser(
+			function (s0) {
+				var _v1 = parse(s0);
+				if (_v1.$ === 'Good') {
+					var p = _v1.a;
+					var a = _v1.b;
+					var s1 = _v1.c;
+					return A3(
+						$elm$parser$Parser$Advanced$Good,
+						p,
+						func(a),
+						s1);
+				} else {
+					var p = _v1.a;
+					var x = _v1.b;
+					return A2($elm$parser$Parser$Advanced$Bad, p, x);
+				}
+			});
+	});
+var $elm$parser$Parser$map = $elm$parser$Parser$Advanced$map;
+var $elm$parser$Parser$Advanced$Done = function (a) {
+	return {$: 'Done', a: a};
+};
+var $elm$parser$Parser$Advanced$Loop = function (a) {
+	return {$: 'Loop', a: a};
+};
+var $elm$parser$Parser$toAdvancedStep = function (step) {
+	if (step.$ === 'Loop') {
+		var s = step.a;
+		return $elm$parser$Parser$Advanced$Loop(s);
+	} else {
+		var a = step.a;
+		return $elm$parser$Parser$Advanced$Done(a);
+	}
+};
+var $elm$parser$Parser$loop = F2(
+	function (state, callback) {
+		return A2(
+			$elm$parser$Parser$Advanced$loop,
+			state,
+			function (s) {
+				return A2(
+					$elm$parser$Parser$map,
+					$elm$parser$Parser$toAdvancedStep,
+					callback(s));
+			});
+	});
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt = function (quantity) {
+	var helper = function (str) {
+		if (_Utils_eq(
+			$elm$core$String$length(str),
+			quantity)) {
+			var _v0 = $elm$core$String$toInt(str);
+			if (_v0.$ === 'Just') {
+				var intVal = _v0.a;
+				return A2(
+					$elm$parser$Parser$map,
+					$elm$parser$Parser$Done,
+					$elm$parser$Parser$succeed(intVal));
+			} else {
+				return $elm$parser$Parser$problem('Invalid integer: \"' + (str + '\"'));
+			}
+		} else {
+			return A2(
+				$elm$parser$Parser$map,
+				function (nextChar) {
+					return $elm$parser$Parser$Loop(
+						A2($elm$core$String$append, str, nextChar));
+				},
+				$elm$parser$Parser$getChompedString(
+					$elm$parser$Parser$chompIf($elm$core$Char$isDigit)));
+		}
+	};
+	return A2($elm$parser$Parser$loop, '', helper);
+};
+var $elm$parser$Parser$ExpectingSymbol = function (a) {
+	return {$: 'ExpectingSymbol', a: a};
+};
+var $elm$parser$Parser$Advanced$Token = F2(
+	function (a, b) {
+		return {$: 'Token', a: a, b: b};
+	});
+var $elm$parser$Parser$Advanced$isSubString = _Parser_isSubString;
+var $elm$core$Basics$not = _Basics_not;
+var $elm$parser$Parser$Advanced$token = function (_v0) {
+	var str = _v0.a;
+	var expecting = _v0.b;
+	var progress = !$elm$core$String$isEmpty(str);
+	return $elm$parser$Parser$Advanced$Parser(
+		function (s) {
+			var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.offset, s.row, s.col, s.src);
+			var newOffset = _v1.a;
+			var newRow = _v1.b;
+			var newCol = _v1.c;
+			return _Utils_eq(newOffset, -1) ? A2(
+				$elm$parser$Parser$Advanced$Bad,
+				false,
+				A2($elm$parser$Parser$Advanced$fromState, s, expecting)) : A3(
+				$elm$parser$Parser$Advanced$Good,
+				progress,
+				_Utils_Tuple0,
+				{col: newCol, context: s.context, indent: s.indent, offset: newOffset, row: newRow, src: s.src});
+		});
+};
+var $elm$parser$Parser$Advanced$symbol = $elm$parser$Parser$Advanced$token;
+var $elm$parser$Parser$symbol = function (str) {
+	return $elm$parser$Parser$Advanced$symbol(
+		A2(
+			$elm$parser$Parser$Advanced$Token,
+			str,
+			$elm$parser$Parser$ExpectingSymbol(str)));
+};
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$epochYear = 1970;
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay = function (day) {
+	return $elm$parser$Parser$problem(
+		'Invalid day: ' + $elm$core$String$fromInt(day));
+};
+var $elm$core$Basics$modBy = _Basics_modBy;
+var $elm$core$Basics$neq = _Utils_notEqual;
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$isLeapYear = function (year) {
+	return (!A2($elm$core$Basics$modBy, 4, year)) && ((!(!A2($elm$core$Basics$modBy, 100, year))) || (!A2($elm$core$Basics$modBy, 400, year)));
+};
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$leapYearsBefore = function (y1) {
+	var y = y1 - 1;
+	return (((y / 4) | 0) - ((y / 100) | 0)) + ((y / 400) | 0);
+};
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$msPerDay = 86400000;
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$msPerYear = 31536000000;
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$yearMonthDay = function (_v0) {
+	var year = _v0.a;
+	var month = _v0.b;
+	var dayInMonth = _v0.c;
+	if (dayInMonth < 0) {
+		return $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth);
+	} else {
+		var succeedWith = function (extraMs) {
+			var yearMs = $rtfeldman$elm_iso8601_date_strings$Iso8601$msPerYear * (year - $rtfeldman$elm_iso8601_date_strings$Iso8601$epochYear);
+			var days = ((month < 3) || (!$rtfeldman$elm_iso8601_date_strings$Iso8601$isLeapYear(year))) ? (dayInMonth - 1) : dayInMonth;
+			var dayMs = $rtfeldman$elm_iso8601_date_strings$Iso8601$msPerDay * (days + ($rtfeldman$elm_iso8601_date_strings$Iso8601$leapYearsBefore(year) - $rtfeldman$elm_iso8601_date_strings$Iso8601$leapYearsBefore($rtfeldman$elm_iso8601_date_strings$Iso8601$epochYear)));
+			return $elm$parser$Parser$succeed((extraMs + yearMs) + dayMs);
+		};
+		switch (month) {
+			case 1:
+				return (dayInMonth > 31) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(0);
+			case 2:
+				return ((dayInMonth > 29) || ((dayInMonth === 29) && (!$rtfeldman$elm_iso8601_date_strings$Iso8601$isLeapYear(year)))) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(2678400000);
+			case 3:
+				return (dayInMonth > 31) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(5097600000);
+			case 4:
+				return (dayInMonth > 30) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(7776000000);
+			case 5:
+				return (dayInMonth > 31) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(10368000000);
+			case 6:
+				return (dayInMonth > 30) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(13046400000);
+			case 7:
+				return (dayInMonth > 31) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(15638400000);
+			case 8:
+				return (dayInMonth > 31) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(18316800000);
+			case 9:
+				return (dayInMonth > 30) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(20995200000);
+			case 10:
+				return (dayInMonth > 31) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(23587200000);
+			case 11:
+				return (dayInMonth > 30) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(26265600000);
+			case 12:
+				return (dayInMonth > 31) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(28857600000);
+			default:
+				return $elm$parser$Parser$problem(
+					'Invalid month: \"' + ($elm$core$String$fromInt(month) + '\"'));
+		}
+	}
+};
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$monthYearDayInMs = A2(
+	$elm$parser$Parser$andThen,
+	$rtfeldman$elm_iso8601_date_strings$Iso8601$yearMonthDay,
+	A2(
+		$elm$parser$Parser$keeper,
+		A2(
+			$elm$parser$Parser$keeper,
+			A2(
+				$elm$parser$Parser$keeper,
+				$elm$parser$Parser$succeed(
+					F3(
+						function (year, month, day) {
+							return _Utils_Tuple3(year, month, day);
+						})),
+				$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(4)),
+			$elm$parser$Parser$oneOf(
+				_List_fromArray(
+					[
+						A2(
+						$elm$parser$Parser$keeper,
+						A2(
+							$elm$parser$Parser$ignorer,
+							$elm$parser$Parser$succeed($elm$core$Basics$identity),
+							$elm$parser$Parser$symbol('-')),
+						$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)),
+						$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)
+					]))),
+		$elm$parser$Parser$oneOf(
+			_List_fromArray(
+				[
+					A2(
+					$elm$parser$Parser$keeper,
+					A2(
+						$elm$parser$Parser$ignorer,
+						$elm$parser$Parser$succeed($elm$core$Basics$identity),
+						$elm$parser$Parser$symbol('-')),
+					$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)),
+					$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)
+				]))));
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$utcOffsetInMinutes = function () {
+	var utcOffsetMinutesFromParts = F3(
+		function (multiplier, hours, minutes) {
+			return (multiplier * (hours * 60)) + minutes;
+		});
+	return A2(
+		$elm$parser$Parser$keeper,
+		$elm$parser$Parser$succeed($elm$core$Basics$identity),
+		$elm$parser$Parser$oneOf(
+			_List_fromArray(
+				[
+					A2(
+					$elm$parser$Parser$map,
+					function (_v0) {
+						return 0;
+					},
+					$elm$parser$Parser$symbol('Z')),
+					A2(
+					$elm$parser$Parser$keeper,
+					A2(
+						$elm$parser$Parser$keeper,
+						A2(
+							$elm$parser$Parser$keeper,
+							$elm$parser$Parser$succeed(utcOffsetMinutesFromParts),
+							$elm$parser$Parser$oneOf(
+								_List_fromArray(
+									[
+										A2(
+										$elm$parser$Parser$map,
+										function (_v1) {
+											return 1;
+										},
+										$elm$parser$Parser$symbol('+')),
+										A2(
+										$elm$parser$Parser$map,
+										function (_v2) {
+											return -1;
+										},
+										$elm$parser$Parser$symbol('-'))
+									]))),
+						$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)),
+					$elm$parser$Parser$oneOf(
+						_List_fromArray(
+							[
+								A2(
+								$elm$parser$Parser$keeper,
+								A2(
+									$elm$parser$Parser$ignorer,
+									$elm$parser$Parser$succeed($elm$core$Basics$identity),
+									$elm$parser$Parser$symbol(':')),
+								$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)),
+								$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2),
+								$elm$parser$Parser$succeed(0)
+							]))),
+					A2(
+					$elm$parser$Parser$ignorer,
+					$elm$parser$Parser$succeed(0),
+					$elm$parser$Parser$end)
+				])));
+}();
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$iso8601 = A2(
+	$elm$parser$Parser$andThen,
+	function (datePart) {
+		return $elm$parser$Parser$oneOf(
+			_List_fromArray(
+				[
+					A2(
+					$elm$parser$Parser$keeper,
+					A2(
+						$elm$parser$Parser$keeper,
+						A2(
+							$elm$parser$Parser$keeper,
+							A2(
+								$elm$parser$Parser$keeper,
+								A2(
+									$elm$parser$Parser$keeper,
+									A2(
+										$elm$parser$Parser$ignorer,
+										$elm$parser$Parser$succeed(
+											$rtfeldman$elm_iso8601_date_strings$Iso8601$fromParts(datePart)),
+										$elm$parser$Parser$symbol('T')),
+									$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)),
+								$elm$parser$Parser$oneOf(
+									_List_fromArray(
+										[
+											A2(
+											$elm$parser$Parser$keeper,
+											A2(
+												$elm$parser$Parser$ignorer,
+												$elm$parser$Parser$succeed($elm$core$Basics$identity),
+												$elm$parser$Parser$symbol(':')),
+											$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)),
+											$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)
+										]))),
+							$elm$parser$Parser$oneOf(
+								_List_fromArray(
+									[
+										A2(
+										$elm$parser$Parser$keeper,
+										A2(
+											$elm$parser$Parser$ignorer,
+											$elm$parser$Parser$succeed($elm$core$Basics$identity),
+											$elm$parser$Parser$symbol(':')),
+										$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)),
+										$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2),
+										$elm$parser$Parser$succeed(0)
+									]))),
+						$elm$parser$Parser$oneOf(
+							_List_fromArray(
+								[
+									A2(
+									$elm$parser$Parser$keeper,
+									A2(
+										$elm$parser$Parser$ignorer,
+										$elm$parser$Parser$succeed($elm$core$Basics$identity),
+										$elm$parser$Parser$symbol('.')),
+									$rtfeldman$elm_iso8601_date_strings$Iso8601$fractionsOfASecondInMs),
+									$elm$parser$Parser$succeed(0)
+								]))),
+					A2($elm$parser$Parser$ignorer, $rtfeldman$elm_iso8601_date_strings$Iso8601$utcOffsetInMinutes, $elm$parser$Parser$end)),
+					A2(
+					$elm$parser$Parser$ignorer,
+					$elm$parser$Parser$succeed(
+						A6($rtfeldman$elm_iso8601_date_strings$Iso8601$fromParts, datePart, 0, 0, 0, 0, 0)),
+					$elm$parser$Parser$end)
+				]));
+	},
+	$rtfeldman$elm_iso8601_date_strings$Iso8601$monthYearDayInMs);
+var $elm$parser$Parser$DeadEnd = F3(
+	function (row, col, problem) {
+		return {col: col, problem: problem, row: row};
+	});
+var $elm$parser$Parser$problemToDeadEnd = function (p) {
+	return A3($elm$parser$Parser$DeadEnd, p.row, p.col, p.problem);
+};
+var $elm$parser$Parser$Advanced$bagToList = F2(
+	function (bag, list) {
+		bagToList:
+		while (true) {
+			switch (bag.$) {
+				case 'Empty':
+					return list;
+				case 'AddRight':
+					var bag1 = bag.a;
+					var x = bag.b;
+					var $temp$bag = bag1,
+						$temp$list = A2($elm$core$List$cons, x, list);
+					bag = $temp$bag;
+					list = $temp$list;
+					continue bagToList;
+				default:
+					var bag1 = bag.a;
+					var bag2 = bag.b;
+					var $temp$bag = bag1,
+						$temp$list = A2($elm$parser$Parser$Advanced$bagToList, bag2, list);
+					bag = $temp$bag;
+					list = $temp$list;
+					continue bagToList;
+			}
+		}
+	});
+var $elm$parser$Parser$Advanced$run = F2(
+	function (_v0, src) {
+		var parse = _v0.a;
+		var _v1 = parse(
+			{col: 1, context: _List_Nil, indent: 1, offset: 0, row: 1, src: src});
+		if (_v1.$ === 'Good') {
+			var value = _v1.b;
+			return $elm$core$Result$Ok(value);
+		} else {
+			var bag = _v1.b;
+			return $elm$core$Result$Err(
+				A2($elm$parser$Parser$Advanced$bagToList, bag, _List_Nil));
+		}
+	});
+var $elm$parser$Parser$run = F2(
+	function (parser, source) {
+		var _v0 = A2($elm$parser$Parser$Advanced$run, parser, source);
+		if (_v0.$ === 'Ok') {
+			var a = _v0.a;
+			return $elm$core$Result$Ok(a);
+		} else {
+			var problems = _v0.a;
+			return $elm$core$Result$Err(
+				A2($elm$core$List$map, $elm$parser$Parser$problemToDeadEnd, problems));
+		}
+	});
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$toTime = function (str) {
+	return A2($elm$parser$Parser$run, $rtfeldman$elm_iso8601_date_strings$Iso8601$iso8601, str);
+};
+var $author$project$GpxParser$parseGPXPoints = function (xml) {
+	var value = function (x) {
+		var _v6 = x.submatches;
+		if (_v6.b && (_v6.a.$ === 'Just')) {
+			var val = _v6.a.a;
+			return $elm$core$String$toFloat(val);
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	};
+	var trkpts = A2(
+		$elm$regex$Regex$find,
+		$author$project$GpxParser$asRegex('(<trkpt(.|\\s)*?)(trkpt>|\\/>)'),
+		xml);
+	var timestamp = function (trkpt) {
+		return A2(
+			$elm$core$Maybe$andThen,
+			A2($elm$core$Basics$composeR, $rtfeldman$elm_iso8601_date_strings$Iso8601$toTime, $elm$core$Result$toMaybe),
+			$elm_community$maybe_extra$Maybe$Extra$join(
+				A2(
+					$elm$core$Maybe$andThen,
+					$elm$core$List$head,
+					A2(
+						$elm$core$Maybe$map,
+						function ($) {
+							return $.submatches;
+						},
+						$elm$core$List$head(
+							A2(
+								$elm$regex$Regex$find,
+								$author$project$GpxParser$asRegex('<time>(.*)<\\/time>'),
+								trkpt))))));
+	};
+	var sameLocation = F2(
+		function (_v4, _v5) {
+			var a = _v4.a;
+			var b = _v5.a;
+			return _Utils_eq(a.latitude, b.latitude) && _Utils_eq(a.longitude, b.longitude);
+		});
+	var matches = function (xs) {
+		return A2($elm$core$List$map, value, xs);
+	};
+	var longitude = function (trkpt) {
+		return matches(
+			A2(
+				$elm$regex$Regex$find,
+				$author$project$GpxParser$asRegex('lon=\\\"([\\d\\.-]*)\\\"'),
+				trkpt));
+	};
+	var latitude = function (trkpt) {
+		return matches(
+			A2(
+				$elm$regex$Regex$find,
+				$author$project$GpxParser$asRegex('lat=\\\"([\\d\\.-]*)\\\"'),
+				trkpt));
+	};
+	var elevation = function (trkpt) {
+		var _v3 = matches(
+			A2(
+				$elm$regex$Regex$find,
+				$author$project$GpxParser$asRegex('<ele>([\\d\\.-]*)<\\/ele>'),
+				trkpt));
+		if (_v3.b && (_v3.a.$ === 'Just')) {
+			var alt = _v3.a.a;
+			return alt;
+		} else {
+			return 0;
+		}
+	};
+	var earthVector = function (trkpt) {
+		var trkptString = trkpt.match;
+		var _v0 = _Utils_Tuple2(
+			latitude(trkptString),
+			longitude(trkptString));
+		if (((_v0.a.b && (_v0.a.a.$ === 'Just')) && _v0.b.b) && (_v0.b.a.$ === 'Just')) {
+			var _v1 = _v0.a;
+			var lat = _v1.a.a;
+			var _v2 = _v0.b;
+			var lon = _v2.a.a;
+			return $elm$core$Maybe$Just(
+				_Utils_Tuple2(
+					A4(
+						$author$project$GpxPoint$GpxPoint,
+						lon,
+						lat,
+						elevation(trkptString),
+						timestamp(trkptString)),
+					trkpt.index));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	};
+	return A2(
+		$author$project$GpxParser$deDupe,
+		sameLocation,
+		A2($elm$core$List$filterMap, earthVector, trkpts));
+};
+var $elm$core$String$concat = function (strings) {
+	return A2($elm$core$String$join, '', strings);
+};
+var $elm$core$String$cons = _String_cons;
+var $elm$core$String$fromChar = function (_char) {
+	return A2($elm$core$String$cons, _char, '');
+};
+var $elm$core$String$foldr = _String_foldr;
+var $elm$core$String$toList = function (string) {
+	return A3($elm$core$String$foldr, $elm$core$List$cons, _List_Nil, string);
+};
+var $marcosh$elm_html_to_unicode$ElmEscapeHtml$convert = F2(
+	function (convertChars, string) {
+		return $elm$core$String$concat(
+			A2(
+				$elm$core$List$map,
+				$elm$core$String$fromChar,
+				convertChars(
+					$elm$core$String$toList(string))));
+	});
+var $elm$core$List$append = F2(
+	function (xs, ys) {
+		if (!ys.b) {
+			return xs;
+		} else {
+			return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
+		}
+	});
+var $elm$core$List$isEmpty = function (xs) {
+	if (!xs.b) {
+		return true;
+	} else {
+		return false;
+	}
+};
+var $elm$core$List$concat = function (lists) {
+	return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
+};
+var $elm$core$String$fromList = _String_fromList;
+var $marcosh$elm_html_to_unicode$ElmEscapeHtml$convertCode = F5(
+	function (mayber, lister, pre, post, list) {
+		var string = $elm$core$String$fromList(list);
+		var maybe = mayber(string);
+		if (maybe.$ === 'Nothing') {
+			return $elm$core$List$concat(
+				_List_fromArray(
+					[pre, list, post]));
+		} else {
+			var something = maybe.a;
+			return lister(something);
+		}
+	});
+var $elm$core$Char$fromCode = _Char_fromCode;
+var $elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
+var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
+var $elm$core$Dict$Black = {$: 'Black'};
+var $elm$core$Dict$RBNode_elm_builtin = F5(
+	function (a, b, c, d, e) {
+		return {$: 'RBNode_elm_builtin', a: a, b: b, c: c, d: d, e: e};
+	});
+var $elm$core$Dict$Red = {$: 'Red'};
+var $elm$core$Dict$balance = F5(
+	function (color, key, value, left, right) {
+		if ((right.$ === 'RBNode_elm_builtin') && (right.a.$ === 'Red')) {
+			var _v1 = right.a;
+			var rK = right.b;
+			var rV = right.c;
+			var rLeft = right.d;
+			var rRight = right.e;
+			if ((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) {
+				var _v3 = left.a;
+				var lK = left.b;
+				var lV = left.c;
+				var lLeft = left.d;
+				var lRight = left.e;
+				return A5(
+					$elm$core$Dict$RBNode_elm_builtin,
+					$elm$core$Dict$Red,
+					key,
+					value,
+					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, lK, lV, lLeft, lRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, rK, rV, rLeft, rRight));
+			} else {
+				return A5(
+					$elm$core$Dict$RBNode_elm_builtin,
+					color,
+					rK,
+					rV,
+					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, left, rLeft),
+					rRight);
+			}
+		} else {
+			if ((((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) && (left.d.$ === 'RBNode_elm_builtin')) && (left.d.a.$ === 'Red')) {
+				var _v5 = left.a;
+				var lK = left.b;
+				var lV = left.c;
+				var _v6 = left.d;
+				var _v7 = _v6.a;
+				var llK = _v6.b;
+				var llV = _v6.c;
+				var llLeft = _v6.d;
+				var llRight = _v6.e;
+				var lRight = left.e;
+				return A5(
+					$elm$core$Dict$RBNode_elm_builtin,
+					$elm$core$Dict$Red,
+					lK,
+					lV,
+					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, llK, llV, llLeft, llRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, key, value, lRight, right));
+			} else {
+				return A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, left, right);
+			}
+		}
+	});
+var $elm$core$Basics$compare = _Utils_compare;
+var $elm$core$Dict$insertHelp = F3(
+	function (key, value, dict) {
+		if (dict.$ === 'RBEmpty_elm_builtin') {
+			return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, $elm$core$Dict$RBEmpty_elm_builtin, $elm$core$Dict$RBEmpty_elm_builtin);
+		} else {
+			var nColor = dict.a;
+			var nKey = dict.b;
+			var nValue = dict.c;
+			var nLeft = dict.d;
+			var nRight = dict.e;
+			var _v1 = A2($elm$core$Basics$compare, key, nKey);
+			switch (_v1.$) {
+				case 'LT':
+					return A5(
+						$elm$core$Dict$balance,
+						nColor,
+						nKey,
+						nValue,
+						A3($elm$core$Dict$insertHelp, key, value, nLeft),
+						nRight);
+				case 'EQ':
+					return A5($elm$core$Dict$RBNode_elm_builtin, nColor, nKey, value, nLeft, nRight);
+				default:
+					return A5(
+						$elm$core$Dict$balance,
+						nColor,
+						nKey,
+						nValue,
+						nLeft,
+						A3($elm$core$Dict$insertHelp, key, value, nRight));
+			}
+		}
+	});
+var $elm$core$Dict$insert = F3(
+	function (key, value, dict) {
+		var _v0 = A3($elm$core$Dict$insertHelp, key, value, dict);
+		if ((_v0.$ === 'RBNode_elm_builtin') && (_v0.a.$ === 'Red')) {
+			var _v1 = _v0.a;
+			var k = _v0.b;
+			var v = _v0.c;
+			var l = _v0.d;
+			var r = _v0.e;
+			return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, l, r);
+		} else {
+			var x = _v0;
+			return x;
+		}
+	});
+var $elm$core$Dict$fromList = function (assocs) {
+	return A3(
+		$elm$core$List$foldl,
+		F2(
+			function (_v0, dict) {
+				var key = _v0.a;
+				var value = _v0.b;
+				return A3($elm$core$Dict$insert, key, value, dict);
+			}),
+		$elm$core$Dict$empty,
+		assocs);
+};
+var $marcosh$elm_html_to_unicode$ElmEscapeHtml$friendlyConverterDictionary = $elm$core$Dict$fromList(
+	A2(
+		$elm$core$List$map,
+		function (_v0) {
+			var a = _v0.a;
+			var b = _v0.b;
+			return _Utils_Tuple2(
+				a,
+				$elm$core$Char$fromCode(b));
+		},
+		_List_fromArray(
+			[
+				_Utils_Tuple2('quot', 34),
+				_Utils_Tuple2('amp', 38),
+				_Utils_Tuple2('lt', 60),
+				_Utils_Tuple2('gt', 62),
+				_Utils_Tuple2('nbsp', 160),
+				_Utils_Tuple2('iexcl', 161),
+				_Utils_Tuple2('cent', 162),
+				_Utils_Tuple2('pound', 163),
+				_Utils_Tuple2('curren', 164),
+				_Utils_Tuple2('yen', 165),
+				_Utils_Tuple2('brvbar', 166),
+				_Utils_Tuple2('sect', 167),
+				_Utils_Tuple2('uml', 168),
+				_Utils_Tuple2('copy', 169),
+				_Utils_Tuple2('ordf', 170),
+				_Utils_Tuple2('laquo', 171),
+				_Utils_Tuple2('not', 172),
+				_Utils_Tuple2('shy', 173),
+				_Utils_Tuple2('reg', 174),
+				_Utils_Tuple2('macr', 175),
+				_Utils_Tuple2('deg', 176),
+				_Utils_Tuple2('plusmn', 177),
+				_Utils_Tuple2('sup2', 178),
+				_Utils_Tuple2('sup3', 179),
+				_Utils_Tuple2('acute', 180),
+				_Utils_Tuple2('micro', 181),
+				_Utils_Tuple2('para', 182),
+				_Utils_Tuple2('middot', 183),
+				_Utils_Tuple2('cedil', 184),
+				_Utils_Tuple2('sup1', 185),
+				_Utils_Tuple2('ordm', 186),
+				_Utils_Tuple2('raquo', 187),
+				_Utils_Tuple2('frac14', 188),
+				_Utils_Tuple2('frac12', 189),
+				_Utils_Tuple2('frac34', 190),
+				_Utils_Tuple2('iquest', 191),
+				_Utils_Tuple2('Agrave', 192),
+				_Utils_Tuple2('Aacute', 193),
+				_Utils_Tuple2('Acirc', 194),
+				_Utils_Tuple2('Atilde', 195),
+				_Utils_Tuple2('Auml', 196),
+				_Utils_Tuple2('Aring', 197),
+				_Utils_Tuple2('AElig', 198),
+				_Utils_Tuple2('Ccedil', 199),
+				_Utils_Tuple2('Egrave', 200),
+				_Utils_Tuple2('Eacute', 201),
+				_Utils_Tuple2('Ecirc', 202),
+				_Utils_Tuple2('Euml', 203),
+				_Utils_Tuple2('Igrave', 204),
+				_Utils_Tuple2('Iacute', 205),
+				_Utils_Tuple2('Icirc', 206),
+				_Utils_Tuple2('Iuml', 207),
+				_Utils_Tuple2('ETH', 208),
+				_Utils_Tuple2('Ntilde', 209),
+				_Utils_Tuple2('Ograve', 210),
+				_Utils_Tuple2('Oacute', 211),
+				_Utils_Tuple2('Ocirc', 212),
+				_Utils_Tuple2('Otilde', 213),
+				_Utils_Tuple2('Ouml', 214),
+				_Utils_Tuple2('times', 215),
+				_Utils_Tuple2('Oslash', 216),
+				_Utils_Tuple2('Ugrave', 217),
+				_Utils_Tuple2('Uacute', 218),
+				_Utils_Tuple2('Ucirc', 219),
+				_Utils_Tuple2('Uuml', 220),
+				_Utils_Tuple2('Yacute', 221),
+				_Utils_Tuple2('THORN', 222),
+				_Utils_Tuple2('szlig', 223),
+				_Utils_Tuple2('agrave', 224),
+				_Utils_Tuple2('aacute', 225),
+				_Utils_Tuple2('acirc', 226),
+				_Utils_Tuple2('atilde', 227),
+				_Utils_Tuple2('auml', 228),
+				_Utils_Tuple2('aring', 229),
+				_Utils_Tuple2('aelig', 230),
+				_Utils_Tuple2('ccedil', 231),
+				_Utils_Tuple2('egrave', 232),
+				_Utils_Tuple2('eacute', 233),
+				_Utils_Tuple2('ecirc', 234),
+				_Utils_Tuple2('euml', 235),
+				_Utils_Tuple2('igrave', 236),
+				_Utils_Tuple2('iacute', 237),
+				_Utils_Tuple2('icirc', 238),
+				_Utils_Tuple2('iuml', 239),
+				_Utils_Tuple2('eth', 240),
+				_Utils_Tuple2('ntilde', 241),
+				_Utils_Tuple2('ograve', 242),
+				_Utils_Tuple2('oacute', 243),
+				_Utils_Tuple2('ocirc', 244),
+				_Utils_Tuple2('otilde', 245),
+				_Utils_Tuple2('ouml', 246),
+				_Utils_Tuple2('divide', 247),
+				_Utils_Tuple2('oslash', 248),
+				_Utils_Tuple2('ugrave', 249),
+				_Utils_Tuple2('uacute', 250),
+				_Utils_Tuple2('ucirc', 251),
+				_Utils_Tuple2('uuml', 252),
+				_Utils_Tuple2('yacute', 253),
+				_Utils_Tuple2('thorn', 254),
+				_Utils_Tuple2('yuml', 255),
+				_Utils_Tuple2('Amacr', 256),
+				_Utils_Tuple2('amacr', 257),
+				_Utils_Tuple2('Abreve', 258),
+				_Utils_Tuple2('abreve', 259),
+				_Utils_Tuple2('Aogon', 260),
+				_Utils_Tuple2('aogon', 261),
+				_Utils_Tuple2('Cacute', 262),
+				_Utils_Tuple2('cacute', 263),
+				_Utils_Tuple2('Ccirc', 264),
+				_Utils_Tuple2('ccirc', 265),
+				_Utils_Tuple2('Cdod', 266),
+				_Utils_Tuple2('cdot', 267),
+				_Utils_Tuple2('Ccaron', 268),
+				_Utils_Tuple2('ccaron', 269),
+				_Utils_Tuple2('Dcaron', 270),
+				_Utils_Tuple2('dcaron', 271),
+				_Utils_Tuple2('Dstork', 272),
+				_Utils_Tuple2('dstork', 273),
+				_Utils_Tuple2('Emacr', 274),
+				_Utils_Tuple2('emacr', 275),
+				_Utils_Tuple2('Edot', 278),
+				_Utils_Tuple2('edot', 279),
+				_Utils_Tuple2('Eogon', 280),
+				_Utils_Tuple2('eogon', 281),
+				_Utils_Tuple2('Ecaron', 282),
+				_Utils_Tuple2('ecaron', 283),
+				_Utils_Tuple2('Gcirc', 284),
+				_Utils_Tuple2('gcirc', 285),
+				_Utils_Tuple2('Gbreve', 286),
+				_Utils_Tuple2('gbreve', 287),
+				_Utils_Tuple2('Gdot', 288),
+				_Utils_Tuple2('gdot', 289),
+				_Utils_Tuple2('Gcedil', 290),
+				_Utils_Tuple2('gcedil', 291),
+				_Utils_Tuple2('Hcirc', 292),
+				_Utils_Tuple2('hcirc', 293),
+				_Utils_Tuple2('Hstork', 294),
+				_Utils_Tuple2('hstork', 295),
+				_Utils_Tuple2('Itilde', 296),
+				_Utils_Tuple2('itilde', 297),
+				_Utils_Tuple2('Imacr', 298),
+				_Utils_Tuple2('imacr', 299),
+				_Utils_Tuple2('Iogon', 302),
+				_Utils_Tuple2('iogon', 303),
+				_Utils_Tuple2('Idot', 304),
+				_Utils_Tuple2('inodot', 305),
+				_Utils_Tuple2('IJlog', 306),
+				_Utils_Tuple2('ijlig', 307),
+				_Utils_Tuple2('Jcirc', 308),
+				_Utils_Tuple2('jcirc', 309),
+				_Utils_Tuple2('Kcedil', 310),
+				_Utils_Tuple2('kcedil', 311),
+				_Utils_Tuple2('kgreen', 312),
+				_Utils_Tuple2('Lacute', 313),
+				_Utils_Tuple2('lacute', 314),
+				_Utils_Tuple2('Lcedil', 315),
+				_Utils_Tuple2('lcedil', 316),
+				_Utils_Tuple2('Lcaron', 317),
+				_Utils_Tuple2('lcaron', 318),
+				_Utils_Tuple2('Lmodot', 319),
+				_Utils_Tuple2('lmidot', 320),
+				_Utils_Tuple2('Lstork', 321),
+				_Utils_Tuple2('lstork', 322),
+				_Utils_Tuple2('Nacute', 323),
+				_Utils_Tuple2('nacute', 324),
+				_Utils_Tuple2('Ncedil', 325),
+				_Utils_Tuple2('ncedil', 326),
+				_Utils_Tuple2('Ncaron', 327),
+				_Utils_Tuple2('ncaron', 328),
+				_Utils_Tuple2('napos', 329),
+				_Utils_Tuple2('ENG', 330),
+				_Utils_Tuple2('eng', 331),
+				_Utils_Tuple2('Omacr', 332),
+				_Utils_Tuple2('omacr', 333),
+				_Utils_Tuple2('Odblac', 336),
+				_Utils_Tuple2('odblac', 337),
+				_Utils_Tuple2('OEling', 338),
+				_Utils_Tuple2('oelig', 339),
+				_Utils_Tuple2('Racute', 340),
+				_Utils_Tuple2('racute', 341),
+				_Utils_Tuple2('Rcedil', 342),
+				_Utils_Tuple2('rcedil', 343),
+				_Utils_Tuple2('Rcaron', 344),
+				_Utils_Tuple2('rcaron', 345),
+				_Utils_Tuple2('Sacute', 346),
+				_Utils_Tuple2('sacute', 347),
+				_Utils_Tuple2('Scirc', 348),
+				_Utils_Tuple2('scirc', 349),
+				_Utils_Tuple2('Scedil', 350),
+				_Utils_Tuple2('scedil', 351),
+				_Utils_Tuple2('Scaron', 352),
+				_Utils_Tuple2('scaron', 353),
+				_Utils_Tuple2('Tcedil', 354),
+				_Utils_Tuple2('tcedil', 355),
+				_Utils_Tuple2('Tcaron', 356),
+				_Utils_Tuple2('tcaron', 357),
+				_Utils_Tuple2('Tstork', 358),
+				_Utils_Tuple2('tstork', 359),
+				_Utils_Tuple2('Utilde', 360),
+				_Utils_Tuple2('utilde', 361),
+				_Utils_Tuple2('Umacr', 362),
+				_Utils_Tuple2('umacr', 363),
+				_Utils_Tuple2('Ubreve', 364),
+				_Utils_Tuple2('ubreve', 365),
+				_Utils_Tuple2('Uring', 366),
+				_Utils_Tuple2('uring', 367),
+				_Utils_Tuple2('Udblac', 368),
+				_Utils_Tuple2('udblac', 369),
+				_Utils_Tuple2('Uogon', 370),
+				_Utils_Tuple2('uogon', 371),
+				_Utils_Tuple2('Wcirc', 372),
+				_Utils_Tuple2('wcirc', 373),
+				_Utils_Tuple2('Ycirc', 374),
+				_Utils_Tuple2('ycirc', 375),
+				_Utils_Tuple2('Yuml', 376),
+				_Utils_Tuple2('Zacute', 377),
+				_Utils_Tuple2('zacute', 378),
+				_Utils_Tuple2('Zdot', 379),
+				_Utils_Tuple2('zdot', 380),
+				_Utils_Tuple2('Zcaron', 381),
+				_Utils_Tuple2('zcaron', 382),
+				_Utils_Tuple2('fnof', 402),
+				_Utils_Tuple2('imped', 437),
+				_Utils_Tuple2('gacute', 501),
+				_Utils_Tuple2('jmath', 567),
+				_Utils_Tuple2('circ', 710),
+				_Utils_Tuple2('tilde', 732),
+				_Utils_Tuple2('Alpha', 913),
+				_Utils_Tuple2('Beta', 914),
+				_Utils_Tuple2('Gamma', 915),
+				_Utils_Tuple2('Delta', 916),
+				_Utils_Tuple2('Epsilon', 917),
+				_Utils_Tuple2('Zeta', 918),
+				_Utils_Tuple2('Eta', 919),
+				_Utils_Tuple2('Theta', 920),
+				_Utils_Tuple2('Iota', 921),
+				_Utils_Tuple2('Kappa', 922),
+				_Utils_Tuple2('Lambda', 923),
+				_Utils_Tuple2('Mu', 924),
+				_Utils_Tuple2('Nu', 925),
+				_Utils_Tuple2('Xi', 926),
+				_Utils_Tuple2('Omicron', 927),
+				_Utils_Tuple2('Pi', 928),
+				_Utils_Tuple2('Rho', 929),
+				_Utils_Tuple2('Sigma', 931),
+				_Utils_Tuple2('Tau', 932),
+				_Utils_Tuple2('Upsilon', 933),
+				_Utils_Tuple2('Phi', 934),
+				_Utils_Tuple2('Chi', 935),
+				_Utils_Tuple2('Psi', 936),
+				_Utils_Tuple2('Omega', 937),
+				_Utils_Tuple2('alpha', 945),
+				_Utils_Tuple2('beta', 946),
+				_Utils_Tuple2('gamma', 947),
+				_Utils_Tuple2('delta', 948),
+				_Utils_Tuple2('epsilon', 949),
+				_Utils_Tuple2('zeta', 950),
+				_Utils_Tuple2('eta', 951),
+				_Utils_Tuple2('theta', 952),
+				_Utils_Tuple2('iota', 953),
+				_Utils_Tuple2('kappa', 954),
+				_Utils_Tuple2('lambda', 955),
+				_Utils_Tuple2('mu', 956),
+				_Utils_Tuple2('nu', 957),
+				_Utils_Tuple2('xi', 958),
+				_Utils_Tuple2('omicron', 959),
+				_Utils_Tuple2('pi', 960),
+				_Utils_Tuple2('rho', 961),
+				_Utils_Tuple2('sigmaf', 962),
+				_Utils_Tuple2('sigma', 963),
+				_Utils_Tuple2('tau', 934),
+				_Utils_Tuple2('upsilon', 965),
+				_Utils_Tuple2('phi', 966),
+				_Utils_Tuple2('chi', 967),
+				_Utils_Tuple2('psi', 968),
+				_Utils_Tuple2('omega', 969),
+				_Utils_Tuple2('thetasym', 977),
+				_Utils_Tuple2('upsih', 978),
+				_Utils_Tuple2('straightphi', 981),
+				_Utils_Tuple2('piv', 982),
+				_Utils_Tuple2('Gammad', 988),
+				_Utils_Tuple2('gammad', 989),
+				_Utils_Tuple2('varkappa', 1008),
+				_Utils_Tuple2('varrho', 1009),
+				_Utils_Tuple2('straightepsilon', 1013),
+				_Utils_Tuple2('backepsilon', 1014),
+				_Utils_Tuple2('ensp', 8194),
+				_Utils_Tuple2('emsp', 8195),
+				_Utils_Tuple2('thinsp', 8201),
+				_Utils_Tuple2('zwnj', 8204),
+				_Utils_Tuple2('zwj', 8205),
+				_Utils_Tuple2('lrm', 8206),
+				_Utils_Tuple2('rlm', 8207),
+				_Utils_Tuple2('ndash', 8211),
+				_Utils_Tuple2('mdash', 8212),
+				_Utils_Tuple2('lsquo', 8216),
+				_Utils_Tuple2('rsquo', 8217),
+				_Utils_Tuple2('sbquo', 8218),
+				_Utils_Tuple2('ldquo', 8220),
+				_Utils_Tuple2('rdquo', 8221),
+				_Utils_Tuple2('bdquo', 8222),
+				_Utils_Tuple2('dagger', 8224),
+				_Utils_Tuple2('Dagger', 8225),
+				_Utils_Tuple2('bull', 8226),
+				_Utils_Tuple2('hellip', 8230),
+				_Utils_Tuple2('permil', 8240),
+				_Utils_Tuple2('prime', 8242),
+				_Utils_Tuple2('Prime', 8243),
+				_Utils_Tuple2('lsaquo', 8249),
+				_Utils_Tuple2('rsaquo', 8250),
+				_Utils_Tuple2('oline', 8254),
+				_Utils_Tuple2('frasl', 8260),
+				_Utils_Tuple2('sigma', 963),
+				_Utils_Tuple2('euro', 8364),
+				_Utils_Tuple2('image', 8465),
+				_Utils_Tuple2('weierp', 8472),
+				_Utils_Tuple2('real', 8476),
+				_Utils_Tuple2('trade', 8482),
+				_Utils_Tuple2('alefsym', 8501),
+				_Utils_Tuple2('larr', 8592),
+				_Utils_Tuple2('uarr', 8593),
+				_Utils_Tuple2('rarr', 8594),
+				_Utils_Tuple2('darr', 8595),
+				_Utils_Tuple2('harr', 8596),
+				_Utils_Tuple2('crarr', 8629),
+				_Utils_Tuple2('lArr', 8656),
+				_Utils_Tuple2('uArr', 8657),
+				_Utils_Tuple2('rArr', 8658),
+				_Utils_Tuple2('dArr', 8659),
+				_Utils_Tuple2('hArr', 8660),
+				_Utils_Tuple2('forall', 8704),
+				_Utils_Tuple2('part', 8706),
+				_Utils_Tuple2('exist', 8707),
+				_Utils_Tuple2('empty', 8709),
+				_Utils_Tuple2('nabla', 8711),
+				_Utils_Tuple2('isin', 8712),
+				_Utils_Tuple2('notin', 8713),
+				_Utils_Tuple2('ni', 8715),
+				_Utils_Tuple2('prod', 8719),
+				_Utils_Tuple2('sum', 8721),
+				_Utils_Tuple2('minus', 8722),
+				_Utils_Tuple2('lowast', 8727),
+				_Utils_Tuple2('radic', 8730),
+				_Utils_Tuple2('prop', 8733),
+				_Utils_Tuple2('infin', 8734),
+				_Utils_Tuple2('ang', 8736),
+				_Utils_Tuple2('and', 8743),
+				_Utils_Tuple2('or', 8744),
+				_Utils_Tuple2('cap', 8745),
+				_Utils_Tuple2('cup', 8746),
+				_Utils_Tuple2('int', 8747),
+				_Utils_Tuple2('there4', 8756),
+				_Utils_Tuple2('sim', 8764),
+				_Utils_Tuple2('cong', 8773),
+				_Utils_Tuple2('asymp', 8776),
+				_Utils_Tuple2('ne', 8800),
+				_Utils_Tuple2('equiv', 8801),
+				_Utils_Tuple2('le', 8804),
+				_Utils_Tuple2('ge', 8805),
+				_Utils_Tuple2('sub', 8834),
+				_Utils_Tuple2('sup', 8835),
+				_Utils_Tuple2('nsub', 8836),
+				_Utils_Tuple2('sube', 8838),
+				_Utils_Tuple2('supe', 8839),
+				_Utils_Tuple2('oplus', 8853),
+				_Utils_Tuple2('otimes', 8855),
+				_Utils_Tuple2('perp', 8869),
+				_Utils_Tuple2('sdot', 8901),
+				_Utils_Tuple2('loz', 9674),
+				_Utils_Tuple2('spades', 9824),
+				_Utils_Tuple2('clubs', 9827),
+				_Utils_Tuple2('hearts', 9829),
+				_Utils_Tuple2('diams', 9830)
+			])));
+var $elm$core$Dict$get = F2(
+	function (targetKey, dict) {
+		get:
+		while (true) {
+			if (dict.$ === 'RBEmpty_elm_builtin') {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				var key = dict.b;
+				var value = dict.c;
+				var left = dict.d;
+				var right = dict.e;
+				var _v1 = A2($elm$core$Basics$compare, targetKey, key);
+				switch (_v1.$) {
+					case 'LT':
+						var $temp$targetKey = targetKey,
+							$temp$dict = left;
+						targetKey = $temp$targetKey;
+						dict = $temp$dict;
+						continue get;
+					case 'EQ':
+						return $elm$core$Maybe$Just(value);
+					default:
+						var $temp$targetKey = targetKey,
+							$temp$dict = right;
+						targetKey = $temp$targetKey;
+						dict = $temp$dict;
+						continue get;
+				}
+			}
+		}
+	});
+var $marcosh$elm_html_to_unicode$ElmEscapeHtml$convertFriendlyCodeToChar = function (string) {
+	return A2($elm$core$Dict$get, string, $marcosh$elm_html_to_unicode$ElmEscapeHtml$friendlyConverterDictionary);
+};
+var $marcosh$elm_html_to_unicode$ElmEscapeHtml$convertFriendlyCode = A2(
+	$marcosh$elm_html_to_unicode$ElmEscapeHtml$convertCode,
+	$marcosh$elm_html_to_unicode$ElmEscapeHtml$convertFriendlyCodeToChar,
+	function (_char) {
+		return _List_fromArray(
+			[_char]);
+	});
+var $marcosh$elm_html_to_unicode$ElmEscapeHtml$convertDecimalCode = A2(
+	$marcosh$elm_html_to_unicode$ElmEscapeHtml$convertCode,
+	$elm$core$String$toInt,
+	function (_int) {
+		return _List_fromArray(
+			[
+				$elm$core$Char$fromCode(_int)
+			]);
+	});
+var $marcosh$elm_html_to_unicode$ElmEscapeHtml$charOffset = F2(
+	function (basis, c) {
+		return $elm$core$Char$toCode(c) - $elm$core$Char$toCode(basis);
+	});
+var $marcosh$elm_html_to_unicode$ElmEscapeHtml$isBetween = F3(
+	function (lower, upper, c) {
+		var ci = $elm$core$Char$toCode(c);
+		return (_Utils_cmp(
+			$elm$core$Char$toCode(lower),
+			ci) < 1) && (_Utils_cmp(
+			ci,
+			$elm$core$Char$toCode(upper)) < 1);
+	});
+var $marcosh$elm_html_to_unicode$ElmEscapeHtml$intFromChar = function (c) {
+	var validInt = function (i) {
+		return (i < 16) ? $elm$core$Maybe$Just(i) : $elm$core$Maybe$Nothing;
+	};
+	var toInt = A3(
+		$marcosh$elm_html_to_unicode$ElmEscapeHtml$isBetween,
+		_Utils_chr('0'),
+		_Utils_chr('9'),
+		c) ? $elm$core$Maybe$Just(
+		A2(
+			$marcosh$elm_html_to_unicode$ElmEscapeHtml$charOffset,
+			_Utils_chr('0'),
+			c)) : (A3(
+		$marcosh$elm_html_to_unicode$ElmEscapeHtml$isBetween,
+		_Utils_chr('a'),
+		_Utils_chr('z'),
+		c) ? $elm$core$Maybe$Just(
+		10 + A2(
+			$marcosh$elm_html_to_unicode$ElmEscapeHtml$charOffset,
+			_Utils_chr('a'),
+			c)) : (A3(
+		$marcosh$elm_html_to_unicode$ElmEscapeHtml$isBetween,
+		_Utils_chr('A'),
+		_Utils_chr('Z'),
+		c) ? $elm$core$Maybe$Just(
+		10 + A2(
+			$marcosh$elm_html_to_unicode$ElmEscapeHtml$charOffset,
+			_Utils_chr('A'),
+			c)) : $elm$core$Maybe$Nothing));
+	return A2($elm$core$Maybe$andThen, validInt, toInt);
+};
+var $marcosh$elm_html_to_unicode$ElmEscapeHtml$parseIntR = function (string) {
+	var _v0 = $elm$core$String$uncons(string);
+	if (_v0.$ === 'Nothing') {
+		return $elm$core$Maybe$Just(0);
+	} else {
+		var _v1 = _v0.a;
+		var c = _v1.a;
+		var tail = _v1.b;
+		return A2(
+			$elm$core$Maybe$andThen,
+			function (ci) {
+				return A2(
+					$elm$core$Maybe$andThen,
+					function (ri) {
+						return $elm$core$Maybe$Just(ci + (ri * 16));
+					},
+					$marcosh$elm_html_to_unicode$ElmEscapeHtml$parseIntR(tail));
+			},
+			$marcosh$elm_html_to_unicode$ElmEscapeHtml$intFromChar(c));
+	}
+};
+var $elm$core$String$reverse = _String_reverse;
+var $marcosh$elm_html_to_unicode$ElmEscapeHtml$parseIntHex = function (string) {
+	return $marcosh$elm_html_to_unicode$ElmEscapeHtml$parseIntR(
+		$elm$core$String$reverse(string));
+};
+var $marcosh$elm_html_to_unicode$ElmEscapeHtml$convertHexadecimalCode = A2(
+	$marcosh$elm_html_to_unicode$ElmEscapeHtml$convertCode,
+	$marcosh$elm_html_to_unicode$ElmEscapeHtml$parseIntHex,
+	function (_int) {
+		return _List_fromArray(
+			[
+				$elm$core$Char$fromCode(_int)
+			]);
+	});
+var $marcosh$elm_html_to_unicode$ElmEscapeHtml$convertNumericalCode = F3(
+	function (pre, post, list) {
+		if (!list.b) {
+			return $elm$core$List$concat(
+				_List_fromArray(
+					[pre, post]));
+		} else {
+			if ('x' === list.a.valueOf()) {
+				var tail = list.b;
+				return A3(
+					$marcosh$elm_html_to_unicode$ElmEscapeHtml$convertHexadecimalCode,
+					A2(
+						$elm$core$List$append,
+						pre,
+						_List_fromArray(
+							[
+								_Utils_chr('x')
+							])),
+					post,
+					tail);
+			} else {
+				var anyOtherList = list;
+				return A3($marcosh$elm_html_to_unicode$ElmEscapeHtml$convertDecimalCode, pre, post, anyOtherList);
+			}
+		}
+	});
+var $marcosh$elm_html_to_unicode$ElmEscapeHtml$noAmpUnicodeConverter = F3(
+	function (pre, post, list) {
+		if (!list.b) {
+			return _List_fromArray(
+				[pre, post]);
+		} else {
+			if ('#' === list.a.valueOf()) {
+				var tail = list.b;
+				return A3(
+					$marcosh$elm_html_to_unicode$ElmEscapeHtml$convertNumericalCode,
+					_List_fromArray(
+						[
+							pre,
+							_Utils_chr('#')
+						]),
+					_List_fromArray(
+						[post]),
+					tail);
+			} else {
+				var head = list.a;
+				var tail = list.b;
+				return A3(
+					$marcosh$elm_html_to_unicode$ElmEscapeHtml$convertFriendlyCode,
+					_List_fromArray(
+						[pre]),
+					_List_fromArray(
+						[post]),
+					A2($elm$core$List$cons, head, tail));
+			}
+		}
+	});
+var $marcosh$elm_html_to_unicode$ElmEscapeHtml$unicodeConverter = F2(
+	function (post, list) {
+		if (!list.b) {
+			return _List_fromArray(
+				[post]);
+		} else {
+			var head = list.a;
+			var tail = list.b;
+			return A3($marcosh$elm_html_to_unicode$ElmEscapeHtml$noAmpUnicodeConverter, head, post, tail);
+		}
+	});
+var $marcosh$elm_html_to_unicode$ElmEscapeHtml$parser = F3(
+	function (charsToBeParsed, charsOnParsing, charsParsed) {
+		parser:
+		while (true) {
+			if (!charsToBeParsed.b) {
+				return charsParsed;
+			} else {
+				var head = charsToBeParsed.a;
+				var tail = charsToBeParsed.b;
+				if (_Utils_eq(
+					head,
+					_Utils_chr('&'))) {
+					var $temp$charsToBeParsed = tail,
+						$temp$charsOnParsing = _List_fromArray(
+						[head]),
+						$temp$charsParsed = charsParsed;
+					charsToBeParsed = $temp$charsToBeParsed;
+					charsOnParsing = $temp$charsOnParsing;
+					charsParsed = $temp$charsParsed;
+					continue parser;
+				} else {
+					if (_Utils_eq(
+						head,
+						_Utils_chr(';'))) {
+						var $temp$charsToBeParsed = tail,
+							$temp$charsOnParsing = _List_Nil,
+							$temp$charsParsed = A2(
+							$elm$core$List$append,
+							charsParsed,
+							A2($marcosh$elm_html_to_unicode$ElmEscapeHtml$unicodeConverter, head, charsOnParsing));
+						charsToBeParsed = $temp$charsToBeParsed;
+						charsOnParsing = $temp$charsOnParsing;
+						charsParsed = $temp$charsParsed;
+						continue parser;
+					} else {
+						if (!$elm$core$List$isEmpty(charsOnParsing)) {
+							var $temp$charsToBeParsed = tail,
+								$temp$charsOnParsing = A2(
+								$elm$core$List$append,
+								charsOnParsing,
+								_List_fromArray(
+									[head])),
+								$temp$charsParsed = charsParsed;
+							charsToBeParsed = $temp$charsToBeParsed;
+							charsOnParsing = $temp$charsOnParsing;
+							charsParsed = $temp$charsParsed;
+							continue parser;
+						} else {
+							var $temp$charsToBeParsed = tail,
+								$temp$charsOnParsing = _List_Nil,
+								$temp$charsParsed = A2(
+								$elm$core$List$append,
+								charsParsed,
+								_List_fromArray(
+									[head]));
+							charsToBeParsed = $temp$charsToBeParsed;
+							charsOnParsing = $temp$charsOnParsing;
+							charsParsed = $temp$charsParsed;
+							continue parser;
+						}
+					}
+				}
+			}
+		}
+	});
+var $marcosh$elm_html_to_unicode$ElmEscapeHtml$unescapeChars = function (list) {
+	return A3($marcosh$elm_html_to_unicode$ElmEscapeHtml$parser, list, _List_Nil, _List_Nil);
+};
+var $marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape = $marcosh$elm_html_to_unicode$ElmEscapeHtml$convert($marcosh$elm_html_to_unicode$ElmEscapeHtml$unescapeChars);
+var $author$project$GpxParser$parseSegments = function (xml) {
+	var trackSegmentStarts = A2(
+		$elm$core$List$map,
+		function ($) {
+			return $.index;
+		},
+		A2(
+			$elm$regex$Regex$find,
+			$author$project$GpxParser$asRegex('<trkseg>'),
+			xml));
+	var trackPoints = $author$project$GpxParser$parseGPXPoints(xml);
+	var segmentExtent = function (match) {
+		var segmentIndex = (-1) + A2(
+			$elm$core$Maybe$withDefault,
+			$elm$core$List$length(trackSegmentStarts),
+			A2(
+				$elm_community$list_extra$List$Extra$findIndex,
+				function (segStart) {
+					return _Utils_cmp(segStart, match.index) > 0;
+				},
+				trackSegmentStarts));
+		var segmentStartOffset = A2(
+			$elm$core$Maybe$withDefault,
+			0,
+			A2($elm_community$list_extra$List$Extra$getAt, segmentIndex, trackSegmentStarts));
+		var segmentEndOffset = A2(
+			$elm$core$Maybe$withDefault,
+			$elm$core$String$length(xml) - 1,
+			A2($elm_community$list_extra$List$Extra$getAt, 1 + segmentIndex, trackSegmentStarts));
+		var lastContainedPoint = (-1) + A2(
+			$elm$core$Maybe$withDefault,
+			$elm$core$List$length(trackPoints),
+			A2(
+				$elm_community$list_extra$List$Extra$findIndex,
+				function (_v2) {
+					var tpOffset = _v2.b;
+					return _Utils_cmp(tpOffset, segmentEndOffset) > 0;
+				},
+				trackPoints));
+		var firstContainedPoint = A2(
+			$elm$core$Maybe$withDefault,
+			0,
+			A2(
+				$elm_community$list_extra$List$Extra$findIndex,
+				function (_v1) {
+					var tpOffset = _v1.b;
+					return _Utils_cmp(tpOffset, segmentStartOffset) > 0;
+				},
+				trackPoints));
+		return _Utils_Tuple3(
+			function () {
+				var _v0 = match.submatches;
+				if (_v0.b && (_v0.a.$ === 'Just')) {
+					var sub1 = _v0.a.a;
+					return $marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape(sub1);
+				} else {
+					return '';
+				}
+			}(),
+			firstContainedPoint,
+			lastContainedPoint);
+	};
+	var namedSegments = A2(
+		$elm$regex$Regex$find,
+		$author$project$GpxParser$asRegex('namedSegment>(.*)<\\/.*:namedSegment'),
+		xml);
+	return _Utils_Tuple2(
+		A2($elm$core$List$map, $elm$core$Tuple$first, trackPoints),
+		A2($elm$core$List$map, segmentExtent, namedSegments));
+};
 var $elm$file$File$toString = _File_toString;
 var $author$project$Main$update = F2(
 	function (msg, model) {
@@ -5496,8 +7748,18 @@ var $author$project$Main$update = F2(
 						$elm$core$Task$perform,
 						$author$project$Main$GpxLoaded,
 						$elm$file$File$toString(file)));
-			default:
+			case 'GpxLoaded':
 				var content = msg.a;
+				var gpxPoints = $author$project$GpxParser$parseSegments(content).a;
+				return _Utils_Tuple2(
+					model,
+					$author$project$IpcStubs$loadNewGpx(
+						A2(
+							$elm$json$Json$Encode$list,
+							$elm$core$Basics$identity,
+							A2($elm$core$List$map, $author$project$GpxPoint$gpxPointAsJSON, gpxPoints))));
+			default:
+				var value = msg.a;
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
@@ -5520,7 +7782,6 @@ var $mdgriffith$elm_ui$Internal$Flag$flag = function (i) {
 	return (i > 31) ? $mdgriffith$elm_ui$Internal$Flag$Second(1 << (i - 32)) : $mdgriffith$elm_ui$Internal$Flag$Flag(1 << i);
 };
 var $mdgriffith$elm_ui$Internal$Flag$bgColor = $mdgriffith$elm_ui$Internal$Flag$flag(8);
-var $elm$core$Basics$round = _Basics_round;
 var $mdgriffith$elm_ui$Internal$Model$floatClass = function (x) {
 	return $elm$core$String$fromInt(
 		$elm$core$Basics$round(x * 255));
@@ -5546,7 +7807,6 @@ var $mdgriffith$elm_ui$Internal$Style$classes = {above: 'a', active: 'atv', alig
 var $mdgriffith$elm_ui$Internal$Model$Attr = function (a) {
 	return {$: 'Attr', a: a};
 };
-var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
 		return A2(
@@ -5681,8 +7941,6 @@ var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$core$Set$Set_elm_builtin = function (a) {
 	return {$: 'Set_elm_builtin', a: a};
 };
-var $elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
-var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
 var $elm$core$Set$empty = $elm$core$Set$Set_elm_builtin($elm$core$Dict$empty);
 var $mdgriffith$elm_ui$Internal$Model$lengthClassName = function (x) {
 	switch (x.$) {
@@ -5737,15 +7995,6 @@ var $mdgriffith$elm_ui$Internal$Model$transformClass = function (transform) {
 				'tfrm-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(tx) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(ty) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(tz) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(sx) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(sy) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(sz) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(ox) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(oy) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(oz) + ('-' + $mdgriffith$elm_ui$Internal$Model$floatClass(angle))))))))))))))))))));
 	}
 };
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
 var $mdgriffith$elm_ui$Internal$Model$getStyleName = function (style) {
 	switch (style.$) {
 		case 'Shadows':
@@ -5837,151 +8086,11 @@ var $mdgriffith$elm_ui$Internal$Model$getStyleName = function (style) {
 				$mdgriffith$elm_ui$Internal$Model$transformClass(x));
 	}
 };
-var $elm$core$Dict$Black = {$: 'Black'};
-var $elm$core$Dict$RBNode_elm_builtin = F5(
-	function (a, b, c, d, e) {
-		return {$: 'RBNode_elm_builtin', a: a, b: b, c: c, d: d, e: e};
-	});
-var $elm$core$Dict$Red = {$: 'Red'};
-var $elm$core$Dict$balance = F5(
-	function (color, key, value, left, right) {
-		if ((right.$ === 'RBNode_elm_builtin') && (right.a.$ === 'Red')) {
-			var _v1 = right.a;
-			var rK = right.b;
-			var rV = right.c;
-			var rLeft = right.d;
-			var rRight = right.e;
-			if ((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) {
-				var _v3 = left.a;
-				var lK = left.b;
-				var lV = left.c;
-				var lLeft = left.d;
-				var lRight = left.e;
-				return A5(
-					$elm$core$Dict$RBNode_elm_builtin,
-					$elm$core$Dict$Red,
-					key,
-					value,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, lK, lV, lLeft, lRight),
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, rK, rV, rLeft, rRight));
-			} else {
-				return A5(
-					$elm$core$Dict$RBNode_elm_builtin,
-					color,
-					rK,
-					rV,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, left, rLeft),
-					rRight);
-			}
-		} else {
-			if ((((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) && (left.d.$ === 'RBNode_elm_builtin')) && (left.d.a.$ === 'Red')) {
-				var _v5 = left.a;
-				var lK = left.b;
-				var lV = left.c;
-				var _v6 = left.d;
-				var _v7 = _v6.a;
-				var llK = _v6.b;
-				var llV = _v6.c;
-				var llLeft = _v6.d;
-				var llRight = _v6.e;
-				var lRight = left.e;
-				return A5(
-					$elm$core$Dict$RBNode_elm_builtin,
-					$elm$core$Dict$Red,
-					lK,
-					lV,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, llK, llV, llLeft, llRight),
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, key, value, lRight, right));
-			} else {
-				return A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, left, right);
-			}
-		}
-	});
-var $elm$core$Basics$compare = _Utils_compare;
-var $elm$core$Dict$insertHelp = F3(
-	function (key, value, dict) {
-		if (dict.$ === 'RBEmpty_elm_builtin') {
-			return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, $elm$core$Dict$RBEmpty_elm_builtin, $elm$core$Dict$RBEmpty_elm_builtin);
-		} else {
-			var nColor = dict.a;
-			var nKey = dict.b;
-			var nValue = dict.c;
-			var nLeft = dict.d;
-			var nRight = dict.e;
-			var _v1 = A2($elm$core$Basics$compare, key, nKey);
-			switch (_v1.$) {
-				case 'LT':
-					return A5(
-						$elm$core$Dict$balance,
-						nColor,
-						nKey,
-						nValue,
-						A3($elm$core$Dict$insertHelp, key, value, nLeft),
-						nRight);
-				case 'EQ':
-					return A5($elm$core$Dict$RBNode_elm_builtin, nColor, nKey, value, nLeft, nRight);
-				default:
-					return A5(
-						$elm$core$Dict$balance,
-						nColor,
-						nKey,
-						nValue,
-						nLeft,
-						A3($elm$core$Dict$insertHelp, key, value, nRight));
-			}
-		}
-	});
-var $elm$core$Dict$insert = F3(
-	function (key, value, dict) {
-		var _v0 = A3($elm$core$Dict$insertHelp, key, value, dict);
-		if ((_v0.$ === 'RBNode_elm_builtin') && (_v0.a.$ === 'Red')) {
-			var _v1 = _v0.a;
-			var k = _v0.b;
-			var v = _v0.c;
-			var l = _v0.d;
-			var r = _v0.e;
-			return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, l, r);
-		} else {
-			var x = _v0;
-			return x;
-		}
-	});
 var $elm$core$Set$insert = F2(
 	function (key, _v0) {
 		var dict = _v0.a;
 		return $elm$core$Set$Set_elm_builtin(
 			A3($elm$core$Dict$insert, key, _Utils_Tuple0, dict));
-	});
-var $elm$core$Dict$get = F2(
-	function (targetKey, dict) {
-		get:
-		while (true) {
-			if (dict.$ === 'RBEmpty_elm_builtin') {
-				return $elm$core$Maybe$Nothing;
-			} else {
-				var key = dict.b;
-				var value = dict.c;
-				var left = dict.d;
-				var right = dict.e;
-				var _v1 = A2($elm$core$Basics$compare, targetKey, key);
-				switch (_v1.$) {
-					case 'LT':
-						var $temp$targetKey = targetKey,
-							$temp$dict = left;
-						targetKey = $temp$targetKey;
-						dict = $temp$dict;
-						continue get;
-					case 'EQ':
-						return $elm$core$Maybe$Just(value);
-					default:
-						var $temp$targetKey = targetKey,
-							$temp$dict = right;
-						targetKey = $temp$targetKey;
-						dict = $temp$dict;
-						continue get;
-				}
-			}
-		}
 	});
 var $elm$core$Dict$member = F2(
 	function (key, dict) {
@@ -6017,24 +8126,6 @@ var $mdgriffith$elm_ui$Internal$Model$Style = F2(
 var $mdgriffith$elm_ui$Internal$Style$dot = function (c) {
 	return '.' + c;
 };
-var $elm$core$List$maybeCons = F3(
-	function (f, mx, xs) {
-		var _v0 = f(mx);
-		if (_v0.$ === 'Just') {
-			var x = _v0.a;
-			return A2($elm$core$List$cons, x, xs);
-		} else {
-			return xs;
-		}
-	});
-var $elm$core$List$filterMap = F2(
-	function (f, xs) {
-		return A3(
-			$elm$core$List$foldr,
-			$elm$core$List$maybeCons(f),
-			_List_Nil,
-			xs);
-	});
 var $elm$core$String$fromFloat = _String_fromNumber;
 var $mdgriffith$elm_ui$Internal$Model$formatColor = function (_v0) {
 	var red = _v0.a;
@@ -6068,16 +8159,6 @@ var $mdgriffith$elm_ui$Internal$Model$formatBoxShadow = function (shadow) {
 					$mdgriffith$elm_ui$Internal$Model$formatColor(shadow.color))
 				])));
 };
-var $elm$core$Maybe$map = F2(
-	function (f, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return $elm$core$Maybe$Just(
-				f(value));
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
 var $elm$core$Tuple$mapFirst = F2(
 	function (func, _v0) {
 		var x = _v0.a;
@@ -6247,17 +8328,6 @@ var $mdgriffith$elm_ui$Internal$Style$CenterY = {$: 'CenterY'};
 var $mdgriffith$elm_ui$Internal$Style$Top = {$: 'Top'};
 var $mdgriffith$elm_ui$Internal$Style$alignments = _List_fromArray(
 	[$mdgriffith$elm_ui$Internal$Style$Top, $mdgriffith$elm_ui$Internal$Style$Bottom, $mdgriffith$elm_ui$Internal$Style$Right, $mdgriffith$elm_ui$Internal$Style$Left, $mdgriffith$elm_ui$Internal$Style$CenterX, $mdgriffith$elm_ui$Internal$Style$CenterY]);
-var $elm$core$List$append = F2(
-	function (xs, ys) {
-		if (!ys.b) {
-			return xs;
-		} else {
-			return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
-		}
-	});
-var $elm$core$List$concat = function (lists) {
-	return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
-};
 var $elm$core$List$concatMap = F2(
 	function (f, list) {
 		return $elm$core$List$concat(
@@ -8069,9 +10139,6 @@ var $mdgriffith$elm_ui$Internal$Style$sliderReset = '\ninput[type=range] {\n  -w
 var $mdgriffith$elm_ui$Internal$Style$thumbReset = '\ninput[type=range]::-webkit-slider-thumb {\n    -webkit-appearance: none;\n    opacity: 0.5;\n    width: 80px;\n    height: 80px;\n    background-color: black;\n    border:none;\n    border-radius: 5px;\n}\ninput[type=range]::-moz-range-thumb {\n    opacity: 0.5;\n    width: 80px;\n    height: 80px;\n    background-color: black;\n    border:none;\n    border-radius: 5px;\n}\ninput[type=range]::-ms-thumb {\n    opacity: 0.5;\n    width: 80px;\n    height: 80px;\n    background-color: black;\n    border:none;\n    border-radius: 5px;\n}\ninput[type=range][orient=vertical]{\n    writing-mode: bt-lr; /* IE */\n    -webkit-appearance: slider-vertical;  /* WebKit */\n}\n';
 var $mdgriffith$elm_ui$Internal$Style$trackReset = '\ninput[type=range]::-moz-range-track {\n    background: transparent;\n    cursor: pointer;\n}\ninput[type=range]::-ms-track {\n    background: transparent;\n    cursor: pointer;\n}\ninput[type=range]::-webkit-slider-runnable-track {\n    background: transparent;\n    cursor: pointer;\n}\n';
 var $mdgriffith$elm_ui$Internal$Style$overrides = '@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {' + ($mdgriffith$elm_ui$Internal$Style$dot($mdgriffith$elm_ui$Internal$Style$classes.any) + ($mdgriffith$elm_ui$Internal$Style$dot($mdgriffith$elm_ui$Internal$Style$classes.row) + (' > ' + ($mdgriffith$elm_ui$Internal$Style$dot($mdgriffith$elm_ui$Internal$Style$classes.any) + (' { flex-basis: auto !important; } ' + ($mdgriffith$elm_ui$Internal$Style$dot($mdgriffith$elm_ui$Internal$Style$classes.any) + ($mdgriffith$elm_ui$Internal$Style$dot($mdgriffith$elm_ui$Internal$Style$classes.row) + (' > ' + ($mdgriffith$elm_ui$Internal$Style$dot($mdgriffith$elm_ui$Internal$Style$classes.any) + ($mdgriffith$elm_ui$Internal$Style$dot($mdgriffith$elm_ui$Internal$Style$classes.container) + (' { flex-basis: auto !important; }}' + ($mdgriffith$elm_ui$Internal$Style$inputTextReset + ($mdgriffith$elm_ui$Internal$Style$sliderReset + ($mdgriffith$elm_ui$Internal$Style$trackReset + ($mdgriffith$elm_ui$Internal$Style$thumbReset + $mdgriffith$elm_ui$Internal$Style$explainer)))))))))))))));
-var $elm$core$String$concat = function (strings) {
-	return A2($elm$core$String$join, '', strings);
-};
 var $mdgriffith$elm_ui$Internal$Style$Intermediate = function (a) {
 	return {$: 'Intermediate', a: a};
 };
@@ -8276,28 +10343,6 @@ var $mdgriffith$elm_ui$Internal$Model$staticRoot = function (opts) {
 				_List_Nil);
 	}
 };
-var $elm$json$Json$Encode$list = F2(
-	function (func, entries) {
-		return _Json_wrap(
-			A3(
-				$elm$core$List$foldl,
-				_Json_addEntry(func),
-				_Json_emptyArray(_Utils_Tuple0),
-				entries));
-	});
-var $elm$json$Json$Encode$object = function (pairs) {
-	return _Json_wrap(
-		A3(
-			$elm$core$List$foldl,
-			F2(
-				function (_v0, obj) {
-					var k = _v0.a;
-					var v = _v0.b;
-					return A3(_Json_addField, k, v, obj);
-				}),
-			_Json_emptyObject(_Utils_Tuple0),
-			pairs));
-};
 var $elm$core$List$any = F2(
 	function (isOkay, list) {
 		any:
@@ -8365,9 +10410,6 @@ var $elm$core$Basics$min = F2(
 	function (x, y) {
 		return (_Utils_cmp(x, y) < 0) ? x : y;
 	});
-var $elm$core$Basics$negate = function (n) {
-	return -n;
-};
 var $mdgriffith$elm_ui$Internal$Model$renderProps = F3(
 	function (force, _v0, existing) {
 		var key = _v0.a;
@@ -9083,7 +11125,6 @@ var $elm$core$List$minimum = function (list) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
-var $elm$core$Basics$neq = _Utils_notEqual;
 var $mdgriffith$elm_ui$Internal$Model$convertAdjustment = function (adjustment) {
 	var lines = _List_fromArray(
 		[adjustment.capital, adjustment.baseline, adjustment.descender, adjustment.lowercase]);
@@ -9368,7 +11409,6 @@ var $elm$virtual_dom$VirtualDom$keyedNode = function (tag) {
 	return _VirtualDom_keyedNode(
 		_VirtualDom_noScript(tag));
 };
-var $elm$core$Basics$not = _Basics_not;
 var $elm$html$Html$p = _VirtualDom_node('p');
 var $elm$core$Bitwise$and = _Bitwise_and;
 var $mdgriffith$elm_ui$Internal$Flag$present = F2(
@@ -9524,13 +11564,6 @@ var $mdgriffith$elm_ui$Internal$Model$finalizeNode = F6(
 				return html;
 		}
 	});
-var $elm$core$List$isEmpty = function (xs) {
-	if (!xs.b) {
-		return true;
-	} else {
-		return false;
-	}
-};
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $mdgriffith$elm_ui$Internal$Model$textElementClasses = $mdgriffith$elm_ui$Internal$Style$classes.any + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.text + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.widthContent + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.heightContent)))));
 var $mdgriffith$elm_ui$Internal$Model$textElement = function (str) {
@@ -11570,125 +13603,6 @@ var $mdgriffith$elm_ui$Element$Input$button = F2(
 				_List_fromArray(
 					[label])));
 	});
-var $mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
-	return {$: 'AlignX', a: a};
-};
-var $mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
-var $mdgriffith$elm_ui$Element$alignRight = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Right);
-var $elm$html$Html$Attributes$alt = $elm$html$Html$Attributes$stringProperty('alt');
-var $elm$html$Html$Attributes$src = function (url) {
-	return A2(
-		$elm$html$Html$Attributes$stringProperty,
-		'src',
-		_VirtualDom_noJavaScriptOrHtmlUri(url));
-};
-var $mdgriffith$elm_ui$Element$image = F2(
-	function (attrs, _v0) {
-		var description = _v0.description;
-		var src = _v0.src;
-		var imageAttributes = A2(
-			$elm$core$List$filter,
-			function (a) {
-				switch (a.$) {
-					case 'Width':
-						return true;
-					case 'Height':
-						return true;
-					default:
-						return false;
-				}
-			},
-			attrs);
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asEl,
-			$mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.imageContainer),
-				attrs),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
-				_List_fromArray(
-					[
-						A4(
-						$mdgriffith$elm_ui$Internal$Model$element,
-						$mdgriffith$elm_ui$Internal$Model$asEl,
-						$mdgriffith$elm_ui$Internal$Model$NodeName('img'),
-						_Utils_ap(
-							_List_fromArray(
-								[
-									$mdgriffith$elm_ui$Internal$Model$Attr(
-									$elm$html$Html$Attributes$src(src)),
-									$mdgriffith$elm_ui$Internal$Model$Attr(
-									$elm$html$Html$Attributes$alt(description))
-								]),
-							imageAttributes),
-						$mdgriffith$elm_ui$Internal$Model$Unkeyed(_List_Nil))
-					])));
-	});
-var $elm$html$Html$Attributes$href = function (url) {
-	return A2(
-		$elm$html$Html$Attributes$stringProperty,
-		'href',
-		_VirtualDom_noJavaScriptUri(url));
-};
-var $elm$html$Html$Attributes$rel = _VirtualDom_attribute('rel');
-var $elm$html$Html$Attributes$target = $elm$html$Html$Attributes$stringProperty('target');
-var $mdgriffith$elm_ui$Element$newTabLink = F2(
-	function (attrs, _v0) {
-		var label = _v0.label;
-		var url = _v0.url;
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asEl,
-			$mdgriffith$elm_ui$Internal$Model$NodeName('a'),
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Internal$Model$Attr(
-					$elm$html$Html$Attributes$href(url)),
-				A2(
-					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Internal$Model$Attr(
-						$elm$html$Html$Attributes$rel('noopener noreferrer')),
-					A2(
-						$elm$core$List$cons,
-						$mdgriffith$elm_ui$Internal$Model$Attr(
-							$elm$html$Html$Attributes$target('_blank')),
-						A2(
-							$elm$core$List$cons,
-							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
-							A2(
-								$elm$core$List$cons,
-								$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
-								A2(
-									$elm$core$List$cons,
-									$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentCenterX + (' ' + ($mdgriffith$elm_ui$Internal$Style$classes.contentCenterY + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.link)))),
-									attrs)))))),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
-				_List_fromArray(
-					[label])));
-	});
-var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
-	return {$: 'Px', a: a};
-};
-var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
-var $author$project$Main$buyMeACoffeeButton = A2(
-	$mdgriffith$elm_ui$Element$newTabLink,
-	_List_fromArray(
-		[$mdgriffith$elm_ui$Element$alignRight]),
-	{
-		label: A2(
-			$mdgriffith$elm_ui$Element$image,
-			_List_fromArray(
-				[
-					$mdgriffith$elm_ui$Element$height(
-					$mdgriffith$elm_ui$Element$px(30)),
-					$mdgriffith$elm_ui$Element$width(
-					$mdgriffith$elm_ui$Element$px(130))
-				]),
-			{description: 'Buy Me A Coffee', src: 'https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png'}),
-		url: 'https://www.buymeacoffee.com/Peterward'
-	});
 var $mdgriffith$elm_ui$Internal$Flag$borderColor = $mdgriffith$elm_ui$Internal$Flag$flag(28);
 var $mdgriffith$elm_ui$Element$Border$color = function (clr) {
 	return A2(
@@ -11956,7 +13870,7 @@ var $author$project$Main$topLoadingBar = function (model) {
 		$mdgriffith$elm_ui$Element$wrappedRow,
 		_List_Nil,
 		_List_fromArray(
-			[loadGpxButton, $author$project$Main$buyMeACoffeeButton]));
+			[loadGpxButton]));
 };
 var $author$project$Main$view = function (model) {
 	return A2(

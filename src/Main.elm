@@ -9,7 +9,11 @@ import File exposing (File)
 import File.Select as Select
 import FlatColors.ChinesePalette
 import FlatColors.FlatUIPalette
+import GpxParser
+import GpxPoint exposing (gpxPointAsJSON)
 import Html exposing (Html, div)
+import IpcStubs
+import Json.Encode as E
 import Task
 import Time
 
@@ -19,11 +23,13 @@ type Msg
     | GpxRequested
     | GpxSelected File
     | GpxLoaded String
+    | MessageFromMainProcess E.Value
 
 
 type alias Model =
     -- This is the minimal model for our first renderer, which will begin
     -- with only a "Load GPX" button, will become the toolbox.
+    -- Note we don't keep a copy of the GPX here!
     { filename : Maybe String
     , time : Time.Posix
     , zone : Time.Zone
@@ -75,6 +81,16 @@ update msg model =
 
         GpxLoaded content ->
             --TODO: Send to main.
+            let
+                gpxPoints =
+                    GpxParser.parseSegments content
+                        |> Tuple.first
+            in
+            ( model
+            , IpcStubs.loadNewGpx <| E.list identity <| List.map gpxPointAsJSON gpxPoints
+            )
+
+        MessageFromMainProcess value ->
             ( model, Cmd.none )
 
 
@@ -101,7 +117,8 @@ topLoadingBar model =
     wrappedRow
         []
         [ loadGpxButton
-        , buyMeACoffeeButton
+
+        --, buyMeACoffeeButton
         ]
 
 
@@ -118,5 +135,7 @@ buyMeACoffeeButton =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none
+subscriptions _ =
+    Sub.batch
+        [ IpcStubs.ipcMainToRenderer MessageFromMainProcess
+        ]

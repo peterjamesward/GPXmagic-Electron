@@ -6,13 +6,13 @@ const { contextBridge, ipcRenderer } = require('electron')
 
 var responseFn;
 
-contextBridge.exposeInMainWorld('electronAPI', {
+contextBridge.exposeInMainWorld('gpxMagicAPI', {
     // Each renderer injects its response function here. This will be called
     // when the main process sends a message, see the `ipcRenderer.on` function below.
     setResponseFn: (f) => responseFn = f,
-    requestAuth: (config) => ipcRenderer.send('requestAuth', config)
+    loadGpx: (points) => ipcRenderer.send('newgpx', points)
 });
 
 ipcRenderer.on('code', (_event, code) => {
-    responseFn({ Cmd : 'Code', code : code});
+    responseFn({ cmd : 'response', code : code});
 })
