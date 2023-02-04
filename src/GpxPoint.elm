@@ -14,7 +14,6 @@ type alias GpxPoint =
 
 gpxPointAsJSON : GpxPoint -> E.Value
 gpxPointAsJSON point =
-    --TODO: optional timestamp
     case point.timestamp of
         Just timestamp ->
             E.object

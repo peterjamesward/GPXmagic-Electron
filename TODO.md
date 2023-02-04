@@ -3,16 +3,30 @@
 
 ## Electron PoC
 
-Create a server "app" in Elm with no view, only messages in and out.
-Put the Tree and Indexes here. (Not strictly required for POC.)
-
 (DONE) Create a file loader Elm app that reads and parses, sends GPX data to server as JSON.
-Create a 3D renderer Elm app that receives elided model from server and renders.
 
-Server sends elided model to all renderers. (Maybe renderer specified eilsion when it registers.)
-Renderers locally render to WebGL, Canvas, Map as required (specialised).
+Note the path from Elm to Main Process is (necessarily) not simple:
+1. Elm creates some JSON
+2. Elm sends JSON through a port with a "cmd" tag
+3. In JS a single routine sits at the port and dispatches on the "cmd" tag
+4. Call from there to the GPXmagicAPI exposed in preload.js; this is named functions
+5. Then it's messaging again up to main, where the event name should be the "cmd" tag
+6. In Main process, there's an ".on" method for each event type
+7. This will pass into Elm through a port in the server side
+8. Elm will pick up the Sub msg
+9. Elm logic in the server
+10. Route back is the reverse set of ports and messages.
+
+>> Create a server "app" in Elm with no view, only messages in and out.
+>> Put the Tree and Indexes here. (Not strictly required for POC.)
+
+Create a 3D renderer Elm app that receives **elided** model from server and renders.
+
+Server sends elided model to all renderers. (Maybe renderer specified elision when it registers.)
+Renderers locally render to WebGL, Canvas, Map as required (specialised, hence simpler).
 
 Traffic is two-way, so Toolbox is also a renderer, sends updates to server, whilst (say) "drag on map" also sends an update.
+(Generally, I suspect tools require access to a PeteTree.)
 
 Not sure where click detect happens; needs to be in server if renderers do not have full model but is that an abstraction leak?
 (It may not be if we're communicating in terms of (lon, lat) or 3D "rays". 
