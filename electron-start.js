@@ -13,6 +13,8 @@ const Elm = require('./site/ServerProcessMain').Elm;
 const elmPorts = Elm.ServerProcessMain.init().ports;
 console.log(elmPorts);
 elmPorts.toJavascript.subscribe(msg => console.log('From Elm:', msg));
+
+//TEST INBOUND PORT
 elmPorts.fromJavascript.send({ someRandomJson : true });
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -69,24 +71,12 @@ app.on('ready',
             }
         );
 
-        // This typifies our likely API, being a pair of messages exchanged.
-        // Arguably should try to get invoke to work but our model is asynch anyway.
-        ipcMain.on('newgpx', (event, points) => {
+        // Forward IPC calls to Elm.
+        ipcMain.on('elmMessage', (event, elmMessage) => {
 
-            loadNewTrack(points);
+            console.log("sending to elm", elmMessage);
+            elmPorts.fromJavascript.send(elmMessage);
 
         });
     }
 );
-
-function loadNewTrack(gpxPoints) {
-
-    console.log(gpxPoints);
-
-    // Pass to Elm to build new internal structures.
-    // Elm will respond by sending out a broadcast message, so we don't do that here.
-    //TODO: Load some Elm into the server process and set up a couple of parts.
-    //https://github.com/davidcavazos/elm-in-node-example
-    //Use a minimal domain model (a list will do right now).
-
-};

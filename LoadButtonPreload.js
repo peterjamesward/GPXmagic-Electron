@@ -10,7 +10,7 @@ contextBridge.exposeInMainWorld('gpxMagicAPI', {
     // Each renderer injects its response function here. This will be called
     // when the main process sends a message, see the `ipcRenderer.on` function below.
     setResponseFn: (f) => responseFn = f,
-    loadGpx: (points) => ipcRenderer.send('newgpx', points)
+    sendToServer: (content) => ipcRenderer.send('elmMessage', content)
 });
 
 ipcRenderer.on('code', (_event, code) => {
