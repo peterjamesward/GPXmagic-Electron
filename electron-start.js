@@ -74,7 +74,7 @@ app.on('ready',
         // Forward IPC calls to Elm.
         ipcMain.on('elmMessage', (event, elmMessage) => {
 
-            console.log("sending to elm", elmMessage);
+//            console.log("sending to elm", elmMessage);
             elmPorts.fromJavascript.send(elmMessage);
 
         });
