@@ -12,8 +12,8 @@ import FlatColors.FlatUIPalette
 import GpxParser
 import GpxPoint exposing (gpxPointAsJSON)
 import Html exposing (Html, div)
-import IpcStubs
 import Json.Encode as E
+import LoadButtonIpcStubs
 import Task
 import Time
 
@@ -86,7 +86,7 @@ update msg model =
                         |> Tuple.first
             in
             ( model
-            , IpcStubs.loadNewGpx <| E.list identity <| List.map gpxPointAsJSON gpxPoints
+            , LoadButtonIpcStubs.loadNewGpx <| E.list identity <| List.map gpxPointAsJSON gpxPoints
             )
 
         MessageFromMainProcess value ->
@@ -133,5 +133,5 @@ buyMeACoffeeButton =
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch
-        [ IpcStubs.ipcMainToRenderer MessageFromMainProcess
+        [ LoadButtonIpcStubs.ipcMainToRenderer MessageFromMainProcess
         ]

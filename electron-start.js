@@ -48,7 +48,7 @@ app.on('ready',
         });
 
         // and load the index.html of the app.
-        mainWindow.loadURL('file://' + __dirname + '/site/index.html');
+        mainWindow.loadURL('file://' + __dirname + '/site/LoadButtonRenderer.html');
 
         // Open the devtools.
         //mainWindow.openDevTools();

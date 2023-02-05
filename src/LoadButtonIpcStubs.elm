@@ -1,4 +1,4 @@
-port module IpcStubs exposing (..)
+port module LoadButtonIpcStubs exposing (..)
 
 import Json.Encode as E
 

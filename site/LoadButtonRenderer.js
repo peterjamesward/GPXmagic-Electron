@@ -5686,12 +5686,12 @@ var $author$project$LoadButtonRenderer$MessageFromMainProcess = function (a) {
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$json$Json$Decode$value = _Json_decodeValue;
-var $author$project$IpcStubs$ipcMainToRenderer = _Platform_incomingPort('ipcMainToRenderer', $elm$json$Json$Decode$value);
+var $author$project$LoadButtonIpcStubs$ipcMainToRenderer = _Platform_incomingPort('ipcMainToRenderer', $elm$json$Json$Decode$value);
 var $author$project$LoadButtonRenderer$subscriptions = function (_v0) {
 	return $elm$core$Platform$Sub$batch(
 		_List_fromArray(
 			[
-				$author$project$IpcStubs$ipcMainToRenderer($author$project$LoadButtonRenderer$MessageFromMainProcess)
+				$author$project$LoadButtonIpcStubs$ipcMainToRenderer($author$project$LoadButtonRenderer$MessageFromMainProcess)
 			]));
 };
 var $author$project$LoadButtonRenderer$GpxLoaded = function (a) {
@@ -5772,10 +5772,10 @@ var $elm$json$Json$Encode$list = F2(
 				_Json_emptyArray(_Utils_Tuple0),
 				entries));
 	});
-var $author$project$IpcStubs$ipcRendererToMain = _Platform_outgoingPort('ipcRendererToMain', $elm$core$Basics$identity);
+var $author$project$LoadButtonIpcStubs$ipcRendererToMain = _Platform_outgoingPort('ipcRendererToMain', $elm$core$Basics$identity);
 var $elm$json$Json$Encode$string = _Json_wrap;
-var $author$project$IpcStubs$loadNewGpx = function (pointsAsJSON) {
-	return $author$project$IpcStubs$ipcRendererToMain(
+var $author$project$LoadButtonIpcStubs$loadNewGpx = function (pointsAsJSON) {
+	return $author$project$LoadButtonIpcStubs$ipcRendererToMain(
 		$elm$json$Json$Encode$object(
 			_List_fromArray(
 				[
@@ -7780,7 +7780,7 @@ var $author$project$LoadButtonRenderer$update = F2(
 				var gpxPoints = $author$project$GpxParser$parseSegments(content).a;
 				return _Utils_Tuple2(
 					model,
-					$author$project$IpcStubs$loadNewGpx(
+					$author$project$LoadButtonIpcStubs$loadNewGpx(
 						A2(
 							$elm$json$Json$Encode$list,
 							$elm$core$Basics$identity,
