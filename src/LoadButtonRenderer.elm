@@ -86,7 +86,9 @@ update msg model =
                         |> Tuple.first
             in
             ( model
-            , LoadButtonIpcStubs.loadNewGpx <| E.list identity <| List.map gpxPointAsJSON gpxPoints
+            , LoadButtonIpcStubs.loadNewGpx <|
+                E.list identity <|
+                    List.map gpxPointAsJSON gpxPoints
             )
 
         MessageFromMainProcess value ->
