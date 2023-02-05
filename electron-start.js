@@ -7,6 +7,14 @@ var BrowserWindow = electron.BrowserWindow; // Module to create native browser w
 // Need this for talking to the main process, which handles the OAuth (partly).
 const ipcMain = electron.ipcMain;
 
+// Connect to Elm, where we will keep our domain logic.
+const Elm = require('./site/ServerProcessMain').Elm;
+
+const elmPorts = Elm.ServerProcessMain.init().ports;
+console.log(elmPorts);
+elmPorts.toJavascript.subscribe(msg => console.log('From Elm:', msg));
+elmPorts.fromJavascript.send({ someRandomJson : true });
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is GCed.
 var mainWindow = null;
