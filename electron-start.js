@@ -42,7 +42,7 @@ app.on('ready',
             width: 300,
             height: 100,
             webPreferences: {
-                preload: path.join(__dirname, 'preload.js')
+                preload: path.join(__dirname, 'LoadButtonPreload.js')
             }
         });
 
