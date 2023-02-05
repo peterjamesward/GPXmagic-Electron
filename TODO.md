@@ -54,6 +54,7 @@ Each BrowserWindow to be only one view but with a consistent set of buttons for 
 * Split vertically or horizontally (which clones the active view)
 * Close (also by title bar controls)
 Window positions and mode to be kept in localStorage like v3.
+Central option somewhere to Tile or Cascade all windows onto primary display.
 
 ---
 
