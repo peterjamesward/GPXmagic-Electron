@@ -1,6 +1,7 @@
 port module ServerProcessMain exposing (main)
 
 import Angle
+import Dict exposing (Dict)
 import Direction2d
 import DomainModel exposing (GPXSource)
 import GpxPoint exposing (GpxPoint)
@@ -26,12 +27,16 @@ type alias Model =
     -- Note we don't keep a copy of the GPX here!
     { filename : Maybe String
     , tree : Maybe DomainModel.PeteTree
+    , windows : Dict Int RendererWindow
+    , nextWindowId : Int
     }
 
 
 startModel =
     { filename = Nothing
     , tree = Nothing
+    , windows = Dict.empty
+    , nextWindowId = 0
     }
 
 
@@ -79,6 +84,11 @@ update msg model =
                     Debug.log "CMD" cmd
             in
             case cmd of
+                Ok "ready" ->
+                    --The Electron server is ready to execute our instructions.
+                    --Begin by making a main window; this will become our toolbox, probably.
+                    makeToolWindow model
+
                 Ok "newgpx" ->
                     let
                         rawGpxPoints =
@@ -118,3 +128,63 @@ subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch
         [ fromJavascript MessageFromRenderer ]
+
+
+
+--TODO: Extract to separate module...
+
+
+type alias RendererWindow =
+    { rendererType : RendererType
+    , width : Int
+    , height : Int
+    }
+
+
+type RendererType
+    = RendererToolbox
+
+
+
+--| Renderer3D
+--| RendererCanvasChart
+--| RendererMap
+
+
+toolWindow =
+    { rendererType = RendererToolbox
+    , width = 300
+    , height = 100
+    }
+
+
+makeToolWindow : Model -> ( Model, Cmd Msg )
+makeToolWindow model =
+    ( { model
+        | windows = model.windows |> Dict.insert model.nextWindowId toolWindow
+        , nextWindowId = 1 + model.nextWindowId
+      }
+    , toJavascript <|
+        E.object
+            [ ( "cmd", E.string "newwindow" )
+            , ( "id", E.int model.nextWindowId )
+            , ( "window", windowAsJson toolWindow )
+            ]
+    )
+
+
+rendererHtmlFile : RendererType -> String
+rendererHtmlFile rendererType =
+    --Yes, this is crucial Electron-level config here.
+    case rendererType of
+        RendererToolbox ->
+            "LoadButtonRenderer"
+
+
+windowAsJson : RendererWindow -> E.Value
+windowAsJson window =
+    E.object
+        [ ( "html", E.string <| rendererHtmlFile window.rendererType )
+        , ( "width", E.int window.width )
+        , ( "height", E.int window.height )
+        ]

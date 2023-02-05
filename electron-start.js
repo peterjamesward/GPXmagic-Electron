@@ -12,10 +12,8 @@ const Elm = require('./site/ServerProcessMain').Elm;
 
 const elmPorts = Elm.ServerProcessMain.init().ports;
 console.log(elmPorts);
-elmPorts.toJavascript.subscribe(msg => console.log('From Elm:', msg));
 
-//TEST INBOUND PORT
-elmPorts.fromJavascript.send({ someRandomJson : true });
+elmPorts.toJavascript.subscribe(handleElmMessage);
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is GCed.
@@ -41,6 +39,7 @@ app.setAboutPanelOptions({
     authors: "Peter Ward"
 });
 
+// JS dictionary of windows, should match the Elm version. Could go badly wrong.
 var renderers = [];
 
 // This method will be called when Electron has finished
@@ -49,6 +48,10 @@ var renderers = [];
 app.on('ready',
 
     function() {
+
+        //Signal readiness to Elm
+        elmPorts.fromJavascript.send({ "cmd" : "ready" });
+
         // Create the browser window.
         mainWindow = new BrowserWindow(
             {
@@ -84,3 +87,48 @@ app.on('ready',
         });
     }
 );
+
+function handleElmMessage(msg) {
+
+    console.log('Message from Elm', msg)
+
+    switch (msg.cmd) {
+        case 'newwindow':
+            makeWindow(msg.id, msg.window)
+            break;
+
+        default:
+            console.log(msg.cmd, " unknown command")
+    };
+
+};
+
+function makeWindow(id, windowSpec) {
+
+        console.log(windowSpec);
+
+        window = new BrowserWindow(
+            {
+                width: windowSpec.width,
+                height: windowSpec.height,
+                webPreferences: {
+                    preload: path.join(__dirname, 'preload.js')
+                }
+            }
+        );
+
+        // and load the index.html of the app.
+        window.loadURL('file://' + __dirname + '/site/' + windowSpec.html + '.html');
+
+        // Open the devtools.
+        //mainWindow.openDevTools();
+        // Emitted when the window is closed.
+        window.on('closed',
+            function() {
+                // Dereference the window object, usually you would store windows
+                // in an array if your app supports multi windows, this is the time
+                // when you should delete the corresponding element.
+                mainWindow = null;
+            }
+        );
+};

@@ -2848,7 +2848,9 @@ var $elm$json$Json$Encode$object = function (pairs) {
 			_Json_emptyObject(_Utils_Tuple0),
 			pairs));
 };
-var $author$project$ServerProcessMain$startModel = {filename: $elm$core$Maybe$Nothing, tree: $elm$core$Maybe$Nothing};
+var $elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
+var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
+var $author$project$ServerProcessMain$startModel = {filename: $elm$core$Maybe$Nothing, nextWindowId: 0, tree: $elm$core$Maybe$Nothing, windows: $elm$core$Dict$empty};
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$core$Basics$identity = function (x) {
 	return x;
@@ -2937,6 +2939,160 @@ var $author$project$GpxPoint$gpxDecoder = A5(
 			A2($elm$json$Json$Decode$field, 'time', $elm$json$Json$Decode$int))));
 var $elm$json$Json$Decode$list = _Json_decodeList;
 var $elm$core$Debug$log = _Debug_log;
+var $elm$core$Dict$Black = {$: 'Black'};
+var $elm$core$Dict$RBNode_elm_builtin = F5(
+	function (a, b, c, d, e) {
+		return {$: 'RBNode_elm_builtin', a: a, b: b, c: c, d: d, e: e};
+	});
+var $elm$core$Dict$Red = {$: 'Red'};
+var $elm$core$Dict$balance = F5(
+	function (color, key, value, left, right) {
+		if ((right.$ === 'RBNode_elm_builtin') && (right.a.$ === 'Red')) {
+			var _v1 = right.a;
+			var rK = right.b;
+			var rV = right.c;
+			var rLeft = right.d;
+			var rRight = right.e;
+			if ((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) {
+				var _v3 = left.a;
+				var lK = left.b;
+				var lV = left.c;
+				var lLeft = left.d;
+				var lRight = left.e;
+				return A5(
+					$elm$core$Dict$RBNode_elm_builtin,
+					$elm$core$Dict$Red,
+					key,
+					value,
+					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, lK, lV, lLeft, lRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, rK, rV, rLeft, rRight));
+			} else {
+				return A5(
+					$elm$core$Dict$RBNode_elm_builtin,
+					color,
+					rK,
+					rV,
+					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, left, rLeft),
+					rRight);
+			}
+		} else {
+			if ((((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) && (left.d.$ === 'RBNode_elm_builtin')) && (left.d.a.$ === 'Red')) {
+				var _v5 = left.a;
+				var lK = left.b;
+				var lV = left.c;
+				var _v6 = left.d;
+				var _v7 = _v6.a;
+				var llK = _v6.b;
+				var llV = _v6.c;
+				var llLeft = _v6.d;
+				var llRight = _v6.e;
+				var lRight = left.e;
+				return A5(
+					$elm$core$Dict$RBNode_elm_builtin,
+					$elm$core$Dict$Red,
+					lK,
+					lV,
+					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, llK, llV, llLeft, llRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, key, value, lRight, right));
+			} else {
+				return A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, left, right);
+			}
+		}
+	});
+var $elm$core$Basics$compare = _Utils_compare;
+var $elm$core$Dict$insertHelp = F3(
+	function (key, value, dict) {
+		if (dict.$ === 'RBEmpty_elm_builtin') {
+			return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, $elm$core$Dict$RBEmpty_elm_builtin, $elm$core$Dict$RBEmpty_elm_builtin);
+		} else {
+			var nColor = dict.a;
+			var nKey = dict.b;
+			var nValue = dict.c;
+			var nLeft = dict.d;
+			var nRight = dict.e;
+			var _v1 = A2($elm$core$Basics$compare, key, nKey);
+			switch (_v1.$) {
+				case 'LT':
+					return A5(
+						$elm$core$Dict$balance,
+						nColor,
+						nKey,
+						nValue,
+						A3($elm$core$Dict$insertHelp, key, value, nLeft),
+						nRight);
+				case 'EQ':
+					return A5($elm$core$Dict$RBNode_elm_builtin, nColor, nKey, value, nLeft, nRight);
+				default:
+					return A5(
+						$elm$core$Dict$balance,
+						nColor,
+						nKey,
+						nValue,
+						nLeft,
+						A3($elm$core$Dict$insertHelp, key, value, nRight));
+			}
+		}
+	});
+var $elm$core$Dict$insert = F3(
+	function (key, value, dict) {
+		var _v0 = A3($elm$core$Dict$insertHelp, key, value, dict);
+		if ((_v0.$ === 'RBNode_elm_builtin') && (_v0.a.$ === 'Red')) {
+			var _v1 = _v0.a;
+			var k = _v0.b;
+			var v = _v0.c;
+			var l = _v0.d;
+			var r = _v0.e;
+			return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, l, r);
+		} else {
+			var x = _v0;
+			return x;
+		}
+	});
+var $elm$json$Json$Encode$int = _Json_wrap;
+var $author$project$ServerProcessMain$RendererToolbox = {$: 'RendererToolbox'};
+var $author$project$ServerProcessMain$toolWindow = {height: 100, rendererType: $author$project$ServerProcessMain$RendererToolbox, width: 300};
+var $author$project$ServerProcessMain$rendererHtmlFile = function (rendererType) {
+	return 'LoadButtonRenderer';
+};
+var $author$project$ServerProcessMain$windowAsJson = function (window) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'html',
+				$elm$json$Json$Encode$string(
+					$author$project$ServerProcessMain$rendererHtmlFile(window.rendererType))),
+				_Utils_Tuple2(
+				'width',
+				$elm$json$Json$Encode$int(window.width)),
+				_Utils_Tuple2(
+				'height',
+				$elm$json$Json$Encode$int(window.height))
+			]));
+};
+var $author$project$ServerProcessMain$makeToolWindow = function (model) {
+	return _Utils_Tuple2(
+		_Utils_update(
+			model,
+			{
+				nextWindowId: 1 + model.nextWindowId,
+				windows: A3($elm$core$Dict$insert, model.nextWindowId, $author$project$ServerProcessMain$toolWindow, model.windows)
+			}),
+		$author$project$ServerProcessMain$toJavascript(
+			$elm$json$Json$Encode$object(
+				_List_fromArray(
+					[
+						_Utils_Tuple2(
+						'cmd',
+						$elm$json$Json$Encode$string('newwindow')),
+						_Utils_Tuple2(
+						'id',
+						$elm$json$Json$Encode$int(model.nextWindowId)),
+						_Utils_Tuple2(
+						'window',
+						$author$project$ServerProcessMain$windowAsJson($author$project$ServerProcessMain$toolWindow))
+					]))));
+};
 var $elm$core$List$foldrHelper = F4(
 	function (fn, acc, ctr, ls) {
 		if (!ls.b) {
@@ -3497,10 +3653,12 @@ var $author$project$ServerProcessMain$update = F2(
 			A2($elm$json$Json$Decode$field, 'cmd', $elm$json$Json$Decode$string),
 			jsonMessage);
 		var _v1 = A2($elm$core$Debug$log, 'CMD', cmd);
-		_v2$2:
+		_v2$3:
 		while (true) {
 			if (cmd.$ === 'Ok') {
 				switch (cmd.a) {
+					case 'ready':
+						return $author$project$ServerProcessMain$makeToolWindow(model);
 					case 'newgpx':
 						var rawGpxPoints = A2(
 							$elm$json$Json$Decode$decodeValue,
@@ -3524,10 +3682,10 @@ var $author$project$ServerProcessMain$update = F2(
 					case 'openview':
 						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 					default:
-						break _v2$2;
+						break _v2$3;
 				}
 			} else {
-				break _v2$2;
+				break _v2$3;
 			}
 		}
 		return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
