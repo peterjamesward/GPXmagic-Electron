@@ -3006,29 +3006,11 @@ var $elm$core$List$map = F2(
 			_List_Nil,
 			xs);
 	});
-var $elm$core$Maybe$map = F2(
-	function (f, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return $elm$core$Maybe$Just(
-				f(value));
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
 var $ianmackenzie$elm_units$Length$meters = function (numMeters) {
 	return $ianmackenzie$elm_units$Quantity$Quantity(numMeters);
 };
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $author$project$DomainModel$skipCount = function (treeNode) {
-	if (treeNode.$ === 'Leaf') {
-		return 1;
-	} else {
-		var node = treeNode.a;
-		return node.nodeContent.skipCount;
-	}
-};
 var $elm$json$Json$Decode$string = _Json_decodeString;
 var $author$project$DomainModel$GPXSource = F4(
 	function (longitude, latitude, altitude, timestamp) {
@@ -3515,33 +3497,40 @@ var $author$project$ServerProcessMain$update = F2(
 			A2($elm$json$Json$Decode$field, 'cmd', $elm$json$Json$Decode$string),
 			jsonMessage);
 		var _v1 = A2($elm$core$Debug$log, 'CMD', cmd);
-		if ((cmd.$ === 'Ok') && (cmd.a === 'newgpx')) {
-			var rawGpxPoints = A2(
-				$elm$json$Json$Decode$decodeValue,
-				A2(
-					$elm$json$Json$Decode$field,
-					'content',
-					$elm$json$Json$Decode$list($author$project$GpxPoint$gpxDecoder)),
-				jsonMessage);
-			if (rawGpxPoints.$ === 'Ok') {
-				var rawPoints = rawGpxPoints.a;
-				var internalPoints = A2($elm$core$List$map, pointConverter, rawPoints);
-				var tree = $author$project$DomainModel$treeFromSourcePoints(internalPoints);
-				var _v4 = A2(
-					$elm$core$Debug$log,
-					'TREE HAS POINTS',
-					A2($elm$core$Maybe$map, $author$project$DomainModel$skipCount, tree));
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{tree: tree}),
-					$elm$core$Platform$Cmd$none);
+		_v2$2:
+		while (true) {
+			if (cmd.$ === 'Ok') {
+				switch (cmd.a) {
+					case 'newgpx':
+						var rawGpxPoints = A2(
+							$elm$json$Json$Decode$decodeValue,
+							A2(
+								$elm$json$Json$Decode$field,
+								'content',
+								$elm$json$Json$Decode$list($author$project$GpxPoint$gpxDecoder)),
+							jsonMessage);
+						if (rawGpxPoints.$ === 'Ok') {
+							var rawPoints = rawGpxPoints.a;
+							var internalPoints = A2($elm$core$List$map, pointConverter, rawPoints);
+							var tree = $author$project$DomainModel$treeFromSourcePoints(internalPoints);
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{tree: tree}),
+								$elm$core$Platform$Cmd$none);
+						} else {
+							return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+						}
+					case 'openview':
+						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					default:
+						break _v2$2;
+				}
 			} else {
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				break _v2$2;
 			}
-		} else {
-			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
+		return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 	});
 var $elm$core$Platform$worker = _Platform_worker;
 var $author$project$ServerProcessMain$main = $elm$core$Platform$worker(

@@ -104,6 +104,12 @@ update msg model =
                             --TODO: Return errors.
                             ( model, Cmd.none )
 
+                Ok "openview" ->
+                    --TODO: Create a list of views.
+                    --When view added, send it a tree if available.
+                    --When tree loaded, send to all views.
+                    ( model, Cmd.none )
+
                 _ ->
                     ( model, Cmd.none )
 

@@ -24,6 +24,7 @@ type Msg
     | GpxSelected File
     | GpxLoaded String
     | MessageFromMainProcess E.Value
+    | OpenView
 
 
 type alias Model =
@@ -94,29 +95,41 @@ update msg model =
         MessageFromMainProcess value ->
             ( model, Cmd.none )
 
+        OpenView ->
+            ( model
+            , LoadButtonIpcStubs.openView
+            )
+
 
 view : Model -> Html Msg
 view model =
     let
+        buttonStyles =
+            [ padding 5
+            , Background.color FlatColors.ChinesePalette.antiFlashWhite
+            , Border.color FlatColors.FlatUIPalette.peterRiver
+            , Border.width 2
+            ]
+
         loadGpxButton =
-            button
-                [ padding 5
-                , Background.color FlatColors.ChinesePalette.antiFlashWhite
-                , Border.color FlatColors.FlatUIPalette.peterRiver
-                , Border.width 2
-                ]
+            button buttonStyles
                 { onPress = Just GpxRequested
                 , label = text "Load GPX"
+                }
+
+        openView =
+            button buttonStyles
+                { onPress = Just OpenView
+                , label = text "Open a viewer window"
                 }
     in
     layout
         [ Background.color model.backgroundColour ]
     <|
-        wrappedRow
+        column
             [ centerX, centerY ]
             [ loadGpxButton
-
-            --, buyMeACoffeeButton
+            , openView
             ]
 
 

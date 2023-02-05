@@ -16,3 +16,10 @@ loadNewGpx pointsAsJSON =
             [ ( "cmd", E.string "newgpx" )
             , ( "content", pointsAsJSON )
             ]
+
+
+openView : Cmd msg
+openView =
+    ipcRendererToMain <|
+        E.object
+            [ ( "cmd", E.string "openview" ) ]
