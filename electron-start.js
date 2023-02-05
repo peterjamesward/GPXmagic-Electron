@@ -45,16 +45,20 @@ var renderers = [];
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
+// TODO: Move window management into Elm, make this a mere servant.
 app.on('ready',
+
     function() {
         // Create the browser window.
-        mainWindow = new BrowserWindow({
-            width: 300,
-            height: 100,
-            webPreferences: {
-                preload: path.join(__dirname, 'LoadButtonPreload.js')
+        mainWindow = new BrowserWindow(
+            {
+                width: 300,
+                height: 100,
+                webPreferences: {
+                    preload: path.join(__dirname, 'preload.js')
+                }
             }
-        });
+        );
 
         // and load the index.html of the app.
         mainWindow.loadURL('file://' + __dirname + '/site/LoadButtonRenderer.html');
