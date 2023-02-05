@@ -3,6 +3,7 @@ var electron = require('electron')
 
 var app = electron.app; // Module to control application life.
 var BrowserWindow = electron.BrowserWindow; // Module to create native browser window.
+
 // Need this for talking to the main process, which handles the OAuth (partly).
 const ipcMain = electron.ipcMain;
 
@@ -29,6 +30,8 @@ app.setAboutPanelOptions({
     version: "9bb2df0a",
     authors: "Peter Ward"
 });
+
+var renderers = [];
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -63,17 +66,20 @@ app.on('ready',
         // Arguably should try to get invoke to work but our model is asynch anyway.
         ipcMain.on('newgpx', (event, points) => {
 
-            console.log(points);
+            loadNewTrack(points);
 
         });
     }
 );
 
-// Shim for OAuth module, driven by Elm code via the renderer process.
-const windowParams = {
-    alwaysOnTop: true,
-    autoHideMenuBar: false,
-    webPreferences: {
-        nodeIntegration: false
-    }
+function loadNewTrack(gpxPoints) {
+
+    console.log(gpxPoints);
+
+    // Pass to Elm to build new internal structures.
+    // Elm will respond by sending out a broadcast message, so we don't do that here.
+    //TODO: Load some Elm into the server process and set up a couple of parts.
+    //https://github.com/davidcavazos/elm-in-node-example
+    //Use a minimal domain model (a list will do right now).
+
 };

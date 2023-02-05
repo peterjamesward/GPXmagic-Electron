@@ -1,4 +1,4 @@
-module Main exposing (Model, Msg, main)
+module LoadButtonRenderer exposing (Model, Msg, main)
 
 import Browser
 import Element exposing (..)

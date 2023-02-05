@@ -19,10 +19,12 @@ Note the path from Elm to Main Process is (necessarily) not simple:
 
 >> Create a server "app" in Elm with no view, only messages in and out.
 >> Put the Tree and Indexes here. (Not strictly required for POC.)
+>> Interested to know how big a file we can load or if there's a hidden limitation.
 
-Create a 3D renderer Elm app that receives **elided** model from server and renders.
+Create a 3D renderer Elm app that receives `List EarthPoint` from server and renders.
+Test with variety of file sizes!
 
-Server sends elided model to all renderers. (Maybe renderer specified elision when it registers.)
+Server sends (elided) model to all renderers. (Maybe renderer specified elision when it registers.)
 Renderers locally render to WebGL, Canvas, Map as required (specialised, hence simpler).
 
 Traffic is two-way, so Toolbox is also a renderer, sends updates to server, whilst (say) "drag on map" also sends an update.
@@ -37,6 +39,22 @@ I guess server could spawn an invisible worker if needed, or that tool is only e
 Anyway, that's the concept. Then tools and views migrate without baggage (no Actions).
 More JS than before but we can keep it clean as renderers are specialised.
 
+## Questions & challenges
+
+Whether WebViews have their own process and are basically "embedded" pages in all respects.
+This could make window management a nice extension of v3, having panes but allowing >1 containers.
+
+Want to avoid re-loading map just because user switches views. Maybe just hide them. Maybe not worry.
+
+How best to implement simple view switch. (Depends on what WebView really is?)
+
+Thinking of keeping window management simple, not using WebView. 
+Each BrowserWindow to be only one view but with a consistent set of buttons for user to:
+* Switch to a different view (which reloads the window with new content)
+* Split vertically or horizontally (which clones the active view)
+* Close (also by title bar controls)
+Window positions and mode to be kept in localStorage like v3.
+
 ---
 
 # BACKLOG
@@ -47,7 +65,12 @@ Need code signing to be entered in Windows store.
 
 Display logged in athlete details from Strava.
 
-Non-deprecated OAuth, I suppose (but secret's in the app today).
+Revert to Elm OAuth, run in an invisible browser window. Nice.
+
+## Street View renderer
+
+Use Maps Embed API -- https://developers.google.com/maps/documentation/embed/get-started
+(Apparently no charge, no rate limit, so we can have a "follow Orange" renderer.)
 
 ## Picture button
 

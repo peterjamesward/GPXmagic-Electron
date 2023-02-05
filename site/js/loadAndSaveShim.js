@@ -1,7 +1,7 @@
 // We will have one of these for each renderer.
 // It glues the Elm app to JS and tells Elm where to render its HTML.
 
-const app = Elm.Main.init({
+const app = Elm.LoadButtonRenderer.init({
     node: document.getElementById("myapp")
 });
 
