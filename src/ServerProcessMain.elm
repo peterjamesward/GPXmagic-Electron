@@ -95,10 +95,6 @@ update msg model =
 
                                 tree =
                                     DomainModel.treeFromSourcePoints internalPoints
-
-                                _ =
-                                    Debug.log "TREE HAS POINTS" <|
-                                        Maybe.map DomainModel.skipCount tree
                             in
                             ( { model | tree = tree }
                             , Cmd.none

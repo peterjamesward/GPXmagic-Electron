@@ -17,9 +17,10 @@ Note the path from Elm to Main Process is (necessarily) not simple:
 9. Elm logic in the server
 10. Route back is the reverse set of ports and messages.
 
->> Create a server "app" in Elm with no view, only messages in and out.
+DONE >> Create a server "app" in Elm with no view, only messages in and out.
 >> Put the Tree and Indexes here. (Not strictly required for POC.)
 >> Interested to know how big a file we can load or if there's a hidden limitation.
+> OK with 1M, failed with 3M (300MB GPX file)!
 
 Create a 3D renderer Elm app that receives `List EarthPoint` from server and renders.
 Test with variety of file sizes!
