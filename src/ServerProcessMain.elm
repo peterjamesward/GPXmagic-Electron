@@ -1,5 +1,6 @@
 port module ServerProcessMain exposing (main)
 
+import Json.Decode as D
 import Json.Encode as E
 import Platform exposing (Program)
 
@@ -40,15 +41,32 @@ init =
     )
 
 
+
+{- Start by processing newgpx...
+   E.object
+       [ ( "cmd", E.string "newgpx" )
+       , ( "content", pointsAsJSON )
+       ]
+-}
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         MessageFromRenderer value ->
             let
+                cmd =
+                    D.decodeValue (D.field "cmd" D.string) value
+
                 _ =
-                    Debug.log "ELM MESSAGE" value
+                    Debug.log "CMD" cmd
             in
-            ( model, Cmd.none )
+            case cmd of
+                Ok "newgpx" ->
+                    ( model, Cmd.none )
+
+                _ ->
+                    ( model, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg

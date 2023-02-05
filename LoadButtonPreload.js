@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld('gpxMagicAPI', {
     sendToServer: (content) => ipcRenderer.send('elmMessage', content)
 });
 
-ipcRenderer.on('code', (_event, code) => {
+//TODO: Renderer needs to provide its response function to get server messages.
+ipcRenderer.on('fromServer', (_event, code) => {
     responseFn({ cmd : 'response', code : code});
 })

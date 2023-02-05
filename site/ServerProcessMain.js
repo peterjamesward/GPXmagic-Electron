@@ -2878,14 +2878,25 @@ var $author$project$ServerProcessMain$subscriptions = function (_v0) {
 			]));
 };
 var $elm$json$Json$Decode$succeed = _Json_succeed;
+var $elm$json$Json$Decode$decodeValue = _Json_run;
+var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$core$Debug$log = _Debug_log;
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $elm$json$Json$Decode$string = _Json_decodeString;
 var $author$project$ServerProcessMain$update = F2(
 	function (msg, model) {
 		var value = msg.a;
-		var _v1 = A2($elm$core$Debug$log, 'ELM MESSAGE', value);
-		return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		var cmd = A2(
+			$elm$json$Json$Decode$decodeValue,
+			A2($elm$json$Json$Decode$field, 'cmd', $elm$json$Json$Decode$string),
+			value);
+		var _v1 = A2($elm$core$Debug$log, 'CMD', cmd);
+		if ((cmd.$ === 'Ok') && (cmd.a === 'newgpx')) {
+			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		} else {
+			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		}
 	});
 var $elm$core$Platform$worker = _Platform_worker;
 var $author$project$ServerProcessMain$main = $elm$core$Platform$worker(
