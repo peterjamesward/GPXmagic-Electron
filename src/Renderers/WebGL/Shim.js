@@ -1,6 +1,8 @@
 // We will have one of these for each renderer.
 // It glues the Elm app to JS and tells Elm where to render its HTML.
 
+
+
 const app = Elm.Renderers.WebGL.Renderer.init({
     node: document.getElementById("myapp")
 });
@@ -14,6 +16,10 @@ function ipcElmToMain(msg) {
 
 };
 
+// Directly connect Electron messages from upstream into inbound Elm port.
 gpxMagicAPI.fromServer(
-    (_event, value) => {   app.ports.ipcRendererToMain.send(value);    }
+    (_event, value) => {
+        console.log(value);
+        app.ports.ipcRendererToMain.send(value);
+    }
 );

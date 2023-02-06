@@ -3,6 +3,7 @@ var electron = require('electron')
 
 var app = electron.app; // Module to control application life.
 var BrowserWindow = electron.BrowserWindow; // Module to create native browser window.
+const { webContents } = require('electron');
 
 // Need this for talking to the main process, which handles the OAuth (partly).
 const ipcMain = electron.ipcMain;
@@ -56,8 +57,10 @@ app.on('ready',
         // Forward IPC calls to Elm.
         ipcMain.on('elmMessage', (event, elmMessage) => {
 
-//            console.log("sending to elm", elmMessage);
-            elmPorts.fromJavascript.send(elmMessage);
+//            console.log("EVENT", event.sender);
+            elmMessage.sender = event.sender.id;
+            console.log("sending to elm", elmMessage);
+            elmPorts.fromJavascript.send( elmMessage );
 
         });
     }
@@ -70,7 +73,12 @@ function handleElmMessage(msg) {
 
     switch (msg.cmd) {
         case 'newwindow':
-            makeWindow(msg.id, msg.window, msg.track);
+            makeWindow(msg.id, msg.window);
+            break;
+
+        case 'track':
+            // Send track to specified window only.
+            webContents.fromId(msg.target).send('update', msg);
             break;
 
         default:
@@ -80,7 +88,7 @@ function handleElmMessage(msg) {
 };
 
 // Basic window lifecycle.
-function makeWindow(id, windowSpec, track) {
+function makeWindow(id, windowSpec) {
 
         console.log(windowSpec);
 
@@ -103,15 +111,6 @@ function makeWindow(id, windowSpec, track) {
 
         // Open the devtools.
         //window.openDevTools();
-
-        // Send a track if we have one.
-        if (track != null) {
-            window.on('did-finish-load',
-                function() {
-                    window.webContents.send('fromServer', { cmd : 'track', track : track } );
-                }
-            );
-        };
 
         // Emitted when the window is closed.
         window.on('close',

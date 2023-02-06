@@ -2891,54 +2891,6 @@ var $ianmackenzie$elm_units$Angle$radians = function (numRadians) {
 var $ianmackenzie$elm_units$Angle$degrees = function (numDegrees) {
 	return $ianmackenzie$elm_units$Angle$radians($elm$core$Basics$pi * (numDegrees / 180));
 };
-var $elm$json$Json$Decode$field = _Json_decodeField;
-var $ianmackenzie$elm_geometry$Geometry$Types$Direction2d = function (a) {
-	return {$: 'Direction2d', a: a};
-};
-var $elm$core$Basics$cos = _Basics_cos;
-var $elm$core$Basics$sin = _Basics_sin;
-var $ianmackenzie$elm_geometry$Direction2d$fromAngle = function (_v0) {
-	var angle = _v0.a;
-	return $ianmackenzie$elm_geometry$Geometry$Types$Direction2d(
-		{
-			x: $elm$core$Basics$cos(angle),
-			y: $elm$core$Basics$sin(angle)
-		});
-};
-var $author$project$Common$GpxPoint$GpxPoint = F4(
-	function (longitude, latitude, altitude, timestamp) {
-		return {altitude: altitude, latitude: latitude, longitude: longitude, timestamp: timestamp};
-	});
-var $elm$json$Json$Decode$float = _Json_decodeFloat;
-var $elm$json$Json$Decode$int = _Json_decodeInt;
-var $elm$json$Json$Decode$map = _Json_map1;
-var $elm$json$Json$Decode$map4 = _Json_map4;
-var $elm$json$Json$Decode$oneOf = _Json_oneOf;
-var $elm$json$Json$Decode$maybe = function (decoder) {
-	return $elm$json$Json$Decode$oneOf(
-		_List_fromArray(
-			[
-				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, decoder),
-				$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing)
-			]));
-};
-var $elm$time$Time$Posix = function (a) {
-	return {$: 'Posix', a: a};
-};
-var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
-var $author$project$Common$GpxPoint$gpxDecoder = A5(
-	$elm$json$Json$Decode$map4,
-	$author$project$Common$GpxPoint$GpxPoint,
-	A2($elm$json$Json$Decode$field, 'lon', $elm$json$Json$Decode$float),
-	A2($elm$json$Json$Decode$field, 'lat', $elm$json$Json$Decode$float),
-	A2($elm$json$Json$Decode$field, 'alt', $elm$json$Json$Decode$float),
-	$elm$json$Json$Decode$maybe(
-		A2(
-			$elm$json$Json$Decode$map,
-			$elm$time$Time$millisToPosix,
-			A2($elm$json$Json$Decode$field, 'time', $elm$json$Json$Decode$int))));
-var $elm$json$Json$Decode$list = _Json_decodeList;
-var $elm$core$Debug$log = _Debug_log;
 var $elm$json$Json$Encode$float = _Json_wrap;
 var $ianmackenzie$elm_units$Length$inMeters = function (_v0) {
 	var numMeters = _v0.a;
@@ -3089,6 +3041,64 @@ var $author$project$Common$DomainModel$elidedEarthPoints = F2(
 				myFoldFn,
 				_List_Nil));
 	});
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $ianmackenzie$elm_geometry$Geometry$Types$Direction2d = function (a) {
+	return {$: 'Direction2d', a: a};
+};
+var $elm$core$Basics$cos = _Basics_cos;
+var $elm$core$Basics$sin = _Basics_sin;
+var $ianmackenzie$elm_geometry$Direction2d$fromAngle = function (_v0) {
+	var angle = _v0.a;
+	return $ianmackenzie$elm_geometry$Geometry$Types$Direction2d(
+		{
+			x: $elm$core$Basics$cos(angle),
+			y: $elm$core$Basics$sin(angle)
+		});
+};
+var $author$project$Common$GpxPoint$GpxPoint = F4(
+	function (longitude, latitude, altitude, timestamp) {
+		return {altitude: altitude, latitude: latitude, longitude: longitude, timestamp: timestamp};
+	});
+var $elm$json$Json$Decode$float = _Json_decodeFloat;
+var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $elm$json$Json$Decode$map = _Json_map1;
+var $elm$json$Json$Decode$map4 = _Json_map4;
+var $elm$json$Json$Decode$oneOf = _Json_oneOf;
+var $elm$json$Json$Decode$maybe = function (decoder) {
+	return $elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, decoder),
+				$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing)
+			]));
+};
+var $elm$time$Time$Posix = function (a) {
+	return {$: 'Posix', a: a};
+};
+var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
+var $author$project$Common$GpxPoint$gpxDecoder = A5(
+	$elm$json$Json$Decode$map4,
+	$author$project$Common$GpxPoint$GpxPoint,
+	A2($elm$json$Json$Decode$field, 'lon', $elm$json$Json$Decode$float),
+	A2($elm$json$Json$Decode$field, 'lat', $elm$json$Json$Decode$float),
+	A2($elm$json$Json$Decode$field, 'alt', $elm$json$Json$Decode$float),
+	$elm$json$Json$Decode$maybe(
+		A2(
+			$elm$json$Json$Decode$map,
+			$elm$time$Time$millisToPosix,
+			A2($elm$json$Json$Decode$field, 'time', $elm$json$Json$Decode$int))));
+var $elm$json$Json$Encode$int = _Json_wrap;
+var $elm$json$Json$Decode$list = _Json_decodeList;
+var $elm$json$Json$Encode$list = F2(
+	function (func, entries) {
+		return _Json_wrap(
+			A3(
+				$elm$core$List$foldl,
+				_Json_addEntry(func),
+				_Json_emptyArray(_Utils_Tuple0),
+				entries));
+	});
+var $elm$core$Debug$log = _Debug_log;
 var $elm$core$Dict$Black = {$: 'Black'};
 var $elm$core$Dict$RBNode_elm_builtin = F5(
 	function (a, b, c, d, e) {
@@ -3198,27 +3208,6 @@ var $elm$core$Dict$insert = F3(
 			return x;
 		}
 	});
-var $elm$json$Json$Encode$int = _Json_wrap;
-var $elm$json$Json$Encode$list = F2(
-	function (func, entries) {
-		return _Json_wrap(
-			A3(
-				$elm$core$List$foldl,
-				_Json_addEntry(func),
-				_Json_emptyArray(_Utils_Tuple0),
-				entries));
-	});
-var $elm$core$Maybe$map = F2(
-	function (f, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return $elm$core$Maybe$Just(
-				f(value));
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
-var $elm$json$Json$Encode$null = _Json_encodeNull;
 var $author$project$ServerProcess$Main$rendererHtmlFile = function (rendererType) {
 	switch (rendererType.$) {
 		case 'RendererToolbox':
@@ -3251,18 +3240,6 @@ var $author$project$ServerProcess$Main$windowAsJson = function (window) {
 };
 var $author$project$ServerProcess$Main$makeNewWindow = F2(
 	function (window, model) {
-		var earthPoints = A2(
-			$elm$core$Maybe$map,
-			$author$project$Common$DomainModel$elidedEarthPoints(10),
-			model.tree);
-		var pointsAsJson = function () {
-			if (earthPoints.$ === 'Just') {
-				var points = earthPoints.a;
-				return A2($elm$json$Json$Encode$list, $author$project$Common$DomainModel$earthPointAsJson, points);
-			} else {
-				return $elm$json$Json$Encode$null;
-			}
-		}();
 		var newWindowCommand = $author$project$ServerProcess$Main$toJavascript(
 			$elm$json$Json$Encode$object(
 				_List_fromArray(
@@ -3275,8 +3252,7 @@ var $author$project$ServerProcess$Main$makeNewWindow = F2(
 						$elm$json$Json$Encode$int(model.nextWindowId)),
 						_Utils_Tuple2(
 						'window',
-						$author$project$ServerProcess$Main$windowAsJson(window)),
-						_Utils_Tuple2('track', pointsAsJson)
+						$author$project$ServerProcess$Main$windowAsJson(window))
 					])));
 		return _Utils_Tuple2(
 			_Utils_update(
@@ -3356,11 +3332,22 @@ var $elm$core$List$map = F2(
 			_List_Nil,
 			xs);
 	});
+var $elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return $elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
 var $ianmackenzie$elm_units$Length$meters = function (numMeters) {
 	return $ianmackenzie$elm_units$Quantity$Quantity(numMeters);
 };
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $elm$json$Json$Encode$null = _Json_encodeNull;
 var $elm$core$Dict$getMin = function (dict) {
 	getMin:
 	while (true) {
@@ -4195,6 +4182,10 @@ var $author$project$Common$DomainModel$treeFromSourcePoints = function (track) {
 var $author$project$ServerProcess$Main$update = F2(
 	function (msg, model) {
 		var jsonMessage = msg.a;
+		var senderId = A2(
+			$elm$json$Json$Decode$decodeValue,
+			A2($elm$json$Json$Decode$field, 'sender', $elm$json$Json$Decode$int),
+			jsonMessage);
 		var pointConverter = function (gpx) {
 			return {
 				altitude: $ianmackenzie$elm_units$Length$meters(gpx.altitude),
@@ -4209,7 +4200,7 @@ var $author$project$ServerProcess$Main$update = F2(
 			A2($elm$json$Json$Decode$field, 'cmd', $elm$json$Json$Decode$string),
 			jsonMessage);
 		var _v1 = A2($elm$core$Debug$log, 'CMD', cmd);
-		_v2$4:
+		_v2$5:
 		while (true) {
 			if (cmd.$ === 'Ok') {
 				switch (cmd.a) {
@@ -4255,13 +4246,41 @@ var $author$project$ServerProcess$Main$update = F2(
 						} else {
 							return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 						}
+					case 'hello':
+						if (senderId.$ === 'Ok') {
+							var id = senderId.a;
+							var earthPoints = A2(
+								$elm$core$Maybe$map,
+								$author$project$Common$DomainModel$elidedEarthPoints(10),
+								model.tree);
+							var pointsAsJson = function () {
+								if (earthPoints.$ === 'Just') {
+									var points = earthPoints.a;
+									return A2($elm$json$Json$Encode$list, $author$project$Common$DomainModel$earthPointAsJson, points);
+								} else {
+									return $elm$json$Json$Encode$null;
+								}
+							}();
+							return _Utils_Tuple2(
+								model,
+								$author$project$ServerProcess$Main$toJavascript(
+									$elm$json$Json$Encode$object(
+										_List_fromArray(
+											[
+												_Utils_Tuple2(
+												'cmd',
+												$elm$json$Json$Encode$string('track')),
+												_Utils_Tuple2(
+												'target',
+												$elm$json$Json$Encode$int(id)),
+												_Utils_Tuple2('track', pointsAsJson)
+											]))));
+						} else {
+							return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+						}
 					case 'closed':
-						var windowId = A2(
-							$elm$json$Json$Decode$decodeValue,
-							A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int),
-							jsonMessage);
-						if (windowId.$ === 'Ok') {
-							var id = windowId.a;
+						if (senderId.$ === 'Ok') {
+							var id = senderId.a;
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
@@ -4273,10 +4292,10 @@ var $author$project$ServerProcess$Main$update = F2(
 							return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 						}
 					default:
-						break _v2$4;
+						break _v2$5;
 				}
 			} else {
-				break _v2$4;
+				break _v2$5;
 			}
 		}
 		return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);

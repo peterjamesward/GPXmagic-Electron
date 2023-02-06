@@ -70,6 +70,9 @@ update msg model =
     case msg of
         MessageFromRenderer jsonMessage ->
             let
+                senderId =
+                    D.decodeValue (D.field "sender" D.int) jsonMessage
+
                 cmd =
                     D.decodeValue (D.field "cmd" D.string) jsonMessage
 
@@ -132,13 +135,37 @@ update msg model =
                         Err _ ->
                             ( model, Cmd.none )
 
+                Ok "hello" ->
+                    -- Window is ready, send it track
+                    case senderId of
+                        Ok id ->
+                            let
+                                earthPoints =
+                                    Maybe.map (DomainModel.elidedEarthPoints 10) model.tree
+
+                                pointsAsJson =
+                                    case earthPoints of
+                                        Just points ->
+                                            E.list earthPointAsJson points
+
+                                        Nothing ->
+                                            E.null
+                            in
+                            ( model
+                            , toJavascript <|
+                                E.object
+                                    [ ( "cmd", E.string "track" )
+                                    , ( "target", E.int id )
+                                    , ( "track", pointsAsJson )
+                                    ]
+                            )
+
+                        Err _ ->
+                            ( model, Cmd.none )
+
                 Ok "closed" ->
                     --User closed a window, remove it.
-                    let
-                        windowId =
-                            D.decodeValue (D.field "id" D.int) jsonMessage
-                    in
-                    case windowId of
+                    case senderId of
                         Ok id ->
                             ( { model | windows = Dict.remove id model.windows }
                             , Cmd.none
@@ -185,17 +212,6 @@ rendererWindow rendererType =
 makeNewWindow : RendererWindow -> Model -> ( Model, Cmd Msg )
 makeNewWindow window model =
     let
-        earthPoints =
-            Maybe.map (DomainModel.elidedEarthPoints 10) model.tree
-
-        pointsAsJson =
-            case earthPoints of
-                Just points ->
-                    E.list earthPointAsJson points
-
-                Nothing ->
-                    E.null
-
         newWindowCommand =
             --Try passing the track to send to the new window only.
             toJavascript <|
@@ -203,7 +219,6 @@ makeNewWindow window model =
                     [ ( "cmd", E.string "newwindow" )
                     , ( "id", E.int model.nextWindowId )
                     , ( "window", windowAsJson window )
-                    , ( "track", pointsAsJson )
                     ]
     in
     ( { model
