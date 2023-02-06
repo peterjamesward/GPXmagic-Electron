@@ -57,6 +57,9 @@ Each BrowserWindow to be only one view but with a consistent set of buttons for 
 Window positions and mode to be kept in localStorage like v3.
 Central option somewhere to Tile or Cascade all windows onto primary display.
 
+> Be nice to open a new view in free space. 
+> (But less important if we are splitting existing.)
+
 ---
 
 # BACKLOG
