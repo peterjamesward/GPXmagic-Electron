@@ -120,6 +120,24 @@ update msg model =
                     --When tree loaded, send to all views.
                     ( model, Cmd.none )
 
+                Ok "ckised" ->
+                    --User closed a window, remove it.
+                    let
+                        windowId =
+                            D.decodeValue (D.field "id" D.int) jsonMessage
+
+                        _ =
+                            Debug.log "WINDOWS" model.windows
+                    in
+                    case windowId of
+                        Ok id ->
+                            ( { model | windows = Dict.remove id model.windows }
+                            , Cmd.none
+                            )
+
+                        Err _ ->
+                            ( model, Cmd.none )
+
                 _ ->
                     ( model, Cmd.none )
 

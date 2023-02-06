@@ -40,7 +40,8 @@ app.setAboutPanelOptions({
 });
 
 // JS dictionary of windows, should match the Elm version. Could go badly wrong.
-var renderers = [];
+var windowsElmToElectron = new Map();
+var windowsElectronToElm = new Map();
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -52,32 +53,6 @@ app.on('ready',
         //Signal readiness to Elm
         elmPorts.fromJavascript.send({ "cmd" : "ready" });
 
-        // Create the browser window.
-        mainWindow = new BrowserWindow(
-            {
-                width: 300,
-                height: 100,
-                webPreferences: {
-                    preload: path.join(__dirname, 'preload.js')
-                }
-            }
-        );
-
-        // and load the index.html of the app.
-        mainWindow.loadURL('file://' + __dirname + '/site/LoadButtonRenderer.html');
-
-        // Open the devtools.
-        //mainWindow.openDevTools();
-        // Emitted when the window is closed.
-        mainWindow.on('closed',
-            function() {
-                // Dereference the window object, usually you would store windows
-                // in an array if your app supports multi windows, this is the time
-                // when you should delete the corresponding element.
-                mainWindow = null;
-            }
-        );
-
         // Forward IPC calls to Elm.
         ipcMain.on('elmMessage', (event, elmMessage) => {
 
@@ -88,6 +63,7 @@ app.on('ready',
     }
 );
 
+// Collect and act on messages from Elm port on server.
 function handleElmMessage(msg) {
 
     console.log('Message from Elm', msg)
@@ -103,11 +79,12 @@ function handleElmMessage(msg) {
 
 };
 
+// Basic window lifecycle.
 function makeWindow(id, windowSpec) {
 
         console.log(windowSpec);
 
-        window = new BrowserWindow(
+        var window = new BrowserWindow(
             {
                 width: windowSpec.width,
                 height: windowSpec.height,
@@ -117,18 +94,23 @@ function makeWindow(id, windowSpec) {
             }
         );
 
+        // Keep track of windows on both sides.
+        windowsElectronToElm.set(window.id, windowSpec.id);
+        windowsElmToElectron.set(windowSpec.id, window.id);
+
         // and load the index.html of the app.
         window.loadURL('file://' + __dirname + '/site/' + windowSpec.html + '.html');
 
         // Open the devtools.
         //mainWindow.openDevTools();
+
         // Emitted when the window is closed.
-        window.on('closed',
+        window.on('close',
             function() {
-                // Dereference the window object, usually you would store windows
-                // in an array if your app supports multi windows, this is the time
-                // when you should delete the corresponding element.
-                mainWindow = null;
+                const elmId = windowsElectronToElm.get(window.id);
+                elmPorts.fromJavascript.send({ cmd : "closed", id : elmId });
+                windowsElectronToElm.delete(window.id);
+                windowsElmToElectron.delete(elmId);
             }
         );
 };
