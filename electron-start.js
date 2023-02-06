@@ -99,7 +99,7 @@ function makeWindow(id, windowSpec) {
         windowsElmToElectron.set(windowSpec.id, window.id);
 
         // and load the index.html of the app.
-        window.loadURL('file://' + __dirname + '/site/' + windowSpec.html + '.html');
+        window.loadURL('file://' + __dirname + '/src/Renderers/' + windowSpec.html + '/Renderer.html');
 
         // Open the devtools.
         //mainWindow.openDevTools();

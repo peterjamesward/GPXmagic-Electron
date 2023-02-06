@@ -3052,15 +3052,15 @@ var $elm$json$Json$Encode$int = _Json_wrap;
 var $author$project$ServerProcessMain$rendererHtmlFile = function (rendererType) {
 	switch (rendererType.$) {
 		case 'RendererToolbox':
-			return 'LoadButtonRenderer';
+			return 'LoadButton';
 		case 'Renderer3D':
-			return 'WebGLRenderer';
+			return 'WebGL';
 		case 'RendererProfile':
-			return 'WebGLRenderer';
+			return 'WebGL';
 		case 'RendererCanvasChart':
-			return 'WebGLRenderer';
+			return 'WebGL';
 		default:
-			return 'WebGLRenderer';
+			return 'WebGL';
 	}
 };
 var $author$project$ServerProcessMain$windowAsJson = function (window) {

@@ -5636,7 +5636,7 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$LoadButtonRenderer$AdjustTimeZone = function (a) {
+var $author$project$Renderers$LoadButton$Renderer$AdjustTimeZone = function (a) {
 	return {$: 'AdjustTimeZone', a: a};
 };
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
@@ -5666,7 +5666,7 @@ var $mdgriffith$elm_ui$Element$rgb255 = F3(
 	});
 var $smucode$elm_flat_colors$FlatColors$FlatUIPalette$silver = A3($mdgriffith$elm_ui$Element$rgb255, 189, 195, 199);
 var $elm$time$Time$utc = A2($elm$time$Time$Zone, 0, _List_Nil);
-var $author$project$LoadButtonRenderer$init = function (_v0) {
+var $author$project$Renderers$LoadButton$Renderer$init = function (_v0) {
 	return _Utils_Tuple2(
 		{
 			backgroundColour: $smucode$elm_flat_colors$FlatColors$FlatUIPalette$silver,
@@ -5678,26 +5678,26 @@ var $author$project$LoadButtonRenderer$init = function (_v0) {
 		$elm$core$Platform$Cmd$batch(
 			_List_fromArray(
 				[
-					A2($elm$core$Task$perform, $author$project$LoadButtonRenderer$AdjustTimeZone, $elm$time$Time$here)
+					A2($elm$core$Task$perform, $author$project$Renderers$LoadButton$Renderer$AdjustTimeZone, $elm$time$Time$here)
 				])));
 };
-var $author$project$LoadButtonRenderer$MessageFromMainProcess = function (a) {
+var $author$project$Renderers$LoadButton$Renderer$MessageFromMainProcess = function (a) {
 	return {$: 'MessageFromMainProcess', a: a};
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$json$Json$Decode$value = _Json_decodeValue;
-var $author$project$LoadButtonIpcStubs$ipcMainToRenderer = _Platform_incomingPort('ipcMainToRenderer', $elm$json$Json$Decode$value);
-var $author$project$LoadButtonRenderer$subscriptions = function (_v0) {
+var $author$project$Renderers$LoadButton$IpcStubs$ipcMainToRenderer = _Platform_incomingPort('ipcMainToRenderer', $elm$json$Json$Decode$value);
+var $author$project$Renderers$LoadButton$Renderer$subscriptions = function (_v0) {
 	return $elm$core$Platform$Sub$batch(
 		_List_fromArray(
 			[
-				$author$project$LoadButtonIpcStubs$ipcMainToRenderer($author$project$LoadButtonRenderer$MessageFromMainProcess)
+				$author$project$Renderers$LoadButton$IpcStubs$ipcMainToRenderer($author$project$Renderers$LoadButton$Renderer$MessageFromMainProcess)
 			]));
 };
-var $author$project$LoadButtonRenderer$GpxLoaded = function (a) {
+var $author$project$Renderers$LoadButton$Renderer$GpxLoaded = function (a) {
 	return {$: 'GpxLoaded', a: a};
 };
-var $author$project$LoadButtonRenderer$GpxSelected = function (a) {
+var $author$project$Renderers$LoadButton$Renderer$GpxSelected = function (a) {
 	return {$: 'GpxSelected', a: a};
 };
 var $elm$file$File$Select$file = F2(
@@ -5772,10 +5772,10 @@ var $elm$json$Json$Encode$list = F2(
 				_Json_emptyArray(_Utils_Tuple0),
 				entries));
 	});
-var $author$project$LoadButtonIpcStubs$ipcRendererToMain = _Platform_outgoingPort('ipcRendererToMain', $elm$core$Basics$identity);
+var $author$project$Renderers$LoadButton$IpcStubs$ipcRendererToMain = _Platform_outgoingPort('ipcRendererToMain', $elm$core$Basics$identity);
 var $elm$json$Json$Encode$string = _Json_wrap;
-var $author$project$LoadButtonIpcStubs$loadNewGpx = function (pointsAsJSON) {
-	return $author$project$LoadButtonIpcStubs$ipcRendererToMain(
+var $author$project$Renderers$LoadButton$IpcStubs$loadNewGpx = function (pointsAsJSON) {
+	return $author$project$Renderers$LoadButton$IpcStubs$ipcRendererToMain(
 		$elm$json$Json$Encode$object(
 			_List_fromArray(
 				[
@@ -5799,8 +5799,8 @@ var $author$project$RendererType$rendererTypeAsString = function (renderer) {
 			return 'map';
 	}
 };
-var $author$project$LoadButtonIpcStubs$newView = function (renderer) {
-	return $author$project$LoadButtonIpcStubs$ipcRendererToMain(
+var $author$project$Renderers$LoadButton$IpcStubs$newView = function (renderer) {
+	return $author$project$Renderers$LoadButton$IpcStubs$ipcRendererToMain(
 		$elm$json$Json$Encode$object(
 			_List_fromArray(
 				[
@@ -7777,7 +7777,7 @@ var $author$project$GpxParser$parseSegments = function (xml) {
 		A2($elm$core$List$map, segmentExtent, namedSegments));
 };
 var $elm$file$File$toString = _File_toString;
-var $author$project$LoadButtonRenderer$update = F2(
+var $author$project$Renderers$LoadButton$Renderer$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
 			case 'AdjustTimeZone':
@@ -7794,21 +7794,21 @@ var $author$project$LoadButtonRenderer$update = F2(
 						$elm$file$File$Select$file,
 						_List_fromArray(
 							['text/gpx']),
-						$author$project$LoadButtonRenderer$GpxSelected));
+						$author$project$Renderers$LoadButton$Renderer$GpxSelected));
 			case 'GpxSelected':
 				var file = msg.a;
 				return _Utils_Tuple2(
 					model,
 					A2(
 						$elm$core$Task$perform,
-						$author$project$LoadButtonRenderer$GpxLoaded,
+						$author$project$Renderers$LoadButton$Renderer$GpxLoaded,
 						$elm$file$File$toString(file)));
 			case 'GpxLoaded':
 				var content = msg.a;
 				var gpxPoints = $author$project$GpxParser$parseSegments(content).a;
 				return _Utils_Tuple2(
 					model,
-					$author$project$LoadButtonIpcStubs$loadNewGpx(
+					$author$project$Renderers$LoadButton$IpcStubs$loadNewGpx(
 						A2(
 							$elm$json$Json$Encode$list,
 							$elm$core$Basics$identity,
@@ -7820,11 +7820,11 @@ var $author$project$LoadButtonRenderer$update = F2(
 				var rendererType = msg.a;
 				return _Utils_Tuple2(
 					model,
-					$author$project$LoadButtonIpcStubs$newView(rendererType));
+					$author$project$Renderers$LoadButton$IpcStubs$newView(rendererType));
 		}
 	});
-var $author$project$LoadButtonRenderer$GpxRequested = {$: 'GpxRequested'};
-var $author$project$LoadButtonRenderer$OpenView = function (a) {
+var $author$project$Renderers$LoadButton$Renderer$GpxRequested = {$: 'GpxRequested'};
+var $author$project$Renderers$LoadButton$Renderer$OpenView = function (a) {
 	return {$: 'OpenView', a: a};
 };
 var $author$project$RendererType$Renderer3D = {$: 'Renderer3D'};
@@ -13749,7 +13749,7 @@ var $mdgriffith$elm_ui$Element$Border$width = function (v) {
 			v,
 			v));
 };
-var $author$project$LoadButtonRenderer$view = function (model) {
+var $author$project$Renderers$LoadButton$Renderer$view = function (model) {
 	var buttonStyles = _List_fromArray(
 		[
 			$mdgriffith$elm_ui$Element$padding(5),
@@ -13762,7 +13762,7 @@ var $author$project$LoadButtonRenderer$view = function (model) {
 		buttonStyles,
 		{
 			label: $mdgriffith$elm_ui$Element$text('Load GPX'),
-			onPress: $elm$core$Maybe$Just($author$project$LoadButtonRenderer$GpxRequested)
+			onPress: $elm$core$Maybe$Just($author$project$Renderers$LoadButton$Renderer$GpxRequested)
 		});
 	var openView = A2(
 		$mdgriffith$elm_ui$Element$Input$button,
@@ -13770,7 +13770,7 @@ var $author$project$LoadButtonRenderer$view = function (model) {
 		{
 			label: $mdgriffith$elm_ui$Element$text('Open a 3D window'),
 			onPress: $elm$core$Maybe$Just(
-				$author$project$LoadButtonRenderer$OpenView($author$project$RendererType$Renderer3D))
+				$author$project$Renderers$LoadButton$Renderer$OpenView($author$project$RendererType$Renderer3D))
 		});
 	return A2(
 		$mdgriffith$elm_ui$Element$layout,
@@ -13785,7 +13785,7 @@ var $author$project$LoadButtonRenderer$view = function (model) {
 			_List_fromArray(
 				[loadGpxButton, openView])));
 };
-var $author$project$LoadButtonRenderer$main = $elm$browser$Browser$element(
-	{init: $author$project$LoadButtonRenderer$init, subscriptions: $author$project$LoadButtonRenderer$subscriptions, update: $author$project$LoadButtonRenderer$update, view: $author$project$LoadButtonRenderer$view});
-_Platform_export({'LoadButtonRenderer':{'init':$author$project$LoadButtonRenderer$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
+var $author$project$Renderers$LoadButton$Renderer$main = $elm$browser$Browser$element(
+	{init: $author$project$Renderers$LoadButton$Renderer$init, subscriptions: $author$project$Renderers$LoadButton$Renderer$subscriptions, update: $author$project$Renderers$LoadButton$Renderer$update, view: $author$project$Renderers$LoadButton$Renderer$view});
+_Platform_export({'Renderers':{'LoadButton':{'Renderer':{'init':$author$project$Renderers$LoadButton$Renderer$main(
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}}}});}(this));

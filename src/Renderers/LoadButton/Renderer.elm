@@ -1,4 +1,4 @@
-module LoadButtonRenderer exposing (Model, Msg, main)
+module Renderers.LoadButton.Renderer exposing (Model, Msg, main)
 
 import Browser
 import Element exposing (..)
@@ -13,8 +13,8 @@ import GpxParser
 import GpxPoint exposing (gpxPointAsJSON)
 import Html exposing (Html, div)
 import Json.Encode as E
-import LoadButtonIpcStubs
 import RendererType exposing (RendererType(..))
+import Renderers.LoadButton.IpcStubs as Stubs
 import Task
 import Time
 
@@ -88,7 +88,7 @@ update msg model =
                         |> Tuple.first
             in
             ( model
-            , LoadButtonIpcStubs.loadNewGpx <|
+            , Stubs.loadNewGpx <|
                 E.list identity <|
                     List.map gpxPointAsJSON gpxPoints
             )
@@ -98,7 +98,7 @@ update msg model =
 
         OpenView rendererType ->
             ( model
-            , LoadButtonIpcStubs.newView rendererType
+            , Stubs.newView rendererType
             )
 
 
@@ -149,5 +149,4 @@ buyMeACoffeeButton =
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch
-        [ LoadButtonIpcStubs.ipcMainToRenderer MessageFromMainProcess
-        ]
+        [ Stubs.ipcMainToRenderer MessageFromMainProcess ]

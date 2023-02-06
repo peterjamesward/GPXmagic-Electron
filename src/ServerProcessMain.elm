@@ -203,19 +203,19 @@ rendererHtmlFile rendererType =
     --TODO: Add each type carefully.
     case rendererType of
         RendererToolbox ->
-            "LoadButtonRenderer"
+            "LoadButton"
 
         Renderer3D ->
-            "WebGLRenderer"
+            "WebGL"
 
         RendererProfile ->
-            "WebGLRenderer"
+            "WebGL"
 
         RendererCanvasChart ->
-            "WebGLRenderer"
+            "WebGL"
 
         RendererMap ->
-            "WebGLRenderer"
+            "WebGL"
 
 
 windowAsJson : RendererWindow -> E.Value
