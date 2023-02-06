@@ -13503,11 +13503,6 @@ var $mdgriffith$elm_ui$Element$layoutWith = F3(
 var $mdgriffith$elm_ui$Element$layout = $mdgriffith$elm_ui$Element$layoutWith(
 	{options: _List_Nil});
 var $avh4$elm_color$Color$lightBlue = A4($avh4$elm_color$Color$RgbaSpace, 114 / 255, 159 / 255, 207 / 255, 1.0);
-var $ianmackenzie$elm_geometry$Geometry$Types$Direction2d = function (a) {
-	return {$: 'Direction2d', a: a};
-};
-var $ianmackenzie$elm_geometry$Direction2d$negativeX = $ianmackenzie$elm_geometry$Geometry$Types$Direction2d(
-	{x: -1, y: 0});
 var $ianmackenzie$elm_geometry$Geometry$Types$Direction3d = function (a) {
 	return {$: 'Direction3d', a: a};
 };
@@ -13882,6 +13877,11 @@ var $ianmackenzie$elm_3d_camera$Camera3d$perspective = function (_arguments) {
 			viewpoint: _arguments.viewpoint
 		});
 };
+var $ianmackenzie$elm_geometry$Geometry$Types$Direction2d = function (a) {
+	return {$: 'Direction2d', a: a};
+};
+var $ianmackenzie$elm_geometry$Direction2d$positiveX = $ianmackenzie$elm_geometry$Geometry$Types$Direction2d(
+	{x: 1, y: 0});
 var $ianmackenzie$elm_geometry$Direction3d$positiveZ = $ianmackenzie$elm_geometry$Direction3d$unsafe(
 	{x: 0, y: 0, z: 1});
 var $mdgriffith$elm_ui$Element$Font$size = function (i) {
@@ -15407,7 +15407,7 @@ var $elm_explorations$markdown$Markdown$toHtml = $elm_explorations$markdown$Mark
 var $author$project$Renderers$WebGL$Renderer$view = function (model) {
 	var cameraViewpoint = $ianmackenzie$elm_3d_camera$Viewpoint3d$orbitZ(
 		{
-			azimuth: $ianmackenzie$elm_geometry$Direction2d$toAngle($ianmackenzie$elm_geometry$Direction2d$negativeX),
+			azimuth: $ianmackenzie$elm_geometry$Direction2d$toAngle($ianmackenzie$elm_geometry$Direction2d$positiveX),
 			distance: $ianmackenzie$elm_units$Length$kilometer,
 			elevation: $ianmackenzie$elm_units$Angle$degrees(45),
 			focalPoint: $ianmackenzie$elm_geometry$Point3d$origin

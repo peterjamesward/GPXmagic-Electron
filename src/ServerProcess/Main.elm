@@ -56,15 +56,6 @@ init =
     )
 
 
-
-{- Start by processing newgpx...
-   E.object
-       [ ( "cmd", E.string "newgpx" )
-       , ( "content", pointsAsJSON )
-       ]
--}
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -83,6 +74,17 @@ update msg model =
                     , altitude = Length.meters gpx.altitude
                     , timestamp = gpx.timestamp
                     }
+
+                earthPoints =
+                    Maybe.map (DomainModel.elidedEarthPoints 10) model.tree
+
+                pointsAsJson =
+                    case earthPoints of
+                        Just points ->
+                            E.list earthPointAsJson points
+
+                        Nothing ->
+                            E.null
 
                 _ =
                     Debug.log "CMD" cmd
@@ -112,6 +114,7 @@ update msg model =
                             in
                             ( { model | tree = tree }
                             , Cmd.none
+                              --sendToAll pointsAsJson model
                             )
 
                         _ ->
@@ -119,8 +122,7 @@ update msg model =
                             ( model, Cmd.none )
 
                 Ok "newview" ->
-                    --When view added, send it a tree if available.
-                    --When tree loaded, send to all views.
+                    -- Just open a new window - it will say "hello" when ready.
                     case D.decodeValue (D.field "renderer" D.string) jsonMessage of
                         Ok foundRenderer ->
                             case RendererType.rendererTypeFromString foundRenderer of
@@ -139,25 +141,8 @@ update msg model =
                     -- Window is ready, send it track
                     case senderId of
                         Ok id ->
-                            let
-                                earthPoints =
-                                    Maybe.map (DomainModel.elidedEarthPoints 10) model.tree
-
-                                pointsAsJson =
-                                    case earthPoints of
-                                        Just points ->
-                                            E.list earthPointAsJson points
-
-                                        Nothing ->
-                                            E.null
-                            in
                             ( model
-                            , toJavascript <|
-                                E.object
-                                    [ ( "cmd", E.string "track" )
-                                    , ( "target", E.int id )
-                                    , ( "track", pointsAsJson )
-                                    ]
+                            , sendTrackToRenderer pointsAsJson id
                             )
 
                         Err _ ->
@@ -176,6 +161,21 @@ update msg model =
 
                 _ ->
                     ( model, Cmd.none )
+
+
+sendTrackToRenderer pointsAsJson id =
+    toJavascript <|
+        E.object
+            [ ( "cmd", E.string "track" )
+            , ( "target", E.int id )
+            , ( "track", pointsAsJson )
+            ]
+
+
+sendToAll pointsAsJson model =
+    model.windows
+        |> Dict.values
+        |> List.map (sendTrackToRenderer pointsAsJson)
 
 
 subscriptions : Model -> Sub Msg

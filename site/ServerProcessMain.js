@@ -3087,7 +3087,6 @@ var $author$project$Common$GpxPoint$gpxDecoder = A5(
 			$elm$json$Json$Decode$map,
 			$elm$time$Time$millisToPosix,
 			A2($elm$json$Json$Decode$field, 'time', $elm$json$Json$Decode$int))));
-var $elm$json$Json$Encode$int = _Json_wrap;
 var $elm$json$Json$Decode$list = _Json_decodeList;
 var $elm$json$Json$Encode$list = F2(
 	function (func, entries) {
@@ -3208,6 +3207,7 @@ var $elm$core$Dict$insert = F3(
 			return x;
 		}
 	});
+var $elm$json$Json$Encode$int = _Json_wrap;
 var $author$project$ServerProcess$Main$rendererHtmlFile = function (rendererType) {
 	switch (rendererType.$) {
 		case 'RendererToolbox':
@@ -3734,6 +3734,21 @@ var $author$project$Common$RendererType$rendererTypeFromString = function (name)
 var $author$project$ServerProcess$Main$rendererWindow = function (rendererType) {
 	return {height: 600, rendererType: rendererType, width: 800};
 };
+var $author$project$ServerProcess$Main$sendTrackToRenderer = F2(
+	function (pointsAsJson, id) {
+		return $author$project$ServerProcess$Main$toJavascript(
+			$elm$json$Json$Encode$object(
+				_List_fromArray(
+					[
+						_Utils_Tuple2(
+						'cmd',
+						$elm$json$Json$Encode$string('track')),
+						_Utils_Tuple2(
+						'target',
+						$elm$json$Json$Encode$int(id)),
+						_Utils_Tuple2('track', pointsAsJson)
+					])));
+	});
 var $elm$json$Json$Decode$string = _Json_decodeString;
 var $author$project$ServerProcess$Main$toolWindow = {height: 100, rendererType: $author$project$Common$RendererType$RendererToolbox, width: 300};
 var $author$project$Common$DomainModel$GPXSource = F4(
@@ -4195,6 +4210,18 @@ var $author$project$ServerProcess$Main$update = F2(
 				timestamp: gpx.timestamp
 			};
 		};
+		var earthPoints = A2(
+			$elm$core$Maybe$map,
+			$author$project$Common$DomainModel$elidedEarthPoints(10),
+			model.tree);
+		var pointsAsJson = function () {
+			if (earthPoints.$ === 'Just') {
+				var points = earthPoints.a;
+				return A2($elm$json$Json$Encode$list, $author$project$Common$DomainModel$earthPointAsJson, points);
+			} else {
+				return $elm$json$Json$Encode$null;
+			}
+		}();
 		var cmd = A2(
 			$elm$json$Json$Decode$decodeValue,
 			A2($elm$json$Json$Decode$field, 'cmd', $elm$json$Json$Decode$string),
@@ -4249,32 +4276,9 @@ var $author$project$ServerProcess$Main$update = F2(
 					case 'hello':
 						if (senderId.$ === 'Ok') {
 							var id = senderId.a;
-							var earthPoints = A2(
-								$elm$core$Maybe$map,
-								$author$project$Common$DomainModel$elidedEarthPoints(10),
-								model.tree);
-							var pointsAsJson = function () {
-								if (earthPoints.$ === 'Just') {
-									var points = earthPoints.a;
-									return A2($elm$json$Json$Encode$list, $author$project$Common$DomainModel$earthPointAsJson, points);
-								} else {
-									return $elm$json$Json$Encode$null;
-								}
-							}();
 							return _Utils_Tuple2(
 								model,
-								$author$project$ServerProcess$Main$toJavascript(
-									$elm$json$Json$Encode$object(
-										_List_fromArray(
-											[
-												_Utils_Tuple2(
-												'cmd',
-												$elm$json$Json$Encode$string('track')),
-												_Utils_Tuple2(
-												'target',
-												$elm$json$Json$Encode$int(id)),
-												_Utils_Tuple2('track', pointsAsJson)
-											]))));
+								A2($author$project$ServerProcess$Main$sendTrackToRenderer, pointsAsJson, id));
 						} else {
 							return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 						}

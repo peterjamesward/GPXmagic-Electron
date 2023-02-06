@@ -115,7 +115,7 @@ view model =
         cameraViewpoint =
             Viewpoint3d.orbitZ
                 { focalPoint = Point3d.origin
-                , azimuth = Direction2d.toAngle Direction2d.negativeX
+                , azimuth = Direction2d.toAngle Direction2d.positiveX
                 , elevation = Angle.degrees 45
                 , distance = Length.kilometer
                 }

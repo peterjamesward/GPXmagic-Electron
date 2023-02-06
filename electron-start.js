@@ -57,8 +57,9 @@ app.on('ready',
         // Forward IPC calls to Elm.
         ipcMain.on('elmMessage', (event, elmMessage) => {
 
-            elmMessage.sender = event.sender.id;
-            console.log("MAIN: sending to Main", elmMessage);
+            // Use the Elm source id, map back on response.
+            elmMessage.sender = windowsElectronToElm.get(event.sender.id);
+            console.log("MAIN: sending to Main", elmMessage.cmd);
             elmPorts.fromJavascript.send( elmMessage );
 
         });
@@ -68,7 +69,9 @@ app.on('ready',
 // Collect and act on messages from Elm port on server.
 function handleElmMessage(msg) {
 
-    console.log('MAIN: Message from Elm', msg)
+//    console.log('MAIN: Message from Elm', msg)
+    console.log("OUTBOUND MAPPING", windowsElmToElectron, msg.target);
+    const targetRenderer = windowsElmToElectron.get(msg.target);
 
     switch (msg.cmd) {
         case 'newwindow':
@@ -78,8 +81,7 @@ function handleElmMessage(msg) {
         case 'track':
             // Send track to specified window only.
             console.log("MAIN: Sending track ", msg.target);
-            console.log("TARGET IS:", webContents.fromId(msg.target) );
-            webContents.fromId(msg.target).send('fromServer', msg);
+            webContents.fromId(targetRenderer).send('fromServer', msg);
             break;
 
         default:
@@ -89,7 +91,7 @@ function handleElmMessage(msg) {
 };
 
 // Basic window lifecycle.
-function makeWindow(id, windowSpec) {
+function makeWindow(elmWindowdId, windowSpec) {
 
 //        console.log("MAIN:", windowSpec);
 
@@ -104,14 +106,15 @@ function makeWindow(id, windowSpec) {
         );
 
         // Keep track of windows on both sides.
-        windowsElectronToElm.set(window.id, windowSpec.id);
-        windowsElmToElectron.set(windowSpec.id, window.id);
+        windowsElectronToElm.set(window.webContents.id, elmWindowdId);
+        windowsElmToElectron.set(elmWindowdId, window.id);
+        console.log("MAPPING", windowsElectronToElm);
 
         // and load the index.html of the app.
         window.loadURL('file://' + __dirname + '/src/Renderers/' + windowSpec.html + '/Renderer.html');
 
         // Open the devtools.
-        window.openDevTools();
+//        window.openDevTools();
 
         // Emitted when the window is closed.
         window.on('close',
