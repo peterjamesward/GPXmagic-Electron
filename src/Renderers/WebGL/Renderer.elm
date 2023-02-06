@@ -8,8 +8,11 @@ import Element.Font as Font
 import Html exposing (Html, div)
 import Json.Decode as D
 import Json.Encode as E
+import Length
 import Markdown
+import Point3d
 import Renderers.LoadButton.IpcStubs as Stubs
+import Renderers.WebGL.SceneBuilder3D as Builder
 import Scene3d exposing (Entity)
 
 
@@ -52,10 +55,51 @@ update msg model =
             in
             case cmd of
                 Ok "track" ->
-                    ( model, Cmd.none )
+                    let
+                        points =
+                            D.decodeValue
+                                (D.field "track" (D.list localPointDecoder))
+                                jsonMessage
+                    in
+                    case points of
+                        Ok somePoints ->
+                            ( { model
+                                | scene =
+                                    Builder.render3dView <|
+                                        List.map
+                                            (Point3d.fromRecord Length.meters)
+                                            somePoints
+                              }
+                            , Cmd.none
+                            )
+
+                        Err _ ->
+                            let
+                                _ =
+                                    Debug.log "NO POINTS " ()
+                            in
+                            ( model, Cmd.none )
 
                 _ ->
+                    let
+                        _ =
+                            Debug.log "CMD?? " cmd
+                    in
                     ( model, Cmd.none )
+
+
+type alias LocalPoint =
+    { x : Float
+    , y : Float
+    , z : Float
+    }
+
+
+localPointDecoder =
+    D.map3 LocalPoint
+        (D.field "x" D.float)
+        (D.field "y" D.float)
+        (D.field "z" D.float)
 
 
 view : Model -> Html Msg

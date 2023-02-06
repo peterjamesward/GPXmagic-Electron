@@ -4357,6 +4357,1861 @@ function _Browser_load(url)
 }
 
 
+/*
+ * Copyright (c) 2010 Mozilla Corporation
+ * Copyright (c) 2010 Vladimir Vukicevic
+ * Copyright (c) 2013 John Mayer
+ * Copyright (c) 2018 Andrey Kuzmin
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+// Vector2
+
+var _MJS_v2 = F2(function(x, y) {
+    return new Float64Array([x, y]);
+});
+
+var _MJS_v2getX = function(a) {
+    return a[0];
+};
+
+var _MJS_v2getY = function(a) {
+    return a[1];
+};
+
+var _MJS_v2setX = F2(function(x, a) {
+    return new Float64Array([x, a[1]]);
+});
+
+var _MJS_v2setY = F2(function(y, a) {
+    return new Float64Array([a[0], y]);
+});
+
+var _MJS_v2toRecord = function(a) {
+    return { x: a[0], y: a[1] };
+};
+
+var _MJS_v2fromRecord = function(r) {
+    return new Float64Array([r.x, r.y]);
+};
+
+var _MJS_v2add = F2(function(a, b) {
+    var r = new Float64Array(2);
+    r[0] = a[0] + b[0];
+    r[1] = a[1] + b[1];
+    return r;
+});
+
+var _MJS_v2sub = F2(function(a, b) {
+    var r = new Float64Array(2);
+    r[0] = a[0] - b[0];
+    r[1] = a[1] - b[1];
+    return r;
+});
+
+var _MJS_v2negate = function(a) {
+    var r = new Float64Array(2);
+    r[0] = -a[0];
+    r[1] = -a[1];
+    return r;
+};
+
+var _MJS_v2direction = F2(function(a, b) {
+    var r = new Float64Array(2);
+    r[0] = a[0] - b[0];
+    r[1] = a[1] - b[1];
+    var im = 1.0 / _MJS_v2lengthLocal(r);
+    r[0] = r[0] * im;
+    r[1] = r[1] * im;
+    return r;
+});
+
+function _MJS_v2lengthLocal(a) {
+    return Math.sqrt(a[0] * a[0] + a[1] * a[1]);
+}
+var _MJS_v2length = _MJS_v2lengthLocal;
+
+var _MJS_v2lengthSquared = function(a) {
+    return a[0] * a[0] + a[1] * a[1];
+};
+
+var _MJS_v2distance = F2(function(a, b) {
+    var dx = a[0] - b[0];
+    var dy = a[1] - b[1];
+    return Math.sqrt(dx * dx + dy * dy);
+});
+
+var _MJS_v2distanceSquared = F2(function(a, b) {
+    var dx = a[0] - b[0];
+    var dy = a[1] - b[1];
+    return dx * dx + dy * dy;
+});
+
+var _MJS_v2normalize = function(a) {
+    var r = new Float64Array(2);
+    var im = 1.0 / _MJS_v2lengthLocal(a);
+    r[0] = a[0] * im;
+    r[1] = a[1] * im;
+    return r;
+};
+
+var _MJS_v2scale = F2(function(k, a) {
+    var r = new Float64Array(2);
+    r[0] = a[0] * k;
+    r[1] = a[1] * k;
+    return r;
+});
+
+var _MJS_v2dot = F2(function(a, b) {
+    return a[0] * b[0] + a[1] * b[1];
+});
+
+// Vector3
+
+var _MJS_v3temp1Local = new Float64Array(3);
+var _MJS_v3temp2Local = new Float64Array(3);
+var _MJS_v3temp3Local = new Float64Array(3);
+
+var _MJS_v3 = F3(function(x, y, z) {
+    return new Float64Array([x, y, z]);
+});
+
+var _MJS_v3getX = function(a) {
+    return a[0];
+};
+
+var _MJS_v3getY = function(a) {
+    return a[1];
+};
+
+var _MJS_v3getZ = function(a) {
+    return a[2];
+};
+
+var _MJS_v3setX = F2(function(x, a) {
+    return new Float64Array([x, a[1], a[2]]);
+});
+
+var _MJS_v3setY = F2(function(y, a) {
+    return new Float64Array([a[0], y, a[2]]);
+});
+
+var _MJS_v3setZ = F2(function(z, a) {
+    return new Float64Array([a[0], a[1], z]);
+});
+
+var _MJS_v3toRecord = function(a) {
+    return { x: a[0], y: a[1], z: a[2] };
+};
+
+var _MJS_v3fromRecord = function(r) {
+    return new Float64Array([r.x, r.y, r.z]);
+};
+
+var _MJS_v3add = F2(function(a, b) {
+    var r = new Float64Array(3);
+    r[0] = a[0] + b[0];
+    r[1] = a[1] + b[1];
+    r[2] = a[2] + b[2];
+    return r;
+});
+
+function _MJS_v3subLocal(a, b, r) {
+    if (r === undefined) {
+        r = new Float64Array(3);
+    }
+    r[0] = a[0] - b[0];
+    r[1] = a[1] - b[1];
+    r[2] = a[2] - b[2];
+    return r;
+}
+var _MJS_v3sub = F2(_MJS_v3subLocal);
+
+var _MJS_v3negate = function(a) {
+    var r = new Float64Array(3);
+    r[0] = -a[0];
+    r[1] = -a[1];
+    r[2] = -a[2];
+    return r;
+};
+
+function _MJS_v3directionLocal(a, b, r) {
+    if (r === undefined) {
+        r = new Float64Array(3);
+    }
+    return _MJS_v3normalizeLocal(_MJS_v3subLocal(a, b, r), r);
+}
+var _MJS_v3direction = F2(_MJS_v3directionLocal);
+
+function _MJS_v3lengthLocal(a) {
+    return Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
+}
+var _MJS_v3length = _MJS_v3lengthLocal;
+
+var _MJS_v3lengthSquared = function(a) {
+    return a[0] * a[0] + a[1] * a[1] + a[2] * a[2];
+};
+
+var _MJS_v3distance = F2(function(a, b) {
+    var dx = a[0] - b[0];
+    var dy = a[1] - b[1];
+    var dz = a[2] - b[2];
+    return Math.sqrt(dx * dx + dy * dy + dz * dz);
+});
+
+var _MJS_v3distanceSquared = F2(function(a, b) {
+    var dx = a[0] - b[0];
+    var dy = a[1] - b[1];
+    var dz = a[2] - b[2];
+    return dx * dx + dy * dy + dz * dz;
+});
+
+function _MJS_v3normalizeLocal(a, r) {
+    if (r === undefined) {
+        r = new Float64Array(3);
+    }
+    var im = 1.0 / _MJS_v3lengthLocal(a);
+    r[0] = a[0] * im;
+    r[1] = a[1] * im;
+    r[2] = a[2] * im;
+    return r;
+}
+var _MJS_v3normalize = _MJS_v3normalizeLocal;
+
+var _MJS_v3scale = F2(function(k, a) {
+    return new Float64Array([a[0] * k, a[1] * k, a[2] * k]);
+});
+
+var _MJS_v3dotLocal = function(a, b) {
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+};
+var _MJS_v3dot = F2(_MJS_v3dotLocal);
+
+function _MJS_v3crossLocal(a, b, r) {
+    if (r === undefined) {
+        r = new Float64Array(3);
+    }
+    r[0] = a[1] * b[2] - a[2] * b[1];
+    r[1] = a[2] * b[0] - a[0] * b[2];
+    r[2] = a[0] * b[1] - a[1] * b[0];
+    return r;
+}
+var _MJS_v3cross = F2(_MJS_v3crossLocal);
+
+var _MJS_v3mul4x4 = F2(function(m, v) {
+    var w;
+    var tmp = _MJS_v3temp1Local;
+    var r = new Float64Array(3);
+
+    tmp[0] = m[3];
+    tmp[1] = m[7];
+    tmp[2] = m[11];
+    w = _MJS_v3dotLocal(v, tmp) + m[15];
+    tmp[0] = m[0];
+    tmp[1] = m[4];
+    tmp[2] = m[8];
+    r[0] = (_MJS_v3dotLocal(v, tmp) + m[12]) / w;
+    tmp[0] = m[1];
+    tmp[1] = m[5];
+    tmp[2] = m[9];
+    r[1] = (_MJS_v3dotLocal(v, tmp) + m[13]) / w;
+    tmp[0] = m[2];
+    tmp[1] = m[6];
+    tmp[2] = m[10];
+    r[2] = (_MJS_v3dotLocal(v, tmp) + m[14]) / w;
+    return r;
+});
+
+// Vector4
+
+var _MJS_v4 = F4(function(x, y, z, w) {
+    return new Float64Array([x, y, z, w]);
+});
+
+var _MJS_v4getX = function(a) {
+    return a[0];
+};
+
+var _MJS_v4getY = function(a) {
+    return a[1];
+};
+
+var _MJS_v4getZ = function(a) {
+    return a[2];
+};
+
+var _MJS_v4getW = function(a) {
+    return a[3];
+};
+
+var _MJS_v4setX = F2(function(x, a) {
+    return new Float64Array([x, a[1], a[2], a[3]]);
+});
+
+var _MJS_v4setY = F2(function(y, a) {
+    return new Float64Array([a[0], y, a[2], a[3]]);
+});
+
+var _MJS_v4setZ = F2(function(z, a) {
+    return new Float64Array([a[0], a[1], z, a[3]]);
+});
+
+var _MJS_v4setW = F2(function(w, a) {
+    return new Float64Array([a[0], a[1], a[2], w]);
+});
+
+var _MJS_v4toRecord = function(a) {
+    return { x: a[0], y: a[1], z: a[2], w: a[3] };
+};
+
+var _MJS_v4fromRecord = function(r) {
+    return new Float64Array([r.x, r.y, r.z, r.w]);
+};
+
+var _MJS_v4add = F2(function(a, b) {
+    var r = new Float64Array(4);
+    r[0] = a[0] + b[0];
+    r[1] = a[1] + b[1];
+    r[2] = a[2] + b[2];
+    r[3] = a[3] + b[3];
+    return r;
+});
+
+var _MJS_v4sub = F2(function(a, b) {
+    var r = new Float64Array(4);
+    r[0] = a[0] - b[0];
+    r[1] = a[1] - b[1];
+    r[2] = a[2] - b[2];
+    r[3] = a[3] - b[3];
+    return r;
+});
+
+var _MJS_v4negate = function(a) {
+    var r = new Float64Array(4);
+    r[0] = -a[0];
+    r[1] = -a[1];
+    r[2] = -a[2];
+    r[3] = -a[3];
+    return r;
+};
+
+var _MJS_v4direction = F2(function(a, b) {
+    var r = new Float64Array(4);
+    r[0] = a[0] - b[0];
+    r[1] = a[1] - b[1];
+    r[2] = a[2] - b[2];
+    r[3] = a[3] - b[3];
+    var im = 1.0 / _MJS_v4lengthLocal(r);
+    r[0] = r[0] * im;
+    r[1] = r[1] * im;
+    r[2] = r[2] * im;
+    r[3] = r[3] * im;
+    return r;
+});
+
+function _MJS_v4lengthLocal(a) {
+    return Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2] + a[3] * a[3]);
+}
+var _MJS_v4length = _MJS_v4lengthLocal;
+
+var _MJS_v4lengthSquared = function(a) {
+    return a[0] * a[0] + a[1] * a[1] + a[2] * a[2] + a[3] * a[3];
+};
+
+var _MJS_v4distance = F2(function(a, b) {
+    var dx = a[0] - b[0];
+    var dy = a[1] - b[1];
+    var dz = a[2] - b[2];
+    var dw = a[3] - b[3];
+    return Math.sqrt(dx * dx + dy * dy + dz * dz + dw * dw);
+});
+
+var _MJS_v4distanceSquared = F2(function(a, b) {
+    var dx = a[0] - b[0];
+    var dy = a[1] - b[1];
+    var dz = a[2] - b[2];
+    var dw = a[3] - b[3];
+    return dx * dx + dy * dy + dz * dz + dw * dw;
+});
+
+var _MJS_v4normalize = function(a) {
+    var r = new Float64Array(4);
+    var im = 1.0 / _MJS_v4lengthLocal(a);
+    r[0] = a[0] * im;
+    r[1] = a[1] * im;
+    r[2] = a[2] * im;
+    r[3] = a[3] * im;
+    return r;
+};
+
+var _MJS_v4scale = F2(function(k, a) {
+    var r = new Float64Array(4);
+    r[0] = a[0] * k;
+    r[1] = a[1] * k;
+    r[2] = a[2] * k;
+    r[3] = a[3] * k;
+    return r;
+});
+
+var _MJS_v4dot = F2(function(a, b) {
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
+});
+
+// Matrix4
+
+var _MJS_m4x4temp1Local = new Float64Array(16);
+var _MJS_m4x4temp2Local = new Float64Array(16);
+
+var _MJS_m4x4identity = new Float64Array([
+    1.0, 0.0, 0.0, 0.0,
+    0.0, 1.0, 0.0, 0.0,
+    0.0, 0.0, 1.0, 0.0,
+    0.0, 0.0, 0.0, 1.0
+]);
+
+var _MJS_m4x4fromRecord = function(r) {
+    var m = new Float64Array(16);
+    m[0] = r.m11;
+    m[1] = r.m21;
+    m[2] = r.m31;
+    m[3] = r.m41;
+    m[4] = r.m12;
+    m[5] = r.m22;
+    m[6] = r.m32;
+    m[7] = r.m42;
+    m[8] = r.m13;
+    m[9] = r.m23;
+    m[10] = r.m33;
+    m[11] = r.m43;
+    m[12] = r.m14;
+    m[13] = r.m24;
+    m[14] = r.m34;
+    m[15] = r.m44;
+    return m;
+};
+
+var _MJS_m4x4toRecord = function(m) {
+    return {
+        m11: m[0], m21: m[1], m31: m[2], m41: m[3],
+        m12: m[4], m22: m[5], m32: m[6], m42: m[7],
+        m13: m[8], m23: m[9], m33: m[10], m43: m[11],
+        m14: m[12], m24: m[13], m34: m[14], m44: m[15]
+    };
+};
+
+var _MJS_m4x4inverse = function(m) {
+    var r = new Float64Array(16);
+
+    r[0] = m[5] * m[10] * m[15] - m[5] * m[11] * m[14] - m[9] * m[6] * m[15] +
+        m[9] * m[7] * m[14] + m[13] * m[6] * m[11] - m[13] * m[7] * m[10];
+    r[4] = -m[4] * m[10] * m[15] + m[4] * m[11] * m[14] + m[8] * m[6] * m[15] -
+        m[8] * m[7] * m[14] - m[12] * m[6] * m[11] + m[12] * m[7] * m[10];
+    r[8] = m[4] * m[9] * m[15] - m[4] * m[11] * m[13] - m[8] * m[5] * m[15] +
+        m[8] * m[7] * m[13] + m[12] * m[5] * m[11] - m[12] * m[7] * m[9];
+    r[12] = -m[4] * m[9] * m[14] + m[4] * m[10] * m[13] + m[8] * m[5] * m[14] -
+        m[8] * m[6] * m[13] - m[12] * m[5] * m[10] + m[12] * m[6] * m[9];
+    r[1] = -m[1] * m[10] * m[15] + m[1] * m[11] * m[14] + m[9] * m[2] * m[15] -
+        m[9] * m[3] * m[14] - m[13] * m[2] * m[11] + m[13] * m[3] * m[10];
+    r[5] = m[0] * m[10] * m[15] - m[0] * m[11] * m[14] - m[8] * m[2] * m[15] +
+        m[8] * m[3] * m[14] + m[12] * m[2] * m[11] - m[12] * m[3] * m[10];
+    r[9] = -m[0] * m[9] * m[15] + m[0] * m[11] * m[13] + m[8] * m[1] * m[15] -
+        m[8] * m[3] * m[13] - m[12] * m[1] * m[11] + m[12] * m[3] * m[9];
+    r[13] = m[0] * m[9] * m[14] - m[0] * m[10] * m[13] - m[8] * m[1] * m[14] +
+        m[8] * m[2] * m[13] + m[12] * m[1] * m[10] - m[12] * m[2] * m[9];
+    r[2] = m[1] * m[6] * m[15] - m[1] * m[7] * m[14] - m[5] * m[2] * m[15] +
+        m[5] * m[3] * m[14] + m[13] * m[2] * m[7] - m[13] * m[3] * m[6];
+    r[6] = -m[0] * m[6] * m[15] + m[0] * m[7] * m[14] + m[4] * m[2] * m[15] -
+        m[4] * m[3] * m[14] - m[12] * m[2] * m[7] + m[12] * m[3] * m[6];
+    r[10] = m[0] * m[5] * m[15] - m[0] * m[7] * m[13] - m[4] * m[1] * m[15] +
+        m[4] * m[3] * m[13] + m[12] * m[1] * m[7] - m[12] * m[3] * m[5];
+    r[14] = -m[0] * m[5] * m[14] + m[0] * m[6] * m[13] + m[4] * m[1] * m[14] -
+        m[4] * m[2] * m[13] - m[12] * m[1] * m[6] + m[12] * m[2] * m[5];
+    r[3] = -m[1] * m[6] * m[11] + m[1] * m[7] * m[10] + m[5] * m[2] * m[11] -
+        m[5] * m[3] * m[10] - m[9] * m[2] * m[7] + m[9] * m[3] * m[6];
+    r[7] = m[0] * m[6] * m[11] - m[0] * m[7] * m[10] - m[4] * m[2] * m[11] +
+        m[4] * m[3] * m[10] + m[8] * m[2] * m[7] - m[8] * m[3] * m[6];
+    r[11] = -m[0] * m[5] * m[11] + m[0] * m[7] * m[9] + m[4] * m[1] * m[11] -
+        m[4] * m[3] * m[9] - m[8] * m[1] * m[7] + m[8] * m[3] * m[5];
+    r[15] = m[0] * m[5] * m[10] - m[0] * m[6] * m[9] - m[4] * m[1] * m[10] +
+        m[4] * m[2] * m[9] + m[8] * m[1] * m[6] - m[8] * m[2] * m[5];
+
+    var det = m[0] * r[0] + m[1] * r[4] + m[2] * r[8] + m[3] * r[12];
+
+    if (det === 0) {
+        return $elm$core$Maybe$Nothing;
+    }
+
+    det = 1.0 / det;
+
+    for (var i = 0; i < 16; i = i + 1) {
+        r[i] = r[i] * det;
+    }
+
+    return $elm$core$Maybe$Just(r);
+};
+
+var _MJS_m4x4inverseOrthonormal = function(m) {
+    var r = _MJS_m4x4transposeLocal(m);
+    var t = [m[12], m[13], m[14]];
+    r[3] = r[7] = r[11] = 0;
+    r[12] = -_MJS_v3dotLocal([r[0], r[4], r[8]], t);
+    r[13] = -_MJS_v3dotLocal([r[1], r[5], r[9]], t);
+    r[14] = -_MJS_v3dotLocal([r[2], r[6], r[10]], t);
+    return r;
+};
+
+function _MJS_m4x4makeFrustumLocal(left, right, bottom, top, znear, zfar) {
+    var r = new Float64Array(16);
+
+    r[0] = 2 * znear / (right - left);
+    r[1] = 0;
+    r[2] = 0;
+    r[3] = 0;
+    r[4] = 0;
+    r[5] = 2 * znear / (top - bottom);
+    r[6] = 0;
+    r[7] = 0;
+    r[8] = (right + left) / (right - left);
+    r[9] = (top + bottom) / (top - bottom);
+    r[10] = -(zfar + znear) / (zfar - znear);
+    r[11] = -1;
+    r[12] = 0;
+    r[13] = 0;
+    r[14] = -2 * zfar * znear / (zfar - znear);
+    r[15] = 0;
+
+    return r;
+}
+var _MJS_m4x4makeFrustum = F6(_MJS_m4x4makeFrustumLocal);
+
+var _MJS_m4x4makePerspective = F4(function(fovy, aspect, znear, zfar) {
+    var ymax = znear * Math.tan(fovy * Math.PI / 360.0);
+    var ymin = -ymax;
+    var xmin = ymin * aspect;
+    var xmax = ymax * aspect;
+
+    return _MJS_m4x4makeFrustumLocal(xmin, xmax, ymin, ymax, znear, zfar);
+});
+
+function _MJS_m4x4makeOrthoLocal(left, right, bottom, top, znear, zfar) {
+    var r = new Float64Array(16);
+
+    r[0] = 2 / (right - left);
+    r[1] = 0;
+    r[2] = 0;
+    r[3] = 0;
+    r[4] = 0;
+    r[5] = 2 / (top - bottom);
+    r[6] = 0;
+    r[7] = 0;
+    r[8] = 0;
+    r[9] = 0;
+    r[10] = -2 / (zfar - znear);
+    r[11] = 0;
+    r[12] = -(right + left) / (right - left);
+    r[13] = -(top + bottom) / (top - bottom);
+    r[14] = -(zfar + znear) / (zfar - znear);
+    r[15] = 1;
+
+    return r;
+}
+var _MJS_m4x4makeOrtho = F6(_MJS_m4x4makeOrthoLocal);
+
+var _MJS_m4x4makeOrtho2D = F4(function(left, right, bottom, top) {
+    return _MJS_m4x4makeOrthoLocal(left, right, bottom, top, -1, 1);
+});
+
+function _MJS_m4x4mulLocal(a, b) {
+    var r = new Float64Array(16);
+    var a11 = a[0];
+    var a21 = a[1];
+    var a31 = a[2];
+    var a41 = a[3];
+    var a12 = a[4];
+    var a22 = a[5];
+    var a32 = a[6];
+    var a42 = a[7];
+    var a13 = a[8];
+    var a23 = a[9];
+    var a33 = a[10];
+    var a43 = a[11];
+    var a14 = a[12];
+    var a24 = a[13];
+    var a34 = a[14];
+    var a44 = a[15];
+    var b11 = b[0];
+    var b21 = b[1];
+    var b31 = b[2];
+    var b41 = b[3];
+    var b12 = b[4];
+    var b22 = b[5];
+    var b32 = b[6];
+    var b42 = b[7];
+    var b13 = b[8];
+    var b23 = b[9];
+    var b33 = b[10];
+    var b43 = b[11];
+    var b14 = b[12];
+    var b24 = b[13];
+    var b34 = b[14];
+    var b44 = b[15];
+
+    r[0] = a11 * b11 + a12 * b21 + a13 * b31 + a14 * b41;
+    r[1] = a21 * b11 + a22 * b21 + a23 * b31 + a24 * b41;
+    r[2] = a31 * b11 + a32 * b21 + a33 * b31 + a34 * b41;
+    r[3] = a41 * b11 + a42 * b21 + a43 * b31 + a44 * b41;
+    r[4] = a11 * b12 + a12 * b22 + a13 * b32 + a14 * b42;
+    r[5] = a21 * b12 + a22 * b22 + a23 * b32 + a24 * b42;
+    r[6] = a31 * b12 + a32 * b22 + a33 * b32 + a34 * b42;
+    r[7] = a41 * b12 + a42 * b22 + a43 * b32 + a44 * b42;
+    r[8] = a11 * b13 + a12 * b23 + a13 * b33 + a14 * b43;
+    r[9] = a21 * b13 + a22 * b23 + a23 * b33 + a24 * b43;
+    r[10] = a31 * b13 + a32 * b23 + a33 * b33 + a34 * b43;
+    r[11] = a41 * b13 + a42 * b23 + a43 * b33 + a44 * b43;
+    r[12] = a11 * b14 + a12 * b24 + a13 * b34 + a14 * b44;
+    r[13] = a21 * b14 + a22 * b24 + a23 * b34 + a24 * b44;
+    r[14] = a31 * b14 + a32 * b24 + a33 * b34 + a34 * b44;
+    r[15] = a41 * b14 + a42 * b24 + a43 * b34 + a44 * b44;
+
+    return r;
+}
+var _MJS_m4x4mul = F2(_MJS_m4x4mulLocal);
+
+var _MJS_m4x4mulAffine = F2(function(a, b) {
+    var r = new Float64Array(16);
+    var a11 = a[0];
+    var a21 = a[1];
+    var a31 = a[2];
+    var a12 = a[4];
+    var a22 = a[5];
+    var a32 = a[6];
+    var a13 = a[8];
+    var a23 = a[9];
+    var a33 = a[10];
+    var a14 = a[12];
+    var a24 = a[13];
+    var a34 = a[14];
+
+    var b11 = b[0];
+    var b21 = b[1];
+    var b31 = b[2];
+    var b12 = b[4];
+    var b22 = b[5];
+    var b32 = b[6];
+    var b13 = b[8];
+    var b23 = b[9];
+    var b33 = b[10];
+    var b14 = b[12];
+    var b24 = b[13];
+    var b34 = b[14];
+
+    r[0] = a11 * b11 + a12 * b21 + a13 * b31;
+    r[1] = a21 * b11 + a22 * b21 + a23 * b31;
+    r[2] = a31 * b11 + a32 * b21 + a33 * b31;
+    r[3] = 0;
+    r[4] = a11 * b12 + a12 * b22 + a13 * b32;
+    r[5] = a21 * b12 + a22 * b22 + a23 * b32;
+    r[6] = a31 * b12 + a32 * b22 + a33 * b32;
+    r[7] = 0;
+    r[8] = a11 * b13 + a12 * b23 + a13 * b33;
+    r[9] = a21 * b13 + a22 * b23 + a23 * b33;
+    r[10] = a31 * b13 + a32 * b23 + a33 * b33;
+    r[11] = 0;
+    r[12] = a11 * b14 + a12 * b24 + a13 * b34 + a14;
+    r[13] = a21 * b14 + a22 * b24 + a23 * b34 + a24;
+    r[14] = a31 * b14 + a32 * b24 + a33 * b34 + a34;
+    r[15] = 1;
+
+    return r;
+});
+
+var _MJS_m4x4makeRotate = F2(function(angle, axis) {
+    var r = new Float64Array(16);
+    axis = _MJS_v3normalizeLocal(axis, _MJS_v3temp1Local);
+    var x = axis[0];
+    var y = axis[1];
+    var z = axis[2];
+    var c = Math.cos(angle);
+    var c1 = 1 - c;
+    var s = Math.sin(angle);
+
+    r[0] = x * x * c1 + c;
+    r[1] = y * x * c1 + z * s;
+    r[2] = z * x * c1 - y * s;
+    r[3] = 0;
+    r[4] = x * y * c1 - z * s;
+    r[5] = y * y * c1 + c;
+    r[6] = y * z * c1 + x * s;
+    r[7] = 0;
+    r[8] = x * z * c1 + y * s;
+    r[9] = y * z * c1 - x * s;
+    r[10] = z * z * c1 + c;
+    r[11] = 0;
+    r[12] = 0;
+    r[13] = 0;
+    r[14] = 0;
+    r[15] = 1;
+
+    return r;
+});
+
+var _MJS_m4x4rotate = F3(function(angle, axis, m) {
+    var r = new Float64Array(16);
+    var im = 1.0 / _MJS_v3lengthLocal(axis);
+    var x = axis[0] * im;
+    var y = axis[1] * im;
+    var z = axis[2] * im;
+    var c = Math.cos(angle);
+    var c1 = 1 - c;
+    var s = Math.sin(angle);
+    var xs = x * s;
+    var ys = y * s;
+    var zs = z * s;
+    var xyc1 = x * y * c1;
+    var xzc1 = x * z * c1;
+    var yzc1 = y * z * c1;
+    var t11 = x * x * c1 + c;
+    var t21 = xyc1 + zs;
+    var t31 = xzc1 - ys;
+    var t12 = xyc1 - zs;
+    var t22 = y * y * c1 + c;
+    var t32 = yzc1 + xs;
+    var t13 = xzc1 + ys;
+    var t23 = yzc1 - xs;
+    var t33 = z * z * c1 + c;
+    var m11 = m[0], m21 = m[1], m31 = m[2], m41 = m[3];
+    var m12 = m[4], m22 = m[5], m32 = m[6], m42 = m[7];
+    var m13 = m[8], m23 = m[9], m33 = m[10], m43 = m[11];
+    var m14 = m[12], m24 = m[13], m34 = m[14], m44 = m[15];
+
+    r[0] = m11 * t11 + m12 * t21 + m13 * t31;
+    r[1] = m21 * t11 + m22 * t21 + m23 * t31;
+    r[2] = m31 * t11 + m32 * t21 + m33 * t31;
+    r[3] = m41 * t11 + m42 * t21 + m43 * t31;
+    r[4] = m11 * t12 + m12 * t22 + m13 * t32;
+    r[5] = m21 * t12 + m22 * t22 + m23 * t32;
+    r[6] = m31 * t12 + m32 * t22 + m33 * t32;
+    r[7] = m41 * t12 + m42 * t22 + m43 * t32;
+    r[8] = m11 * t13 + m12 * t23 + m13 * t33;
+    r[9] = m21 * t13 + m22 * t23 + m23 * t33;
+    r[10] = m31 * t13 + m32 * t23 + m33 * t33;
+    r[11] = m41 * t13 + m42 * t23 + m43 * t33;
+    r[12] = m14,
+    r[13] = m24;
+    r[14] = m34;
+    r[15] = m44;
+
+    return r;
+});
+
+function _MJS_m4x4makeScale3Local(x, y, z) {
+    var r = new Float64Array(16);
+
+    r[0] = x;
+    r[1] = 0;
+    r[2] = 0;
+    r[3] = 0;
+    r[4] = 0;
+    r[5] = y;
+    r[6] = 0;
+    r[7] = 0;
+    r[8] = 0;
+    r[9] = 0;
+    r[10] = z;
+    r[11] = 0;
+    r[12] = 0;
+    r[13] = 0;
+    r[14] = 0;
+    r[15] = 1;
+
+    return r;
+}
+var _MJS_m4x4makeScale3 = F3(_MJS_m4x4makeScale3Local);
+
+var _MJS_m4x4makeScale = function(v) {
+    return _MJS_m4x4makeScale3Local(v[0], v[1], v[2]);
+};
+
+var _MJS_m4x4scale3 = F4(function(x, y, z, m) {
+    var r = new Float64Array(16);
+
+    r[0] = m[0] * x;
+    r[1] = m[1] * x;
+    r[2] = m[2] * x;
+    r[3] = m[3] * x;
+    r[4] = m[4] * y;
+    r[5] = m[5] * y;
+    r[6] = m[6] * y;
+    r[7] = m[7] * y;
+    r[8] = m[8] * z;
+    r[9] = m[9] * z;
+    r[10] = m[10] * z;
+    r[11] = m[11] * z;
+    r[12] = m[12];
+    r[13] = m[13];
+    r[14] = m[14];
+    r[15] = m[15];
+
+    return r;
+});
+
+var _MJS_m4x4scale = F2(function(v, m) {
+    var r = new Float64Array(16);
+    var x = v[0];
+    var y = v[1];
+    var z = v[2];
+
+    r[0] = m[0] * x;
+    r[1] = m[1] * x;
+    r[2] = m[2] * x;
+    r[3] = m[3] * x;
+    r[4] = m[4] * y;
+    r[5] = m[5] * y;
+    r[6] = m[6] * y;
+    r[7] = m[7] * y;
+    r[8] = m[8] * z;
+    r[9] = m[9] * z;
+    r[10] = m[10] * z;
+    r[11] = m[11] * z;
+    r[12] = m[12];
+    r[13] = m[13];
+    r[14] = m[14];
+    r[15] = m[15];
+
+    return r;
+});
+
+function _MJS_m4x4makeTranslate3Local(x, y, z) {
+    var r = new Float64Array(16);
+
+    r[0] = 1;
+    r[1] = 0;
+    r[2] = 0;
+    r[3] = 0;
+    r[4] = 0;
+    r[5] = 1;
+    r[6] = 0;
+    r[7] = 0;
+    r[8] = 0;
+    r[9] = 0;
+    r[10] = 1;
+    r[11] = 0;
+    r[12] = x;
+    r[13] = y;
+    r[14] = z;
+    r[15] = 1;
+
+    return r;
+}
+var _MJS_m4x4makeTranslate3 = F3(_MJS_m4x4makeTranslate3Local);
+
+var _MJS_m4x4makeTranslate = function(v) {
+    return _MJS_m4x4makeTranslate3Local(v[0], v[1], v[2]);
+};
+
+var _MJS_m4x4translate3 = F4(function(x, y, z, m) {
+    var r = new Float64Array(16);
+    var m11 = m[0];
+    var m21 = m[1];
+    var m31 = m[2];
+    var m41 = m[3];
+    var m12 = m[4];
+    var m22 = m[5];
+    var m32 = m[6];
+    var m42 = m[7];
+    var m13 = m[8];
+    var m23 = m[9];
+    var m33 = m[10];
+    var m43 = m[11];
+
+    r[0] = m11;
+    r[1] = m21;
+    r[2] = m31;
+    r[3] = m41;
+    r[4] = m12;
+    r[5] = m22;
+    r[6] = m32;
+    r[7] = m42;
+    r[8] = m13;
+    r[9] = m23;
+    r[10] = m33;
+    r[11] = m43;
+    r[12] = m11 * x + m12 * y + m13 * z + m[12];
+    r[13] = m21 * x + m22 * y + m23 * z + m[13];
+    r[14] = m31 * x + m32 * y + m33 * z + m[14];
+    r[15] = m41 * x + m42 * y + m43 * z + m[15];
+
+    return r;
+});
+
+var _MJS_m4x4translate = F2(function(v, m) {
+    var r = new Float64Array(16);
+    var x = v[0];
+    var y = v[1];
+    var z = v[2];
+    var m11 = m[0];
+    var m21 = m[1];
+    var m31 = m[2];
+    var m41 = m[3];
+    var m12 = m[4];
+    var m22 = m[5];
+    var m32 = m[6];
+    var m42 = m[7];
+    var m13 = m[8];
+    var m23 = m[9];
+    var m33 = m[10];
+    var m43 = m[11];
+
+    r[0] = m11;
+    r[1] = m21;
+    r[2] = m31;
+    r[3] = m41;
+    r[4] = m12;
+    r[5] = m22;
+    r[6] = m32;
+    r[7] = m42;
+    r[8] = m13;
+    r[9] = m23;
+    r[10] = m33;
+    r[11] = m43;
+    r[12] = m11 * x + m12 * y + m13 * z + m[12];
+    r[13] = m21 * x + m22 * y + m23 * z + m[13];
+    r[14] = m31 * x + m32 * y + m33 * z + m[14];
+    r[15] = m41 * x + m42 * y + m43 * z + m[15];
+
+    return r;
+});
+
+var _MJS_m4x4makeLookAt = F3(function(eye, center, up) {
+    var z = _MJS_v3directionLocal(eye, center, _MJS_v3temp1Local);
+    var x = _MJS_v3normalizeLocal(_MJS_v3crossLocal(up, z, _MJS_v3temp2Local), _MJS_v3temp2Local);
+    var y = _MJS_v3normalizeLocal(_MJS_v3crossLocal(z, x, _MJS_v3temp3Local), _MJS_v3temp3Local);
+    var tm1 = _MJS_m4x4temp1Local;
+    var tm2 = _MJS_m4x4temp2Local;
+
+    tm1[0] = x[0];
+    tm1[1] = y[0];
+    tm1[2] = z[0];
+    tm1[3] = 0;
+    tm1[4] = x[1];
+    tm1[5] = y[1];
+    tm1[6] = z[1];
+    tm1[7] = 0;
+    tm1[8] = x[2];
+    tm1[9] = y[2];
+    tm1[10] = z[2];
+    tm1[11] = 0;
+    tm1[12] = 0;
+    tm1[13] = 0;
+    tm1[14] = 0;
+    tm1[15] = 1;
+
+    tm2[0] = 1; tm2[1] = 0; tm2[2] = 0; tm2[3] = 0;
+    tm2[4] = 0; tm2[5] = 1; tm2[6] = 0; tm2[7] = 0;
+    tm2[8] = 0; tm2[9] = 0; tm2[10] = 1; tm2[11] = 0;
+    tm2[12] = -eye[0]; tm2[13] = -eye[1]; tm2[14] = -eye[2]; tm2[15] = 1;
+
+    return _MJS_m4x4mulLocal(tm1, tm2);
+});
+
+
+function _MJS_m4x4transposeLocal(m) {
+    var r = new Float64Array(16);
+
+    r[0] = m[0]; r[1] = m[4]; r[2] = m[8]; r[3] = m[12];
+    r[4] = m[1]; r[5] = m[5]; r[6] = m[9]; r[7] = m[13];
+    r[8] = m[2]; r[9] = m[6]; r[10] = m[10]; r[11] = m[14];
+    r[12] = m[3]; r[13] = m[7]; r[14] = m[11]; r[15] = m[15];
+
+    return r;
+}
+var _MJS_m4x4transpose = _MJS_m4x4transposeLocal;
+
+var _MJS_m4x4makeBasis = F3(function(vx, vy, vz) {
+    var r = new Float64Array(16);
+
+    r[0] = vx[0];
+    r[1] = vx[1];
+    r[2] = vx[2];
+    r[3] = 0;
+    r[4] = vy[0];
+    r[5] = vy[1];
+    r[6] = vy[2];
+    r[7] = 0;
+    r[8] = vz[0];
+    r[9] = vz[1];
+    r[10] = vz[2];
+    r[11] = 0;
+    r[12] = 0;
+    r[13] = 0;
+    r[14] = 0;
+    r[15] = 1;
+
+    return r;
+});
+
+
+var _WebGL_guid = 0;
+
+function _WebGL_listEach(fn, list) {
+  for (; list.b; list = list.b) {
+    fn(list.a);
+  }
+}
+
+function _WebGL_listLength(list) {
+  var length = 0;
+  for (; list.b; list = list.b) {
+    length++;
+  }
+  return length;
+}
+
+var _WebGL_rAF = typeof requestAnimationFrame !== 'undefined' ?
+  requestAnimationFrame :
+  function (cb) { setTimeout(cb, 1000 / 60); };
+
+// eslint-disable-next-line no-unused-vars
+var _WebGL_entity = F5(function (settings, vert, frag, mesh, uniforms) {
+  return {
+    $: 0,
+    a: settings,
+    b: vert,
+    c: frag,
+    d: mesh,
+    e: uniforms
+  };
+});
+
+// eslint-disable-next-line no-unused-vars
+var _WebGL_enableBlend = F2(function (cache, setting) {
+  var blend = cache.blend;
+  blend.toggle = cache.toggle;
+
+  if (!blend.enabled) {
+    cache.gl.enable(cache.gl.BLEND);
+    blend.enabled = true;
+  }
+
+  // a   b   c   d   e   f   g h i j
+  // eq1 f11 f12 eq2 f21 f22 r g b a
+  if (blend.a !== setting.a || blend.d !== setting.d) {
+    cache.gl.blendEquationSeparate(setting.a, setting.d);
+    blend.a = setting.a;
+    blend.d = setting.d;
+  }
+  if (blend.b !== setting.b || blend.c !== setting.c || blend.e !== setting.e || blend.f !== setting.f) {
+    cache.gl.blendFuncSeparate(setting.b, setting.c, setting.e, setting.f);
+    blend.b = setting.b;
+    blend.c = setting.c;
+    blend.e = setting.e;
+    blend.f = setting.f;
+  }
+  if (blend.g !== setting.g || blend.h !== setting.h || blend.i !== setting.i || blend.j !== setting.j) {
+    cache.gl.blendColor(setting.g, setting.h, setting.i, setting.j);
+    blend.g = setting.g;
+    blend.h = setting.h;
+    blend.i = setting.i;
+    blend.j = setting.j;
+  }
+});
+
+// eslint-disable-next-line no-unused-vars
+var _WebGL_enableDepthTest = F2(function (cache, setting) {
+  var depthTest = cache.depthTest;
+  depthTest.toggle = cache.toggle;
+
+  if (!depthTest.enabled) {
+    cache.gl.enable(cache.gl.DEPTH_TEST);
+    depthTest.enabled = true;
+  }
+
+  // a    b    c    d
+  // func mask near far
+  if (depthTest.a !== setting.a) {
+    cache.gl.depthFunc(setting.a);
+    depthTest.a = setting.a;
+  }
+  if (depthTest.b !== setting.b) {
+    cache.gl.depthMask(setting.b);
+    depthTest.b = setting.b;
+  }
+  if (depthTest.c !== setting.c || depthTest.d !== setting.d) {
+    cache.gl.depthRange(setting.c, setting.d);
+    depthTest.c = setting.c;
+    depthTest.d = setting.d;
+  }
+});
+
+// eslint-disable-next-line no-unused-vars
+var _WebGL_enableStencilTest = F2(function (cache, setting) {
+  var stencilTest = cache.stencilTest;
+  stencilTest.toggle = cache.toggle;
+
+  if (!stencilTest.enabled) {
+    cache.gl.enable(cache.gl.STENCIL_TEST);
+    stencilTest.enabled = true;
+  }
+
+  // a   b    c         d     e     f      g      h     i     j      k
+  // ref mask writeMask test1 fail1 zfail1 zpass1 test2 fail2 zfail2 zpass2
+  if (stencilTest.d !== setting.d || stencilTest.a !== setting.a || stencilTest.b !== setting.b) {
+    cache.gl.stencilFuncSeparate(cache.gl.FRONT, setting.d, setting.a, setting.b);
+    stencilTest.d = setting.d;
+    // a and b are set in the cache.gl.BACK diffing because they should be the same
+  }
+  if (stencilTest.e !== setting.e || stencilTest.f !== setting.f || stencilTest.g !== setting.g) {
+    cache.gl.stencilOpSeparate(cache.gl.FRONT, setting.e, setting.f, setting.g);
+    stencilTest.e = setting.e;
+    stencilTest.f = setting.f;
+    stencilTest.g = setting.g;
+  }
+  if (stencilTest.c !== setting.c) {
+    cache.gl.stencilMask(setting.c);
+    stencilTest.c = setting.c;
+  }
+  if (stencilTest.h !== setting.h || stencilTest.a !== setting.a || stencilTest.b !== setting.b) {
+    cache.gl.stencilFuncSeparate(cache.gl.BACK, setting.h, setting.a, setting.b);
+    stencilTest.h = setting.h;
+    stencilTest.a = setting.a;
+    stencilTest.b = setting.b;
+  }
+  if (stencilTest.i !== setting.i || stencilTest.j !== setting.j || stencilTest.k !== setting.k) {
+    cache.gl.stencilOpSeparate(cache.gl.BACK, setting.i, setting.j, setting.k);
+    stencilTest.i = setting.i;
+    stencilTest.j = setting.j;
+    stencilTest.k = setting.k;
+  }
+});
+
+// eslint-disable-next-line no-unused-vars
+var _WebGL_enableScissor = F2(function (cache, setting) {
+  var scissor = cache.scissor;
+  scissor.toggle = cache.toggle;
+
+  if (!scissor.enabled) {
+    cache.gl.enable(cache.gl.SCISSOR_TEST);
+    scissor.enabled = true;
+  }
+
+  if (scissor.a !== setting.a || scissor.b !== setting.b || scissor.c !== setting.c || scissor.d !== setting.d) {
+    cache.gl.scissor(setting.a, setting.b, setting.c, setting.d);
+    scissor.a = setting.a;
+    scissor.b = setting.b;
+    scissor.c = setting.c;
+    scissor.d = setting.d;
+  }
+});
+
+// eslint-disable-next-line no-unused-vars
+var _WebGL_enableColorMask = F2(function (cache, setting) {
+  var colorMask = cache.colorMask;
+  colorMask.toggle = cache.toggle;
+  colorMask.enabled = true;
+
+  if (colorMask.a !== setting.a || colorMask.b !== setting.b || colorMask.c !== setting.c || colorMask.d !== setting.d) {
+    cache.gl.colorMask(setting.a, setting.b, setting.c, setting.d);
+    colorMask.a = setting.a;
+    colorMask.b = setting.b;
+    colorMask.c = setting.c;
+    colorMask.d = setting.d;
+  }
+});
+
+// eslint-disable-next-line no-unused-vars
+var _WebGL_enableCullFace = F2(function (cache, setting) {
+  var cullFace = cache.cullFace;
+  cullFace.toggle = cache.toggle;
+
+  if (!cullFace.enabled) {
+    cache.gl.enable(cache.gl.CULL_FACE);
+    cullFace.enabled = true;
+  }
+
+  if (cullFace.a !== setting.a) {
+    cache.gl.cullFace(setting.a);
+    cullFace.a = setting.a;
+  }
+});
+
+// eslint-disable-next-line no-unused-vars
+var _WebGL_enablePolygonOffset = F2(function (cache, setting) {
+  var polygonOffset = cache.polygonOffset;
+  polygonOffset.toggle = cache.toggle;
+
+  if (!polygonOffset.enabled) {
+    cache.gl.enable(cache.gl.POLYGON_OFFSET_FILL);
+    polygonOffset.enabled = true;
+  }
+
+  if (polygonOffset.a !== setting.a || polygonOffset.b !== setting.b) {
+    cache.gl.polygonOffset(setting.a, setting.b);
+    polygonOffset.a = setting.a;
+    polygonOffset.b = setting.b;
+  }
+});
+
+// eslint-disable-next-line no-unused-vars
+var _WebGL_enableSampleCoverage = F2(function (cache, setting) {
+  var sampleCoverage = cache.sampleCoverage;
+  sampleCoverage.toggle = cache.toggle;
+
+  if (!sampleCoverage.enabled) {
+    cache.gl.enable(cache.gl.SAMPLE_COVERAGE);
+    sampleCoverage.enabled = true;
+  }
+
+  if (sampleCoverage.a !== setting.a || sampleCoverage.b !== setting.b) {
+    cache.gl.sampleCoverage(setting.a, setting.b);
+    sampleCoverage.a = setting.a;
+    sampleCoverage.b = setting.b;
+  }
+});
+
+// eslint-disable-next-line no-unused-vars
+var _WebGL_enableSampleAlphaToCoverage = function (cache) {
+  var sampleAlphaToCoverage = cache.sampleAlphaToCoverage;
+  sampleAlphaToCoverage.toggle = cache.toggle;
+
+  if (!sampleAlphaToCoverage.enabled) {
+    cache.gl.enable(cache.gl.SAMPLE_ALPHA_TO_COVERAGE);
+    sampleAlphaToCoverage.enabled = true;
+  }
+};
+
+var _WebGL_disableBlend = function (cache) {
+  if (cache.blend.enabled) {
+    cache.gl.disable(cache.gl.BLEND);
+    cache.blend.enabled = false;
+  }
+};
+
+var _WebGL_disableDepthTest = function (cache) {
+  if (cache.depthTest.enabled) {
+    cache.gl.disable(cache.gl.DEPTH_TEST);
+    cache.depthTest.enabled = false;
+  }
+};
+
+var _WebGL_disableStencilTest = function (cache) {
+  if (cache.stencilTest.enabled) {
+    cache.gl.disable(cache.gl.STENCIL_TEST);
+    cache.stencilTest.enabled = false;
+  }
+};
+
+var _WebGL_disableScissor = function (cache) {
+  if (cache.scissor.enabled) {
+    cache.gl.disable(cache.gl.SCISSOR_TEST);
+    cache.scissor.enabled = false;
+  }
+};
+
+var _WebGL_disableColorMask = function (cache) {
+  var colorMask = cache.colorMask;
+  if (!colorMask.a || !colorMask.b || !colorMask.c || !colorMask.d) {
+    cache.gl.colorMask(true, true, true, true);
+    colorMask.a = true;
+    colorMask.b = true;
+    colorMask.c = true;
+    colorMask.d = true;
+  }
+};
+
+var _WebGL_disableCullFace = function (cache) {
+  cache.gl.disable(cache.gl.CULL_FACE);
+};
+
+var _WebGL_disablePolygonOffset = function (cache) {
+  cache.gl.disable(cache.gl.POLYGON_OFFSET_FILL);
+};
+
+var _WebGL_disableSampleCoverage = function (cache) {
+  cache.gl.disable(cache.gl.SAMPLE_COVERAGE);
+};
+
+var _WebGL_disableSampleAlphaToCoverage = function (cache) {
+  cache.gl.disable(cache.gl.SAMPLE_ALPHA_TO_COVERAGE);
+};
+
+var _WebGL_settings = ['blend', 'depthTest', 'stencilTest', 'scissor', 'colorMask', 'cullFace', 'polygonOffset', 'sampleCoverage', 'sampleAlphaToCoverage'];
+var _WebGL_disableFunctions = [_WebGL_disableBlend, _WebGL_disableDepthTest, _WebGL_disableStencilTest, _WebGL_disableScissor, _WebGL_disableColorMask, _WebGL_disableCullFace, _WebGL_disablePolygonOffset, _WebGL_disableSampleCoverage, _WebGL_disableSampleAlphaToCoverage];
+
+function _WebGL_doCompile(gl, src, type) {
+  var shader = gl.createShader(type);
+  // Enable OES_standard_derivatives extension
+  gl.shaderSource(shader, '#extension GL_OES_standard_derivatives : enable\n' + src);
+  gl.compileShader(shader);
+  return shader;
+}
+
+function _WebGL_doLink(gl, vshader, fshader) {
+  var program = gl.createProgram();
+
+  gl.attachShader(program, vshader);
+  gl.attachShader(program, fshader);
+  gl.linkProgram(program);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    throw ('Link failed: ' + gl.getProgramInfoLog(program) +
+      '\nvs info-log: ' + gl.getShaderInfoLog(vshader) +
+      '\nfs info-log: ' + gl.getShaderInfoLog(fshader));
+  }
+
+  return program;
+}
+
+function _WebGL_getAttributeInfo(gl, type) {
+  switch (type) {
+    case gl.FLOAT:
+      return { size: 1, arraySize: 1, type: Float32Array, baseType: gl.FLOAT };
+    case gl.FLOAT_VEC2:
+      return { size: 2, arraySize: 1, type: Float32Array, baseType: gl.FLOAT };
+    case gl.FLOAT_VEC3:
+      return { size: 3, arraySize: 1, type: Float32Array, baseType: gl.FLOAT };
+    case gl.FLOAT_VEC4:
+      return { size: 4, arraySize: 1, type: Float32Array, baseType: gl.FLOAT };
+    case gl.FLOAT_MAT4:
+      return { size: 4, arraySize: 4, type: Float32Array, baseType: gl.FLOAT };
+    case gl.INT:
+      return { size: 1, arraySize: 1, type: Int32Array, baseType: gl.INT };
+  }
+}
+
+/**
+ *  Form the buffer for a given attribute.
+ *
+ *  @param {WebGLRenderingContext} gl context
+ *  @param {WebGLActiveInfo} attribute the attribute to bind to.
+ *         We use its name to grab the record by name and also to know
+ *         how many elements we need to grab.
+ *  @param {Mesh} mesh The mesh coming in from Elm.
+ *  @param {Object} attributes The mapping between the attribute names and Elm fields
+ *  @return {WebGLBuffer}
+ */
+function _WebGL_doBindAttribute(gl, attribute, mesh, attributes) {
+  // The length of the number of vertices that
+  // complete one 'thing' based on the drawing mode.
+  // ie, 2 for Lines, 3 for Triangles, etc.
+  var elemSize = mesh.a.elemSize;
+
+  var idxKeys = [];
+  for (var i = 0; i < elemSize; i++) {
+    idxKeys.push(String.fromCharCode(97 + i));
+  }
+
+  function dataFill(data, cnt, fillOffset, elem, key) {
+    var i;
+    if (elemSize === 1) {
+      for (i = 0; i < cnt; i++) {
+        data[fillOffset++] = cnt === 1 ? elem[key] : elem[key][i];
+      }
+    } else {
+      idxKeys.forEach(function (idx) {
+        for (i = 0; i < cnt; i++) {
+          data[fillOffset++] = cnt === 1 ? elem[idx][key] : elem[idx][key][i];
+        }
+      });
+    }
+  }
+
+  var attributeInfo = _WebGL_getAttributeInfo(gl, attribute.type);
+
+  if (attributeInfo === undefined) {
+    throw new Error('No info available for: ' + attribute.type);
+  }
+
+  var dataIdx = 0;
+  var dataOffset = attributeInfo.size * attributeInfo.arraySize * elemSize;
+  var array = new attributeInfo.type(_WebGL_listLength(mesh.b) * dataOffset);
+
+  _WebGL_listEach(function (elem) {
+    dataFill(array, attributeInfo.size * attributeInfo.arraySize, dataIdx, elem, attributes[attribute.name] || attribute.name);
+    dataIdx += dataOffset;
+  }, mesh.b);
+
+  var buffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+  gl.bufferData(gl.ARRAY_BUFFER, array, gl.STATIC_DRAW);
+  return buffer;
+}
+
+/**
+ *  This sets up the binding caching buffers.
+ *
+ *  We don't actually bind any buffers now except for the indices buffer.
+ *  The problem with filling the buffers here is that it is possible to
+ *  have a buffer shared between two webgl shaders;
+ *  which could have different active attributes. If we bind it here against
+ *  a particular program, we might not bind them all. That final bind is now
+ *  done right before drawing.
+ *
+ *  @param {WebGLRenderingContext} gl context
+ *  @param {Mesh} mesh a mesh object from Elm
+ *  @return {Object} buffer - an object with the following properties
+ *  @return {Number} buffer.numIndices
+ *  @return {WebGLBuffer|null} buffer.indexBuffer - optional index buffer
+ *  @return {Object} buffer.buffers - will be used to buffer attributes
+ */
+function _WebGL_doBindSetup(gl, mesh) {
+  if (mesh.a.indexSize > 0) {
+    var indexBuffer = gl.createBuffer();
+    var indices = _WebGL_makeIndexedBuffer(mesh.c, mesh.a.indexSize);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+    return {
+      numIndices: indices.length,
+      indexBuffer: indexBuffer,
+      buffers: {}
+    };
+  } else {
+    return {
+      numIndices: mesh.a.elemSize * _WebGL_listLength(mesh.b),
+      indexBuffer: null,
+      buffers: {}
+    };
+  }
+}
+
+/**
+ *  Create an indices array and fill it from indices
+ *  based on the size of the index
+ *
+ *  @param {List} indicesList the list of indices
+ *  @param {Number} indexSize the size of the index
+ *  @return {Uint32Array} indices
+ */
+function _WebGL_makeIndexedBuffer(indicesList, indexSize) {
+  var indices = new Uint32Array(_WebGL_listLength(indicesList) * indexSize);
+  var fillOffset = 0;
+  var i;
+  _WebGL_listEach(function (elem) {
+    if (indexSize === 1) {
+      indices[fillOffset++] = elem;
+    } else {
+      for (i = 0; i < indexSize; i++) {
+        indices[fillOffset++] = elem[String.fromCharCode(97 + i)];
+      }
+    }
+  }, indicesList);
+  return indices;
+}
+
+function _WebGL_getProgID(vertID, fragID) {
+  return vertID + '#' + fragID;
+}
+
+var _WebGL_drawGL = F2(function (model, domNode) {
+  var cache = model.f;
+  var gl = cache.gl;
+
+  if (!gl) {
+    return domNode;
+  }
+
+  gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+
+  if (!cache.depthTest.b) {
+    gl.depthMask(true);
+    cache.depthTest.b = true;
+  }
+  if (cache.stencilTest.c !== cache.STENCIL_WRITEMASK) {
+    gl.stencilMask(cache.STENCIL_WRITEMASK);
+    cache.stencilTest.c = cache.STENCIL_WRITEMASK;
+  }
+  _WebGL_disableScissor(cache);
+  _WebGL_disableColorMask(cache);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+
+  function drawEntity(entity) {
+    if (!entity.d.b.b) {
+      return; // Empty list
+    }
+
+    var progid;
+    var program;
+    var i;
+
+    if (entity.b.id && entity.c.id) {
+      progid = _WebGL_getProgID(entity.b.id, entity.c.id);
+      program = cache.programs[progid];
+    }
+
+    if (!program) {
+
+      var vshader;
+      if (entity.b.id) {
+        vshader = cache.shaders[entity.b.id];
+      } else {
+        entity.b.id = _WebGL_guid++;
+      }
+
+      if (!vshader) {
+        vshader = _WebGL_doCompile(gl, entity.b.src, gl.VERTEX_SHADER);
+        cache.shaders[entity.b.id] = vshader;
+      }
+
+      var fshader;
+      if (entity.c.id) {
+        fshader = cache.shaders[entity.c.id];
+      } else {
+        entity.c.id = _WebGL_guid++;
+      }
+
+      if (!fshader) {
+        fshader = _WebGL_doCompile(gl, entity.c.src, gl.FRAGMENT_SHADER);
+        cache.shaders[entity.c.id] = fshader;
+      }
+
+      var glProgram = _WebGL_doLink(gl, vshader, fshader);
+
+      program = {
+        glProgram: glProgram,
+        attributes: Object.assign({}, entity.b.attributes, entity.c.attributes),
+        currentUniforms: {},
+        activeAttributes: [],
+        activeAttributeLocations: []
+      };
+
+      program.uniformSetters = _WebGL_createUniformSetters(
+        gl,
+        model,
+        program,
+        Object.assign({}, entity.b.uniforms, entity.c.uniforms)
+      );
+
+      var numActiveAttributes = gl.getProgramParameter(glProgram, gl.ACTIVE_ATTRIBUTES);
+      for (i = 0; i < numActiveAttributes; i++) {
+        var attribute = gl.getActiveAttrib(glProgram, i);
+        var attribLocation = gl.getAttribLocation(glProgram, attribute.name);
+        program.activeAttributes.push(attribute);
+        program.activeAttributeLocations.push(attribLocation);
+      }
+
+      progid = _WebGL_getProgID(entity.b.id, entity.c.id);
+      cache.programs[progid] = program;
+    }
+
+    if (cache.lastProgId !== progid) {
+      gl.useProgram(program.glProgram);
+      cache.lastProgId = progid;
+    }
+
+    _WebGL_setUniforms(program.uniformSetters, entity.e);
+
+    var buffer = cache.buffers.get(entity.d);
+
+    if (!buffer) {
+      buffer = _WebGL_doBindSetup(gl, entity.d);
+      cache.buffers.set(entity.d, buffer);
+    }
+
+    for (i = 0; i < program.activeAttributes.length; i++) {
+      attribute = program.activeAttributes[i];
+      attribLocation = program.activeAttributeLocations[i];
+
+      if (buffer.buffers[attribute.name] === undefined) {
+        buffer.buffers[attribute.name] = _WebGL_doBindAttribute(gl, attribute, entity.d, program.attributes);
+      }
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer.buffers[attribute.name]);
+
+      var attributeInfo = _WebGL_getAttributeInfo(gl, attribute.type);
+      if (attributeInfo.arraySize === 1) {
+        gl.enableVertexAttribArray(attribLocation);
+        gl.vertexAttribPointer(attribLocation, attributeInfo.size, attributeInfo.baseType, false, 0, 0);
+      } else {
+        // Point to four vec4 in case of mat4
+        var offset = attributeInfo.size * 4; // float32 takes 4 bytes
+        var stride = offset * attributeInfo.arraySize;
+        for (var m = 0; m < attributeInfo.arraySize; m++) {
+          gl.enableVertexAttribArray(attribLocation + m);
+          gl.vertexAttribPointer(attribLocation + m, attributeInfo.size, attributeInfo.baseType, false, stride, offset * m);
+        }
+      }
+    }
+
+    // Apply all the new settings
+    cache.toggle = !cache.toggle;
+    _WebGL_listEach($elm_explorations$webgl$WebGL$Internal$enableSetting(cache), entity.a);
+    // Disable the settings that were applied in the previous draw call
+    for (i = 0; i < _WebGL_settings.length; i++) {
+      var setting = cache[_WebGL_settings[i]];
+      if (setting.toggle !== cache.toggle && setting.enabled) {
+        _WebGL_disableFunctions[i](cache);
+        setting.enabled = false;
+        setting.toggle = cache.toggle;
+      }
+    }
+
+    if (buffer.indexBuffer) {
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer.indexBuffer);
+      gl.drawElements(entity.d.a.mode, buffer.numIndices, gl.UNSIGNED_INT, 0);
+    } else {
+      gl.drawArrays(entity.d.a.mode, 0, buffer.numIndices);
+    }
+  }
+
+  _WebGL_listEach(drawEntity, model.g);
+  return domNode;
+});
+
+function _WebGL_createUniformSetters(gl, model, program, uniformsMap) {
+  var glProgram = program.glProgram;
+  var currentUniforms = program.currentUniforms;
+  var textureCounter = 0;
+  var cache = model.f;
+  function createUniformSetter(glProgram, uniform) {
+    var uniformName = uniform.name;
+    var uniformLocation = gl.getUniformLocation(glProgram, uniformName);
+    switch (uniform.type) {
+      case gl.INT:
+        return function (value) {
+          if (currentUniforms[uniformName] !== value) {
+            gl.uniform1i(uniformLocation, value);
+            currentUniforms[uniformName] = value;
+          }
+        };
+      case gl.FLOAT:
+        return function (value) {
+          if (currentUniforms[uniformName] !== value) {
+            gl.uniform1f(uniformLocation, value);
+            currentUniforms[uniformName] = value;
+          }
+        };
+      case gl.FLOAT_VEC2:
+        return function (value) {
+          if (currentUniforms[uniformName] !== value) {
+            gl.uniform2f(uniformLocation, value[0], value[1]);
+            currentUniforms[uniformName] = value;
+          }
+        };
+      case gl.FLOAT_VEC3:
+        return function (value) {
+          if (currentUniforms[uniformName] !== value) {
+            gl.uniform3f(uniformLocation, value[0], value[1], value[2]);
+            currentUniforms[uniformName] = value;
+          }
+        };
+      case gl.FLOAT_VEC4:
+        return function (value) {
+          if (currentUniforms[uniformName] !== value) {
+            gl.uniform4f(uniformLocation, value[0], value[1], value[2], value[3]);
+            currentUniforms[uniformName] = value;
+          }
+        };
+      case gl.FLOAT_MAT4:
+        return function (value) {
+          if (currentUniforms[uniformName] !== value) {
+            gl.uniformMatrix4fv(uniformLocation, false, new Float32Array(value));
+            currentUniforms[uniformName] = value;
+          }
+        };
+      case gl.SAMPLER_2D:
+        var currentTexture = textureCounter++;
+        return function (texture) {
+          gl.activeTexture(gl.TEXTURE0 + currentTexture);
+          var tex = cache.textures.get(texture);
+          if (!tex) {
+            tex = texture.createTexture(gl);
+            cache.textures.set(texture, tex);
+          }
+          gl.bindTexture(gl.TEXTURE_2D, tex);
+          if (currentUniforms[uniformName] !== texture) {
+            gl.uniform1i(uniformLocation, currentTexture);
+            currentUniforms[uniformName] = texture;
+          }
+        };
+      case gl.BOOL:
+        return function (value) {
+          if (currentUniforms[uniformName] !== value) {
+            gl.uniform1i(uniformLocation, value);
+            currentUniforms[uniformName] = value;
+          }
+        };
+      default:
+        return function () { };
+    }
+  }
+
+  var uniformSetters = {};
+  var numUniforms = gl.getProgramParameter(glProgram, gl.ACTIVE_UNIFORMS);
+  for (var i = 0; i < numUniforms; i++) {
+    var uniform = gl.getActiveUniform(glProgram, i);
+    uniformSetters[uniformsMap[uniform.name] || uniform.name] = createUniformSetter(glProgram, uniform);
+  }
+
+  return uniformSetters;
+}
+
+function _WebGL_setUniforms(setters, values) {
+  Object.keys(values).forEach(function (name) {
+    var setter = setters[name];
+    if (setter) {
+      setter(values[name]);
+    }
+  });
+}
+
+// VIRTUAL-DOM WIDGET
+
+// eslint-disable-next-line no-unused-vars
+var _WebGL_toHtml = F3(function (options, factList, entities) {
+  return _VirtualDom_custom(
+    factList,
+    {
+      g: entities,
+      f: {},
+      h: options
+    },
+    _WebGL_render,
+    _WebGL_diff
+  );
+});
+
+// eslint-disable-next-line no-unused-vars
+var _WebGL_enableAlpha = F2(function (options, option) {
+  options.contextAttributes.alpha = true;
+  options.contextAttributes.premultipliedAlpha = option.a;
+});
+
+// eslint-disable-next-line no-unused-vars
+var _WebGL_enableDepth = F2(function (options, option) {
+  options.contextAttributes.depth = true;
+  options.sceneSettings.push(function (gl) {
+    gl.clearDepth(option.a);
+  });
+});
+
+// eslint-disable-next-line no-unused-vars
+var _WebGL_enableStencil = F2(function (options, option) {
+  options.contextAttributes.stencil = true;
+  options.sceneSettings.push(function (gl) {
+    gl.clearStencil(option.a);
+  });
+});
+
+// eslint-disable-next-line no-unused-vars
+var _WebGL_enableAntialias = F2(function (options, option) {
+  options.contextAttributes.antialias = true;
+});
+
+// eslint-disable-next-line no-unused-vars
+var _WebGL_enableClearColor = F2(function (options, option) {
+  options.sceneSettings.push(function (gl) {
+    gl.clearColor(option.a, option.b, option.c, option.d);
+  });
+});
+
+// eslint-disable-next-line no-unused-vars
+var _WebGL_enablePreserveDrawingBuffer = F2(function (options, option) {
+  options.contextAttributes.preserveDrawingBuffer = true;
+});
+
+/**
+ *  Creates canvas and schedules initial _WebGL_drawGL
+ *  @param {Object} model
+ *  @param {Object} model.f that may contain the following properties:
+           gl, shaders, programs, buffers, textures
+ *  @param {List<Option>} model.h list of options coming from Elm
+ *  @param {List<Entity>} model.g list of entities coming from Elm
+ *  @return {HTMLElement} <canvas> if WebGL is supported, otherwise a <div>
+ */
+function _WebGL_render(model) {
+  var options = {
+    contextAttributes: {
+      alpha: false,
+      depth: false,
+      stencil: false,
+      antialias: false,
+      premultipliedAlpha: false,
+      preserveDrawingBuffer: false
+    },
+    sceneSettings: []
+  };
+
+  _WebGL_listEach(function (option) {
+    return A2($elm_explorations$webgl$WebGL$Internal$enableOption, options, option);
+  }, model.h);
+
+  var canvas = _VirtualDom_doc.createElement('canvas');
+  var gl = canvas.getContext && (
+    canvas.getContext('webgl', options.contextAttributes) ||
+    canvas.getContext('experimental-webgl', options.contextAttributes)
+  );
+
+  if (gl && typeof WeakMap !== 'undefined') {
+    options.sceneSettings.forEach(function (sceneSetting) {
+      sceneSetting(gl);
+    });
+
+    // Activate extensions
+    gl.getExtension('OES_standard_derivatives');
+    gl.getExtension('OES_element_index_uint');
+
+    model.f.gl = gl;
+
+    // Cache the current settings in order to diff them to avoid redundant calls
+    // https://emscripten.org/docs/optimizing/Optimizing-WebGL.html#avoid-redundant-calls
+    model.f.toggle = false; // used to diff the settings from the previous and current draw calls
+    model.f.blend = { enabled: false, toggle: false };
+    model.f.depthTest = { enabled: false, toggle: false };
+    model.f.stencilTest = { enabled: false, toggle: false };
+    model.f.scissor = { enabled: false, toggle: false };
+    model.f.colorMask = { enabled: false, toggle: false };
+    model.f.cullFace = { enabled: false, toggle: false };
+    model.f.polygonOffset = { enabled: false, toggle: false };
+    model.f.sampleCoverage = { enabled: false, toggle: false };
+    model.f.sampleAlphaToCoverage = { enabled: false, toggle: false };
+
+    model.f.shaders = [];
+    model.f.programs = {};
+    model.f.lastProgId = null;
+    model.f.buffers = new WeakMap();
+    model.f.textures = new WeakMap();
+    // Memorize the initial stencil write mask, because
+    // browsers may have different number of stencil bits
+    model.f.STENCIL_WRITEMASK = gl.getParameter(gl.STENCIL_WRITEMASK);
+
+    // Render for the first time.
+    // This has to be done in animation frame,
+    // because the canvas is not in the DOM yet
+    _WebGL_rAF(function () {
+      return A2(_WebGL_drawGL, model, canvas);
+    });
+
+  } else {
+    canvas = _VirtualDom_doc.createElement('div');
+    canvas.innerHTML = '<a href="https://get.webgl.org/">Enable WebGL</a> to see this content!';
+  }
+
+  return canvas;
+}
+
+function _WebGL_diff(oldModel, newModel) {
+  newModel.f = oldModel.f;
+  return _WebGL_drawGL(newModel);
+}
+
+
 
 var _Bitwise_and = F2(function(a, b)
 {
@@ -5322,9 +7177,379 @@ var $author$project$Renderers$WebGL$Renderer$subscriptions = function (_v0) {
 };
 var $elm$json$Json$Decode$decodeValue = _Json_run;
 var $elm$json$Json$Decode$field = _Json_decodeField;
+var $ianmackenzie$elm_geometry$Geometry$Types$Point3d = function (a) {
+	return {$: 'Point3d', a: a};
+};
+var $ianmackenzie$elm_geometry$Point3d$xyz = F3(
+	function (_v0, _v1, _v2) {
+		var x = _v0.a;
+		var y = _v1.a;
+		var z = _v2.a;
+		return $ianmackenzie$elm_geometry$Geometry$Types$Point3d(
+			{x: x, y: y, z: z});
+	});
+var $ianmackenzie$elm_geometry$Point3d$fromRecord = F2(
+	function (toQuantity, _v0) {
+		var z = _v0.z;
+		var y = _v0.y;
+		var x = _v0.x;
+		return A3(
+			$ianmackenzie$elm_geometry$Point3d$xyz,
+			toQuantity(x),
+			toQuantity(y),
+			toQuantity(z));
+	});
+var $elm$json$Json$Decode$list = _Json_decodeList;
+var $author$project$Renderers$WebGL$Renderer$LocalPoint = F3(
+	function (x, y, z) {
+		return {x: x, y: y, z: z};
+	});
+var $elm$json$Json$Decode$float = _Json_decodeFloat;
+var $elm$json$Json$Decode$map3 = _Json_map3;
+var $author$project$Renderers$WebGL$Renderer$localPointDecoder = A4(
+	$elm$json$Json$Decode$map3,
+	$author$project$Renderers$WebGL$Renderer$LocalPoint,
+	A2($elm$json$Json$Decode$field, 'x', $elm$json$Json$Decode$float),
+	A2($elm$json$Json$Decode$field, 'y', $elm$json$Json$Decode$float),
+	A2($elm$json$Json$Decode$field, 'z', $elm$json$Json$Decode$float));
 var $elm$core$Debug$log = _Debug_log;
+var $ianmackenzie$elm_units$Quantity$Quantity = function (a) {
+	return {$: 'Quantity', a: a};
+};
+var $ianmackenzie$elm_units$Length$meters = function (numMeters) {
+	return $ianmackenzie$elm_units$Quantity$Quantity(numMeters);
+};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $avh4$elm_color$Color$RgbaSpace = F4(
+	function (a, b, c, d) {
+		return {$: 'RgbaSpace', a: a, b: b, c: c, d: d};
+	});
+var $avh4$elm_color$Color$black = A4($avh4$elm_color$Color$RgbaSpace, 0 / 255, 0 / 255, 0 / 255, 1.0);
+var $ianmackenzie$elm_3d_scene$Scene3d$Types$Constant = function (a) {
+	return {$: 'Constant', a: a};
+};
+var $ianmackenzie$elm_3d_scene$Scene3d$Types$UnlitMaterial = F2(
+	function (a, b) {
+		return {$: 'UnlitMaterial', a: a, b: b};
+	});
+var $ianmackenzie$elm_3d_scene$Scene3d$Types$UseMeshUvs = {$: 'UseMeshUvs'};
+var $avh4$elm_color$Color$toRgba = function (_v0) {
+	var r = _v0.a;
+	var g = _v0.b;
+	var b = _v0.c;
+	var a = _v0.d;
+	return {alpha: a, blue: b, green: g, red: r};
+};
+var $elm_explorations$linear_algebra$Math$Vector3$vec3 = _MJS_v3;
+var $ianmackenzie$elm_3d_scene$Scene3d$Material$toVec3 = function (givenColor) {
+	var _v0 = $avh4$elm_color$Color$toRgba(givenColor);
+	var blue = _v0.blue;
+	var green = _v0.green;
+	var red = _v0.red;
+	return A3($elm_explorations$linear_algebra$Math$Vector3$vec3, red, green, blue);
+};
+var $ianmackenzie$elm_3d_scene$Scene3d$Material$color = function (givenColor) {
+	return A2(
+		$ianmackenzie$elm_3d_scene$Scene3d$Types$UnlitMaterial,
+		$ianmackenzie$elm_3d_scene$Scene3d$Types$UseMeshUvs,
+		$ianmackenzie$elm_3d_scene$Scene3d$Types$Constant(
+			$ianmackenzie$elm_3d_scene$Scene3d$Material$toVec3(givenColor)));
+};
+var $ianmackenzie$elm_units$Pixels$pixels = function (numPixels) {
+	return $ianmackenzie$elm_units$Quantity$Quantity(numPixels);
+};
+var $ianmackenzie$elm_3d_scene$Scene3d$Types$Entity = function (a) {
+	return {$: 'Entity', a: a};
+};
+var $ianmackenzie$elm_3d_scene$Scene3d$Types$PointNode = F2(
+	function (a, b) {
+		return {$: 'PointNode', a: a, b: b};
+	});
+var $ianmackenzie$elm_3d_scene$Scene3d$UnoptimizedShaders$constantPointFragment = {
+	src: '\n        precision lowp float;\n        \n        uniform lowp vec3 constantColor;\n        uniform lowp float pointRadius;\n        uniform highp mat4 sceneProperties;\n        \n        float pointAlpha(float pointRadius, vec2 pointCoord) {\n            float pointSize = 2.0 * pointRadius;\n            float x = (pointSize + 2.0) * (pointCoord.s - 0.5);\n            float y = (pointSize + 2.0) * (pointCoord.t - 0.5);\n            float r = sqrt(x * x + y * y);\n            float innerRadius = pointRadius;\n            float outerRadius = pointRadius + 1.0;\n            if (r > outerRadius) {\n                return 0.0;\n            } else if (r > innerRadius) {\n                return outerRadius - r;\n            } else {\n                return 1.0;\n            }\n        }\n        \n        void main () {\n            float supersampling = sceneProperties[3][0];\n            float alpha = pointAlpha(pointRadius * supersampling, gl_PointCoord);\n            gl_FragColor = vec4(constantColor, alpha);\n        }\n    ',
+	attributes: {},
+	uniforms: {constantColor: 'constantColor', pointRadius: 'pointRadius', sceneProperties: 'sceneProperties'}
+};
+var $elm_explorations$webgl$WebGL$Mesh1 = F2(
+	function (a, b) {
+		return {$: 'Mesh1', a: a, b: b};
+	});
+var $elm_explorations$webgl$WebGL$points = $elm_explorations$webgl$WebGL$Mesh1(
+	{elemSize: 1, indexSize: 0, mode: 0});
+var $ianmackenzie$elm_3d_scene$Scene3d$Entity$dummyVertex = $elm_explorations$webgl$WebGL$points(
+	_List_fromArray(
+		[
+			{dummyAttribute: 1}
+		]));
+var $ianmackenzie$elm_3d_scene$Scene3d$UnoptimizedShaders$emissivePointFragment = {
+	src: '\n        precision mediump float;\n        \n        uniform mediump vec3 emissiveColor;\n        uniform lowp float pointRadius;\n        uniform highp mat4 sceneProperties;\n        \n        float gammaCorrect(float u) {\n            if (u <= 0.0031308) {\n                return 12.92 * u;\n            } else {\n                return 1.055 * pow(u, 1.0 / 2.4) - 0.055;\n            }\n        }\n        \n        vec3 gammaCorrectedColor(vec3 color) {\n            float red = gammaCorrect(color.r);\n            float green = gammaCorrect(color.g);\n            float blue = gammaCorrect(color.b);\n            return vec3(red, green, blue);\n        }\n        \n        vec3 reinhardLuminanceToneMap(vec3 color) {\n            float luminance = 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;\n            float scale = 1.0 / (1.0 + luminance);\n            return gammaCorrectedColor(color * scale);\n        }\n        \n        vec3 reinhardPerChannelToneMap(vec3 color) {\n            return gammaCorrectedColor(color / (color + 1.0));\n        }\n        \n        float extendedReinhardToneMap(float x, float xMax) {\n            return x * (1.0 + (x / (xMax * xMax))) / (1.0 + x);\n        }\n        \n        vec3 extendedReinhardLuminanceToneMap(vec3 color, float overexposureLimit) {\n            float luminance = 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;\n            float scaledLuminance = extendedReinhardToneMap(luminance, overexposureLimit);\n            float scale = scaledLuminance / luminance;\n            return gammaCorrectedColor(color * scale);\n        }\n        \n        vec3 extendedReinhardPerChannelToneMap(vec3 color, float overexposureLimit) {\n            float red = extendedReinhardToneMap(color.r, overexposureLimit);\n            float green = extendedReinhardToneMap(color.g, overexposureLimit);\n            float blue = extendedReinhardToneMap(color.b, overexposureLimit);\n            return gammaCorrectedColor(vec3(red, green, blue));\n        }\n        \n        vec3 hableFilmicHelper(vec3 color) {\n            float a = 0.15;\n            float b = 0.5;\n            float c = 0.1;\n            float d = 0.2;\n            float e = 0.02;\n            float f = 0.3;\n            return (color * (a * color + c * b) + d * e) / (color * (a * color + b) + d * f) - e / f;\n        }\n        \n        vec3 hableFilmicToneMap(vec3 color) {\n            float exposureBias = 2.0;\n            vec3 unscaled = hableFilmicHelper(exposureBias * color);\n            vec3 scale = 1.0 / hableFilmicHelper(vec3(11.2));\n            return gammaCorrectedColor(scale * unscaled);\n        }\n        \n        vec3 toneMap(vec3 color, float toneMapType, float toneMapParam) {\n            if (toneMapType == 0.0) {\n                return gammaCorrectedColor(color);\n            } else if (toneMapType == 1.0) {\n                return reinhardLuminanceToneMap(color);\n            } else if (toneMapType == 2.0) {\n                return reinhardPerChannelToneMap(color);\n            } else if (toneMapType == 3.0) {\n                return extendedReinhardLuminanceToneMap(color, toneMapParam);\n            } else if (toneMapType == 4.0) {\n                return extendedReinhardPerChannelToneMap(color, toneMapParam);\n            } else if (toneMapType == 5.0) {\n                return hableFilmicToneMap(color);\n            } else {\n                return vec3(0.0, 0.0, 0.0);\n            }\n        }\n        \n        vec4 toSrgb(vec3 linearColor, mat4 sceneProperties) {\n            vec3 referenceWhite = sceneProperties[2].rgb;\n            float unitR = linearColor.r / referenceWhite.r;\n            float unitG = linearColor.g / referenceWhite.g;\n            float unitB = linearColor.b / referenceWhite.b;\n            float toneMapType = sceneProperties[3][2];\n            float toneMapParam = sceneProperties[3][3];\n            vec3 toneMapped = toneMap(vec3(unitR, unitG, unitB), toneMapType, toneMapParam);\n            return vec4(toneMapped, 1.0);\n        }\n        \n        float pointAlpha(float pointRadius, vec2 pointCoord) {\n            float pointSize = 2.0 * pointRadius;\n            float x = (pointSize + 2.0) * (pointCoord.s - 0.5);\n            float y = (pointSize + 2.0) * (pointCoord.t - 0.5);\n            float r = sqrt(x * x + y * y);\n            float innerRadius = pointRadius;\n            float outerRadius = pointRadius + 1.0;\n            if (r > outerRadius) {\n                return 0.0;\n            } else if (r > innerRadius) {\n                return outerRadius - r;\n            } else {\n                return 1.0;\n            }\n        }\n        \n        void main () {\n            vec4 color = toSrgb(emissiveColor, sceneProperties);\n            float supersampling = sceneProperties[3][0];\n            float alpha = pointAlpha(pointRadius * supersampling, gl_PointCoord);\n            gl_FragColor = vec4(color.rgb, alpha);\n        }\n    ',
+	attributes: {},
+	uniforms: {emissiveColor: 'emissiveColor', pointRadius: 'pointRadius', sceneProperties: 'sceneProperties'}
+};
+var $ianmackenzie$elm_3d_scene$Scene3d$Types$EmptyNode = {$: 'EmptyNode'};
+var $ianmackenzie$elm_3d_scene$Scene3d$Entity$empty = $ianmackenzie$elm_3d_scene$Scene3d$Types$Entity($ianmackenzie$elm_3d_scene$Scene3d$Types$EmptyNode);
+var $elm_explorations$webgl$WebGL$Internal$enableOption = F2(
+	function (ctx, option) {
+		switch (option.$) {
+			case 'Alpha':
+				return A2(_WebGL_enableAlpha, ctx, option);
+			case 'Depth':
+				return A2(_WebGL_enableDepth, ctx, option);
+			case 'Stencil':
+				return A2(_WebGL_enableStencil, ctx, option);
+			case 'Antialias':
+				return A2(_WebGL_enableAntialias, ctx, option);
+			case 'ClearColor':
+				return A2(_WebGL_enableClearColor, ctx, option);
+			default:
+				return A2(_WebGL_enablePreserveDrawingBuffer, ctx, option);
+		}
+	});
+var $elm_explorations$webgl$WebGL$Internal$enableSetting = F2(
+	function (cache, setting) {
+		switch (setting.$) {
+			case 'Blend':
+				return A2(_WebGL_enableBlend, cache, setting);
+			case 'DepthTest':
+				return A2(_WebGL_enableDepthTest, cache, setting);
+			case 'StencilTest':
+				return A2(_WebGL_enableStencilTest, cache, setting);
+			case 'Scissor':
+				return A2(_WebGL_enableScissor, cache, setting);
+			case 'ColorMask':
+				return A2(_WebGL_enableColorMask, cache, setting);
+			case 'CullFace':
+				return A2(_WebGL_enableCullFace, cache, setting);
+			case 'PolygonOffset':
+				return A2(_WebGL_enablePolygonOffset, cache, setting);
+			case 'SampleCoverage':
+				return A2(_WebGL_enableSampleCoverage, cache, setting);
+			default:
+				return _WebGL_enableSampleAlphaToCoverage(cache);
+		}
+	});
+var $elm_explorations$webgl$WebGL$entityWith = _WebGL_entity;
+var $ianmackenzie$elm_units$Luminance$inNits = function (_v0) {
+	var numNits = _v0.a;
+	return numNits;
+};
+var $elm_explorations$linear_algebra$Math$Vector3$scale = _MJS_v3scale;
+var $ianmackenzie$elm_3d_scene$Scene3d$UnoptimizedShaders$singlePointVertex = {
+	src: '\n        precision highp float;\n        \n        attribute lowp float dummyAttribute;\n        \n        uniform highp vec4 modelScale;\n        uniform highp mat4 modelMatrix;\n        uniform lowp float pointRadius;\n        uniform highp mat4 viewMatrix;\n        uniform highp mat4 projectionMatrix;\n        uniform highp mat4 sceneProperties;\n        uniform highp vec3 pointPosition;\n        \n        vec4 getWorldPosition(vec3 modelPosition, vec4 modelScale, mat4 modelMatrix) {\n            vec4 scaledPosition = vec4(modelScale.xyz * modelPosition, 1.0);\n            return modelMatrix * scaledPosition;\n        }\n        \n        void main () {\n            vec4 worldPosition = getWorldPosition(pointPosition, modelScale, modelMatrix);\n            gl_Position = projectionMatrix * (viewMatrix * worldPosition);\n            float supersampling = sceneProperties[3][0];\n            gl_PointSize = 2.0 * pointRadius * supersampling * dummyAttribute + 2.0;\n        }\n    ',
+	attributes: {dummyAttribute: 'dummyAttribute'},
+	uniforms: {modelMatrix: 'modelMatrix', modelScale: 'modelScale', pointPosition: 'pointPosition', pointRadius: 'pointRadius', projectionMatrix: 'projectionMatrix', sceneProperties: 'sceneProperties', viewMatrix: 'viewMatrix'}
+};
+var $ianmackenzie$elm_geometry$Geometry$Types$BoundingBox3d = function (a) {
+	return {$: 'BoundingBox3d', a: a};
+};
+var $ianmackenzie$elm_geometry$Point3d$xCoordinate = function (_v0) {
+	var p = _v0.a;
+	return $ianmackenzie$elm_units$Quantity$Quantity(p.x);
+};
+var $ianmackenzie$elm_geometry$Point3d$yCoordinate = function (_v0) {
+	var p = _v0.a;
+	return $ianmackenzie$elm_units$Quantity$Quantity(p.y);
+};
+var $ianmackenzie$elm_geometry$Point3d$zCoordinate = function (_v0) {
+	var p = _v0.a;
+	return $ianmackenzie$elm_units$Quantity$Quantity(p.z);
+};
+var $ianmackenzie$elm_geometry$BoundingBox3d$singleton = function (point) {
+	return $ianmackenzie$elm_geometry$Geometry$Types$BoundingBox3d(
+		{
+			maxX: $ianmackenzie$elm_geometry$Point3d$xCoordinate(point),
+			maxY: $ianmackenzie$elm_geometry$Point3d$yCoordinate(point),
+			maxZ: $ianmackenzie$elm_geometry$Point3d$zCoordinate(point),
+			minX: $ianmackenzie$elm_geometry$Point3d$xCoordinate(point),
+			minY: $ianmackenzie$elm_geometry$Point3d$yCoordinate(point),
+			minZ: $ianmackenzie$elm_geometry$Point3d$zCoordinate(point)
+		});
+};
+var $ianmackenzie$elm_units$Quantity$interpolateFrom = F3(
+	function (_v0, _v1, parameter) {
+		var start = _v0.a;
+		var end = _v1.a;
+		return (parameter <= 0.5) ? $ianmackenzie$elm_units$Quantity$Quantity(start + (parameter * (end - start))) : $ianmackenzie$elm_units$Quantity$Quantity(end + ((1 - parameter) * (start - end)));
+	});
+var $ianmackenzie$elm_geometry$BoundingBox3d$midX = function (_v0) {
+	var boundingBox = _v0.a;
+	return A3($ianmackenzie$elm_units$Quantity$interpolateFrom, boundingBox.minX, boundingBox.maxX, 0.5);
+};
+var $ianmackenzie$elm_geometry$BoundingBox3d$midY = function (_v0) {
+	var boundingBox = _v0.a;
+	return A3($ianmackenzie$elm_units$Quantity$interpolateFrom, boundingBox.minY, boundingBox.maxY, 0.5);
+};
+var $ianmackenzie$elm_geometry$BoundingBox3d$midZ = function (_v0) {
+	var boundingBox = _v0.a;
+	return A3($ianmackenzie$elm_units$Quantity$interpolateFrom, boundingBox.minZ, boundingBox.maxZ, 0.5);
+};
+var $ianmackenzie$elm_geometry$BoundingBox3d$centerPoint = function (boundingBox) {
+	return A3(
+		$ianmackenzie$elm_geometry$Point3d$xyz,
+		$ianmackenzie$elm_geometry$BoundingBox3d$midX(boundingBox),
+		$ianmackenzie$elm_geometry$BoundingBox3d$midY(boundingBox),
+		$ianmackenzie$elm_geometry$BoundingBox3d$midZ(boundingBox));
+};
+var $ianmackenzie$elm_geometry$BoundingBox3d$maxX = function (_v0) {
+	var boundingBox = _v0.a;
+	return boundingBox.maxX;
+};
+var $ianmackenzie$elm_geometry$BoundingBox3d$maxY = function (_v0) {
+	var boundingBox = _v0.a;
+	return boundingBox.maxY;
+};
+var $ianmackenzie$elm_geometry$BoundingBox3d$maxZ = function (_v0) {
+	var boundingBox = _v0.a;
+	return boundingBox.maxZ;
+};
+var $ianmackenzie$elm_geometry$BoundingBox3d$minX = function (_v0) {
+	var boundingBox = _v0.a;
+	return boundingBox.minX;
+};
+var $ianmackenzie$elm_geometry$BoundingBox3d$minY = function (_v0) {
+	var boundingBox = _v0.a;
+	return boundingBox.minY;
+};
+var $ianmackenzie$elm_geometry$BoundingBox3d$minZ = function (_v0) {
+	var boundingBox = _v0.a;
+	return boundingBox.minZ;
+};
+var $ianmackenzie$elm_units$Quantity$minus = F2(
+	function (_v0, _v1) {
+		var y = _v0.a;
+		var x = _v1.a;
+		return $ianmackenzie$elm_units$Quantity$Quantity(x - y);
+	});
+var $ianmackenzie$elm_geometry$BoundingBox3d$dimensions = function (boundingBox) {
+	return _Utils_Tuple3(
+		A2(
+			$ianmackenzie$elm_units$Quantity$minus,
+			$ianmackenzie$elm_geometry$BoundingBox3d$minX(boundingBox),
+			$ianmackenzie$elm_geometry$BoundingBox3d$maxX(boundingBox)),
+		A2(
+			$ianmackenzie$elm_units$Quantity$minus,
+			$ianmackenzie$elm_geometry$BoundingBox3d$minY(boundingBox),
+			$ianmackenzie$elm_geometry$BoundingBox3d$maxY(boundingBox)),
+		A2(
+			$ianmackenzie$elm_units$Quantity$minus,
+			$ianmackenzie$elm_geometry$BoundingBox3d$minZ(boundingBox),
+			$ianmackenzie$elm_geometry$BoundingBox3d$maxZ(boundingBox)));
+};
+var $ianmackenzie$elm_geometry$Point3d$unwrap = function (_v0) {
+	var pointCoordinates = _v0.a;
+	return pointCoordinates;
+};
+var $ianmackenzie$elm_3d_scene$Scene3d$Entity$toBounds = function (boundingBox) {
+	var _v0 = $ianmackenzie$elm_geometry$BoundingBox3d$dimensions(boundingBox);
+	var xDimension = _v0.a.a;
+	var yDimension = _v0.b.a;
+	var zDimension = _v0.c.a;
+	return {
+		centerPoint: $ianmackenzie$elm_geometry$Point3d$unwrap(
+			$ianmackenzie$elm_geometry$BoundingBox3d$centerPoint(boundingBox)),
+		halfX: xDimension / 2,
+		halfY: yDimension / 2,
+		halfZ: zDimension / 2
+	};
+};
+var $ianmackenzie$elm_units$Pixels$toFloat = function (_v0) {
+	var numPixels = _v0.a;
+	return numPixels;
+};
+var $elm_explorations$linear_algebra$Math$Vector3$fromRecord = _MJS_v3fromRecord;
+var $ianmackenzie$elm_geometry_linear_algebra_interop$Geometry$Interop$LinearAlgebra$Point3d$toVec3 = function (point) {
+	return $elm_explorations$linear_algebra$Math$Vector3$fromRecord(
+		$ianmackenzie$elm_geometry$Point3d$unwrap(point));
+};
+var $ianmackenzie$elm_3d_scene$Scene3d$Entity$point = F3(
+	function (givenRadius, givenMaterial, givenPoint) {
+		var boundingBox = $ianmackenzie$elm_geometry$BoundingBox3d$singleton(givenPoint);
+		var bounds = $ianmackenzie$elm_3d_scene$Scene3d$Entity$toBounds(boundingBox);
+		switch (givenMaterial.$) {
+			case 'UnlitMaterial':
+				if (givenMaterial.b.$ === 'Constant') {
+					var color = givenMaterial.b.a;
+					return $ianmackenzie$elm_3d_scene$Scene3d$Types$Entity(
+						A2(
+							$ianmackenzie$elm_3d_scene$Scene3d$Types$PointNode,
+							bounds,
+							F8(
+								function (sceneProperties, modelScale, modelMatrix, isRightHanded, viewMatrix, projectionMatrix, lights, settings) {
+									return A5(
+										$elm_explorations$webgl$WebGL$entityWith,
+										settings,
+										$ianmackenzie$elm_3d_scene$Scene3d$UnoptimizedShaders$singlePointVertex,
+										$ianmackenzie$elm_3d_scene$Scene3d$UnoptimizedShaders$constantPointFragment,
+										$ianmackenzie$elm_3d_scene$Scene3d$Entity$dummyVertex,
+										{
+											constantColor: color,
+											modelMatrix: modelMatrix,
+											modelScale: modelScale,
+											pointPosition: $ianmackenzie$elm_geometry_linear_algebra_interop$Geometry$Interop$LinearAlgebra$Point3d$toVec3(givenPoint),
+											pointRadius: $ianmackenzie$elm_units$Pixels$toFloat(givenRadius),
+											projectionMatrix: projectionMatrix,
+											sceneProperties: sceneProperties,
+											viewMatrix: viewMatrix
+										});
+								})));
+				} else {
+					var data = givenMaterial.b.a.data;
+					return $ianmackenzie$elm_3d_scene$Scene3d$Entity$empty;
+				}
+			case 'EmissiveMaterial':
+				if (givenMaterial.b.$ === 'Constant') {
+					var color = givenMaterial.b.a.a;
+					var backlight = givenMaterial.c;
+					return $ianmackenzie$elm_3d_scene$Scene3d$Types$Entity(
+						A2(
+							$ianmackenzie$elm_3d_scene$Scene3d$Types$PointNode,
+							bounds,
+							F8(
+								function (sceneProperties, modelScale, modelMatrix, isRightHanded, viewMatrix, projectionMatrix, lights, settings) {
+									return A5(
+										$elm_explorations$webgl$WebGL$entityWith,
+										settings,
+										$ianmackenzie$elm_3d_scene$Scene3d$UnoptimizedShaders$singlePointVertex,
+										$ianmackenzie$elm_3d_scene$Scene3d$UnoptimizedShaders$emissivePointFragment,
+										$ianmackenzie$elm_3d_scene$Scene3d$Entity$dummyVertex,
+										{
+											emissiveColor: A2(
+												$elm_explorations$linear_algebra$Math$Vector3$scale,
+												$ianmackenzie$elm_units$Luminance$inNits(backlight),
+												color),
+											modelMatrix: modelMatrix,
+											modelScale: modelScale,
+											pointPosition: $ianmackenzie$elm_geometry_linear_algebra_interop$Geometry$Interop$LinearAlgebra$Point3d$toVec3(givenPoint),
+											pointRadius: $ianmackenzie$elm_units$Pixels$toFloat(givenRadius),
+											projectionMatrix: projectionMatrix,
+											sceneProperties: sceneProperties,
+											viewMatrix: viewMatrix
+										});
+								})));
+				} else {
+					return $ianmackenzie$elm_3d_scene$Scene3d$Entity$empty;
+				}
+			case 'LambertianMaterial':
+				return $ianmackenzie$elm_3d_scene$Scene3d$Entity$empty;
+			default:
+				return $ianmackenzie$elm_3d_scene$Scene3d$Entity$empty;
+		}
+	});
+var $ianmackenzie$elm_3d_scene$Scene3d$point = F3(
+	function (_v0, givenMaterial, givenPoint) {
+		var radius = _v0.radius;
+		return A3($ianmackenzie$elm_3d_scene$Scene3d$Entity$point, radius, givenMaterial, givenPoint);
+	});
+var $author$project$Renderers$WebGL$SceneBuilder3D$render3dView = function (points) {
+	var renderPoint = A2(
+		$ianmackenzie$elm_3d_scene$Scene3d$point,
+		{
+			radius: $ianmackenzie$elm_units$Pixels$pixels(2)
+		},
+		$ianmackenzie$elm_3d_scene$Scene3d$Material$color($avh4$elm_color$Color$black));
+	return A2($elm$core$List$map, renderPoint, points);
+};
 var $elm$json$Json$Decode$string = _Json_decodeString;
 var $author$project$Renderers$WebGL$Renderer$update = F2(
 	function (msg, model) {
@@ -5335,8 +7560,32 @@ var $author$project$Renderers$WebGL$Renderer$update = F2(
 			jsonMessage);
 		var _v1 = A2($elm$core$Debug$log, 'CMD', cmd);
 		if ((cmd.$ === 'Ok') && (cmd.a === 'track')) {
-			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			var points = A2(
+				$elm$json$Json$Decode$decodeValue,
+				A2(
+					$elm$json$Json$Decode$field,
+					'track',
+					$elm$json$Json$Decode$list($author$project$Renderers$WebGL$Renderer$localPointDecoder)),
+				jsonMessage);
+			if (points.$ === 'Ok') {
+				var somePoints = points.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							scene: $author$project$Renderers$WebGL$SceneBuilder3D$render3dView(
+								A2(
+									$elm$core$List$map,
+									$ianmackenzie$elm_geometry$Point3d$fromRecord($ianmackenzie$elm_units$Length$meters),
+									somePoints))
+						}),
+					$elm$core$Platform$Cmd$none);
+			} else {
+				var _v4 = A2($elm$core$Debug$log, 'NO POINTS ', _Utils_Tuple0);
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			}
 		} else {
+			var _v5 = A2($elm$core$Debug$log, 'CMD?? ', cmd);
 			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
