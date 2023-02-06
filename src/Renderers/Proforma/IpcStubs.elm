@@ -1,7 +1,6 @@
-port module Renderers.PROFORMA.IpcStubs exposing (..)
+port module Renderers.Proforma.IpcStubs exposing (..)
 
 import Json.Encode as E
-import RendererType exposing (RendererType)
 
 
 port ipcRendererToMain : E.Value -> Cmd msg

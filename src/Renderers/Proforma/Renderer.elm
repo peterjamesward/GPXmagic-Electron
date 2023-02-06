@@ -1,4 +1,4 @@
-module Renderers.PROFORMA.Renderer exposing (Model, Msg, main)
+module Renderers.Proforma.Renderer exposing (Model, Msg, main)
 
 import Browser
 import Element exposing (..)
@@ -8,7 +8,7 @@ import FlatColors.ChinesePalette
 import FlatColors.FlatUIPalette
 import Html exposing (Html, div)
 import Json.Encode as E
-import Renderers.PROFORMA.IpcStubs as Stubs
+import Renderers.Proforma.IpcStubs as Stubs
 import Task
 import Time
 
