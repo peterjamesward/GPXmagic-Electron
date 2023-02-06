@@ -1,4 +1,9 @@
-module Spherical exposing (findBearingToTarget, metresPerDegree, metresPerPixel, range)
+module Common.Spherical exposing
+    ( findBearingToTarget
+    , metresPerDegree
+    , metresPerPixel
+    , range
+    )
 
 -- Need some coordinate mangling
 -- https://www.movable-type.co.uk/scripts/latlong.html

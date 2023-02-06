@@ -1,7 +1,7 @@
 port module Renderers.LoadButton.IpcStubs exposing (..)
 
+import Common.RendererType as RendererType exposing (RendererType)
 import Json.Encode as E
-import RendererType exposing (RendererType)
 
 
 port ipcRendererToMain : E.Value -> Cmd msg

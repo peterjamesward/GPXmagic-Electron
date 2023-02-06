@@ -1,6 +1,8 @@
 module Renderers.LoadButton.Renderer exposing (Model, Msg, main)
 
 import Browser
+import Common.GpxPoint as GpxPoint exposing (gpxPointAsJSON)
+import Common.RendererType as RendererType exposing (RendererType(..))
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
@@ -9,11 +11,9 @@ import File exposing (File)
 import File.Select as Select
 import FlatColors.ChinesePalette
 import FlatColors.FlatUIPalette
-import GpxParser
-import GpxPoint exposing (gpxPointAsJSON)
 import Html exposing (Html, div)
 import Json.Encode as E
-import RendererType exposing (RendererType(..))
+import Renderers.LoadButton.GpxParser as GpxParser
 import Renderers.LoadButton.IpcStubs as Stubs
 import Task
 import Time

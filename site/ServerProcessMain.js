@@ -2905,7 +2905,7 @@ var $ianmackenzie$elm_geometry$Direction2d$fromAngle = function (_v0) {
 			y: $elm$core$Basics$sin(angle)
 		});
 };
-var $author$project$GpxPoint$GpxPoint = F4(
+var $author$project$Common$GpxPoint$GpxPoint = F4(
 	function (longitude, latitude, altitude, timestamp) {
 		return {altitude: altitude, latitude: latitude, longitude: longitude, timestamp: timestamp};
 	});
@@ -2926,9 +2926,9 @@ var $elm$time$Time$Posix = function (a) {
 	return {$: 'Posix', a: a};
 };
 var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
-var $author$project$GpxPoint$gpxDecoder = A5(
+var $author$project$Common$GpxPoint$gpxDecoder = A5(
 	$elm$json$Json$Decode$map4,
-	$author$project$GpxPoint$GpxPoint,
+	$author$project$Common$GpxPoint$GpxPoint,
 	A2($elm$json$Json$Decode$field, 'lon', $elm$json$Json$Decode$float),
 	A2($elm$json$Json$Decode$field, 'lat', $elm$json$Json$Decode$float),
 	A2($elm$json$Json$Decode$field, 'alt', $elm$json$Json$Decode$float),
@@ -3539,23 +3539,23 @@ var $elm$core$Dict$remove = F2(
 			return x;
 		}
 	});
-var $author$project$RendererType$Renderer3D = {$: 'Renderer3D'};
-var $author$project$RendererType$RendererCanvasChart = {$: 'RendererCanvasChart'};
-var $author$project$RendererType$RendererMap = {$: 'RendererMap'};
-var $author$project$RendererType$RendererProfile = {$: 'RendererProfile'};
-var $author$project$RendererType$RendererToolbox = {$: 'RendererToolbox'};
-var $author$project$RendererType$rendererTypeFromString = function (name) {
+var $author$project$Common$RendererType$Renderer3D = {$: 'Renderer3D'};
+var $author$project$Common$RendererType$RendererCanvasChart = {$: 'RendererCanvasChart'};
+var $author$project$Common$RendererType$RendererMap = {$: 'RendererMap'};
+var $author$project$Common$RendererType$RendererProfile = {$: 'RendererProfile'};
+var $author$project$Common$RendererType$RendererToolbox = {$: 'RendererToolbox'};
+var $author$project$Common$RendererType$rendererTypeFromString = function (name) {
 	switch (name) {
 		case 'toolbox':
-			return $elm$core$Maybe$Just($author$project$RendererType$RendererToolbox);
+			return $elm$core$Maybe$Just($author$project$Common$RendererType$RendererToolbox);
 		case '3d':
-			return $elm$core$Maybe$Just($author$project$RendererType$Renderer3D);
+			return $elm$core$Maybe$Just($author$project$Common$RendererType$Renderer3D);
 		case 'profile':
-			return $elm$core$Maybe$Just($author$project$RendererType$RendererProfile);
+			return $elm$core$Maybe$Just($author$project$Common$RendererType$RendererProfile);
 		case 'canvas':
-			return $elm$core$Maybe$Just($author$project$RendererType$RendererCanvasChart);
+			return $elm$core$Maybe$Just($author$project$Common$RendererType$RendererCanvasChart);
 		case 'map':
-			return $elm$core$Maybe$Just($author$project$RendererType$RendererMap);
+			return $elm$core$Maybe$Just($author$project$Common$RendererType$RendererMap);
 		default:
 			return $elm$core$Maybe$Nothing;
 	}
@@ -3564,8 +3564,8 @@ var $author$project$ServerProcess$Main$rendererWindow = function (rendererType) 
 	return {height: 600, rendererType: rendererType, width: 800};
 };
 var $elm$json$Json$Decode$string = _Json_decodeString;
-var $author$project$ServerProcess$Main$toolWindow = {height: 100, rendererType: $author$project$RendererType$RendererToolbox, width: 300};
-var $author$project$DomainModel$GPXSource = F4(
+var $author$project$ServerProcess$Main$toolWindow = {height: 100, rendererType: $author$project$Common$RendererType$RendererToolbox, width: 300};
+var $author$project$Common$DomainModel$GPXSource = F4(
 	function (longitude, latitude, altitude, timestamp) {
 		return {altitude: altitude, latitude: latitude, longitude: longitude, timestamp: timestamp};
 	});
@@ -3578,10 +3578,10 @@ var $elm$core$List$head = function (list) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
-var $author$project$DomainModel$Leaf = function (a) {
+var $author$project$Common$DomainModel$Leaf = function (a) {
 	return {$: 'Leaf', a: a};
 };
-var $author$project$DomainModel$Node = function (a) {
+var $author$project$Common$DomainModel$Node = function (a) {
 	return {$: 'Node', a: a};
 };
 var $elm$core$Basics$negate = function (n) {
@@ -3605,7 +3605,7 @@ var $ianmackenzie$elm_geometry$Direction2d$angleFrom = F2(
 		return $ianmackenzie$elm_units$Quantity$Quantity(
 			A2($elm$core$Basics$atan2, relativeY, relativeX));
 	});
-var $author$project$DomainModel$asRecord = function (treeNode) {
+var $author$project$Common$DomainModel$asRecord = function (treeNode) {
 	if (treeNode.$ === 'Leaf') {
 		var section = treeNode.a;
 		return section;
@@ -3614,8 +3614,8 @@ var $author$project$DomainModel$asRecord = function (treeNode) {
 		return node.nodeContent;
 	}
 };
-var $author$project$DomainModel$boundingBox = function (treeNode) {
-	return $author$project$DomainModel$asRecord(treeNode).boundingBox;
+var $author$project$Common$DomainModel$boundingBox = function (treeNode) {
+	return $author$project$Common$DomainModel$asRecord(treeNode).boundingBox;
 };
 var $elm$core$List$maximum = function (list) {
 	if (list.b) {
@@ -3700,15 +3700,15 @@ var $elm$core$Maybe$withDefault = F2(
 		}
 	});
 var $ianmackenzie$elm_units$Quantity$zero = $ianmackenzie$elm_units$Quantity$Quantity(0);
-var $author$project$DomainModel$combineInfo = F2(
+var $author$project$Common$DomainModel$combineInfo = F2(
 	function (info1, info2) {
 		var box = A2(
 			$ianmackenzie$elm_geometry$BoundingBox3d$union,
-			$author$project$DomainModel$boundingBox(info1),
-			$author$project$DomainModel$boundingBox(info2));
+			$author$project$Common$DomainModel$boundingBox(info1),
+			$author$project$Common$DomainModel$boundingBox(info2));
 		var _v0 = _Utils_Tuple2(
-			$author$project$DomainModel$asRecord(info1),
-			$author$project$DomainModel$asRecord(info2));
+			$author$project$Common$DomainModel$asRecord(info1),
+			$author$project$Common$DomainModel$asRecord(info2));
 		var asRecord1 = _v0.a;
 		var asRecord2 = _v0.b;
 		return {
@@ -3762,16 +3762,16 @@ var $author$project$DomainModel$combineInfo = F2(
 			trueLength: A2($ianmackenzie$elm_units$Quantity$plus, asRecord1.trueLength, asRecord2.trueLength)
 		};
 	});
-var $author$project$DomainModel$joiningNode = F2(
+var $author$project$Common$DomainModel$joiningNode = F2(
 	function (left, right) {
-		return $author$project$DomainModel$Node(
+		return $author$project$Common$DomainModel$Node(
 			{
 				left: left,
-				nodeContent: A2($author$project$DomainModel$combineInfo, left, right),
+				nodeContent: A2($author$project$Common$DomainModel$combineInfo, left, right),
 				right: right
 			});
 	});
-var $author$project$Spherical$findBearingToTarget = F2(
+var $author$project$Common$Spherical$findBearingToTarget = F2(
 	function (_v0, _v1) {
 		var lat1 = _v0.a;
 		var lon1 = _v0.b;
@@ -3837,9 +3837,9 @@ var $ianmackenzie$elm_units$Quantity$negate = function (_v0) {
 	var value = _v0.a;
 	return $ianmackenzie$elm_units$Quantity$Quantity(-value);
 };
-var $author$project$Spherical$meanRadius = 6371000;
+var $author$project$Common$Spherical$meanRadius = 6371000;
 var $elm$core$Basics$sqrt = _Basics_sqrt;
-var $author$project$Spherical$range = F2(
+var $author$project$Common$Spherical$range = F2(
 	function (lonLat1, lonLat2) {
 		var _v0 = _Utils_Tuple2(
 			$ianmackenzie$elm_units$Angle$inRadians(lonLat2.b),
@@ -3853,14 +3853,14 @@ var $author$project$Spherical$range = F2(
 		var lon1 = _v1.b;
 		var y = lat2 - lat1;
 		var x = (lon2 - lon1) * $elm$core$Basics$cos((lat1 + lat2) / 2);
-		return $author$project$Spherical$meanRadius * $elm$core$Basics$sqrt((x * x) + (y * y));
+		return $author$project$Common$Spherical$meanRadius * $elm$core$Basics$sqrt((x * x) + (y * y));
 	});
 var $ianmackenzie$elm_geometry$Direction2d$toAngle = function (_v0) {
 	var d = _v0.a;
 	return $ianmackenzie$elm_units$Quantity$Quantity(
 		A2($elm$core$Basics$atan2, d.y, d.x));
 };
-var $author$project$DomainModel$makeRoadSectionKnowingLocalCoords = F2(
+var $author$project$Common$DomainModel$makeRoadSectionKnowingLocalCoords = F2(
 	function (_v0, _v1) {
 		var earth1 = _v0.a;
 		var local1 = _v0.b;
@@ -3868,7 +3868,7 @@ var $author$project$DomainModel$makeRoadSectionKnowingLocalCoords = F2(
 		var local2 = _v1.b;
 		var range = $ianmackenzie$elm_units$Length$meters(
 			A2(
-				$author$project$Spherical$range,
+				$author$project$Common$Spherical$range,
 				_Utils_Tuple2(
 					$ianmackenzie$elm_geometry$Direction2d$toAngle(earth1.longitude),
 					earth1.latitude),
@@ -3877,7 +3877,7 @@ var $author$project$DomainModel$makeRoadSectionKnowingLocalCoords = F2(
 					earth2.latitude)));
 		var box = A2($ianmackenzie$elm_geometry$BoundingBox3d$from, local1.space, local2.space);
 		var bearing = A2(
-			$author$project$Spherical$findBearingToTarget,
+			$author$project$Common$Spherical$findBearingToTarget,
 			_Utils_Tuple2(
 				$ianmackenzie$elm_units$Angle$inRadians(earth1.latitude),
 				$ianmackenzie$elm_units$Angle$inRadians(
@@ -3937,7 +3937,7 @@ var $ianmackenzie$elm_units$Angle$cos = function (_v0) {
 var $ianmackenzie$elm_units$Angle$inDegrees = function (angle) {
 	return 180 * ($ianmackenzie$elm_units$Angle$inRadians(angle) / $elm$core$Basics$pi);
 };
-var $author$project$Spherical$metresPerDegree = ($author$project$Spherical$meanRadius * $elm$core$Basics$pi) / 180.0;
+var $author$project$Common$Spherical$metresPerDegree = ($author$project$Common$Spherical$meanRadius * $elm$core$Basics$pi) / 180.0;
 var $ianmackenzie$elm_geometry$Geometry$Types$Point3d = function (a) {
 	return {$: 'Point3d', a: a};
 };
@@ -3949,34 +3949,34 @@ var $ianmackenzie$elm_geometry$Point3d$xyz = F3(
 		return $ianmackenzie$elm_geometry$Geometry$Types$Point3d(
 			{x: x, y: y, z: z});
 	});
-var $author$project$DomainModel$pointFromGpxWithReference = F2(
+var $author$project$Common$DomainModel$pointFromGpxWithReference = F2(
 	function (reference, gpx) {
 		return {
 			space: A3(
 				$ianmackenzie$elm_geometry$Point3d$xyz,
 				$ianmackenzie$elm_units$Length$meters(
-					$ianmackenzie$elm_units$Angle$cos(gpx.latitude) * ($author$project$Spherical$metresPerDegree * $ianmackenzie$elm_units$Angle$inDegrees(
+					$ianmackenzie$elm_units$Angle$cos(gpx.latitude) * ($author$project$Common$Spherical$metresPerDegree * $ianmackenzie$elm_units$Angle$inDegrees(
 						A2($ianmackenzie$elm_geometry$Direction2d$angleFrom, reference.longitude, gpx.longitude)))),
 				$ianmackenzie$elm_units$Length$meters(
-					$author$project$Spherical$metresPerDegree * $ianmackenzie$elm_units$Angle$inDegrees(
+					$author$project$Common$Spherical$metresPerDegree * $ianmackenzie$elm_units$Angle$inDegrees(
 						A2($ianmackenzie$elm_units$Quantity$minus, reference.latitude, gpx.latitude))),
 				gpx.altitude),
 			time: gpx.timestamp
 		};
 	});
-var $author$project$DomainModel$makeRoadSection = F3(
+var $author$project$Common$DomainModel$makeRoadSection = F3(
 	function (reference, earth1, earth2) {
 		var _v0 = _Utils_Tuple2(
-			A2($author$project$DomainModel$pointFromGpxWithReference, reference, earth1),
-			A2($author$project$DomainModel$pointFromGpxWithReference, reference, earth2));
+			A2($author$project$Common$DomainModel$pointFromGpxWithReference, reference, earth1),
+			A2($author$project$Common$DomainModel$pointFromGpxWithReference, reference, earth2));
 		var local1 = _v0.a;
 		var local2 = _v0.b;
 		return A2(
-			$author$project$DomainModel$makeRoadSectionKnowingLocalCoords,
+			$author$project$Common$DomainModel$makeRoadSectionKnowingLocalCoords,
 			_Utils_Tuple2(earth1, local1),
 			_Utils_Tuple2(earth2, local2));
 	});
-var $author$project$DomainModel$treeFromSourcesWithExistingReference = F2(
+var $author$project$Common$DomainModel$treeFromSourcesWithExistingReference = F2(
 	function (referencePoint, track) {
 		var treeBuilder = F2(
 			function (n, pointStream) {
@@ -3990,8 +3990,8 @@ var $author$project$DomainModel$treeFromSourcesWithExistingReference = F2(
 						var vvvv = _v2.b;
 						return _Utils_Tuple2(
 							$elm$core$Maybe$Just(
-								$author$project$DomainModel$Leaf(
-									A3($author$project$DomainModel$makeRoadSection, referencePoint, v1, v2))),
+								$author$project$Common$DomainModel$Leaf(
+									A3($author$project$Common$DomainModel$makeRoadSection, referencePoint, v1, v2))),
 							A2($elm$core$List$cons, v2, vvvv));
 					} else {
 						var anythingElse = _v0.b;
@@ -4013,7 +4013,7 @@ var $author$project$DomainModel$treeFromSourcesWithExistingReference = F2(
 						var rightSubtree = _v5.b.a;
 						return _Utils_Tuple2(
 							$elm$core$Maybe$Just(
-								A2($author$project$DomainModel$joiningNode, leftSubtree, rightSubtree)),
+								A2($author$project$Common$DomainModel$joiningNode, leftSubtree, rightSubtree)),
 							remainingAfterRight);
 					} else {
 						return _Utils_Tuple2($elm$core$Maybe$Nothing, remainingAfterRight);
@@ -4026,12 +4026,12 @@ var $author$project$DomainModel$treeFromSourcesWithExistingReference = F2(
 var $ianmackenzie$elm_geometry$Direction2d$positiveX = $ianmackenzie$elm_geometry$Geometry$Types$Direction2d(
 	{x: 1, y: 0});
 var $ianmackenzie$elm_geometry$Direction2d$x = $ianmackenzie$elm_geometry$Direction2d$positiveX;
-var $author$project$DomainModel$treeFromSourcePoints = function (track) {
+var $author$project$Common$DomainModel$treeFromSourcePoints = function (track) {
 	var referencePoint = A2(
 		$elm$core$Maybe$withDefault,
-		A4($author$project$DomainModel$GPXSource, $ianmackenzie$elm_geometry$Direction2d$x, $ianmackenzie$elm_units$Quantity$zero, $ianmackenzie$elm_units$Quantity$zero, $elm$core$Maybe$Nothing),
+		A4($author$project$Common$DomainModel$GPXSource, $ianmackenzie$elm_geometry$Direction2d$x, $ianmackenzie$elm_units$Quantity$zero, $ianmackenzie$elm_units$Quantity$zero, $elm$core$Maybe$Nothing),
 		$elm$core$List$head(track));
-	return A2($author$project$DomainModel$treeFromSourcesWithExistingReference, referencePoint, track);
+	return A2($author$project$Common$DomainModel$treeFromSourcesWithExistingReference, referencePoint, track);
 };
 var $author$project$ServerProcess$Main$update = F2(
 	function (msg, model) {
@@ -4062,12 +4062,12 @@ var $author$project$ServerProcess$Main$update = F2(
 							A2(
 								$elm$json$Json$Decode$field,
 								'content',
-								$elm$json$Json$Decode$list($author$project$GpxPoint$gpxDecoder)),
+								$elm$json$Json$Decode$list($author$project$Common$GpxPoint$gpxDecoder)),
 							jsonMessage);
 						if (rawGpxPoints.$ === 'Ok') {
 							var rawPoints = rawGpxPoints.a;
 							var internalPoints = A2($elm$core$List$map, pointConverter, rawPoints);
-							var tree = $author$project$DomainModel$treeFromSourcePoints(internalPoints);
+							var tree = $author$project$Common$DomainModel$treeFromSourcePoints(internalPoints);
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
@@ -4083,7 +4083,7 @@ var $author$project$ServerProcess$Main$update = F2(
 							jsonMessage);
 						if (_v4.$ === 'Ok') {
 							var foundRenderer = _v4.a;
-							var _v5 = $author$project$RendererType$rendererTypeFromString(foundRenderer);
+							var _v5 = $author$project$Common$RendererType$rendererTypeFromString(foundRenderer);
 							if (_v5.$ === 'Just') {
 								var renderer = _v5.a;
 								return A2(

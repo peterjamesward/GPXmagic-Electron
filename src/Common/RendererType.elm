@@ -1,4 +1,4 @@
-module RendererType exposing (..)
+module Common.RendererType exposing (..)
 
 import Json.Decode as D
 

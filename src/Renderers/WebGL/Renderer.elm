@@ -4,16 +4,10 @@ import Browser
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
-import Element.Input as Input exposing (button)
-import File exposing (File)
-import File.Select as Select
 import FlatColors.ChinesePalette
 import FlatColors.FlatUIPalette
-import GpxParser
-import GpxPoint exposing (gpxPointAsJSON)
 import Html exposing (Html, div)
 import Json.Encode as E
-import RendererType exposing (RendererType(..))
 import Renderers.LoadButton.IpcStubs as Stubs
 import Task
 import Time

@@ -1,4 +1,4 @@
-module DomainModel exposing
+module Common.DomainModel exposing
     ( EarthPoint
     , GPXSource
     , PeteTree(..)
@@ -50,18 +50,18 @@ module DomainModel exposing
 import Angle exposing (Angle)
 import Axis3d exposing (Axis3d)
 import BoundingBox3d exposing (BoundingBox3d)
+import Common.LocalCoords exposing (LocalCoords)
+import Common.Spherical as Spherical
+import Common.Utils as Utils
 import Dict exposing (Dict)
 import Direction2d exposing (Direction2d)
 import Direction3d
 import Json.Encode as E
 import Length exposing (Meters)
 import List.Extra
-import LocalCoords exposing (LocalCoords)
 import Point3d exposing (Point3d)
 import Quantity exposing (Quantity)
-import Spherical exposing (range)
 import Time
-import Utils
 
 
 type alias GPXSource =
@@ -794,7 +794,7 @@ interpolateTrack distance treeNode =
 gpxDistance : GPXSource -> GPXSource -> Length.Length
 gpxDistance p1 p2 =
     Length.meters <|
-        range
+        Spherical.range
             ( Direction2d.toAngle p1.longitude, p1.latitude )
             ( Direction2d.toAngle p2.longitude, p2.latitude )
 

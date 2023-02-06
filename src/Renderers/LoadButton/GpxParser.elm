@@ -1,11 +1,11 @@
-module GpxParser exposing
+module Renderers.LoadButton.GpxParser exposing
     ( asRegex
     , parseSegments
     , parseTrackName
     )
 
+import Common.GpxPoint as GpxPoint exposing (GpxPoint)
 import ElmEscapeHtml
-import GpxPoint exposing (GpxPoint)
 import Iso8601
 import List.Extra
 import Maybe.Extra

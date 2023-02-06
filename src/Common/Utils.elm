@@ -1,4 +1,12 @@
-module Utils exposing (addTimes, deDupe, elide, equalIntervals, errorToString, interpolateTimes, subtractTimes)
+module Common.Utils exposing
+    ( addTimes
+    , deDupe
+    , elide
+    , equalIntervals
+    , errorToString
+    , interpolateTimes
+    , subtractTimes
+    )
 
 import Http exposing (Error(..))
 import Time

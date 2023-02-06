@@ -1,4 +1,4 @@
-module GpxPoint exposing (..)
+module Common.GpxPoint exposing (..)
 
 import Json.Decode as D
 import Json.Encode as E

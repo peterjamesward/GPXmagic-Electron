@@ -1,4 +1,4 @@
-module About exposing (aboutText)
+module Common.About exposing (aboutText)
 
 
 aboutText =

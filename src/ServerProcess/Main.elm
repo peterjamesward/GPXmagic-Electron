@@ -1,15 +1,15 @@
 port module ServerProcess.Main exposing (main)
 
 import Angle
+import Common.DomainModel as DomainModel exposing (GPXSource)
+import Common.GpxPoint as GpxPoint exposing (GpxPoint)
+import Common.RendererType as RendererType exposing (RendererType(..))
 import Dict exposing (Dict)
 import Direction2d
-import DomainModel exposing (GPXSource)
-import GpxPoint exposing (GpxPoint)
 import Json.Decode as D
 import Json.Encode as E
 import Length
 import Platform exposing (Program)
-import RendererType exposing (RendererType(..))
 
 
 port fromJavascript : (E.Value -> msg) -> Sub msg
