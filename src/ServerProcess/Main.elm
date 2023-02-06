@@ -75,11 +75,11 @@ update msg model =
                     , timestamp = gpx.timestamp
                     }
 
-                earthPoints =
-                    Maybe.map (DomainModel.elidedEarthPoints 10) model.tree
+                earthPoints tree =
+                    Maybe.map (DomainModel.elidedEarthPoints 10) tree
 
-                pointsAsJson =
-                    case earthPoints of
+                pointsAsJson tree =
+                    case earthPoints tree of
                         Just points ->
                             E.list earthPointAsJson points
 
@@ -109,12 +109,11 @@ update msg model =
                                 internalPoints =
                                     List.map pointConverter rawPoints
 
-                                tree =
-                                    DomainModel.treeFromSourcePoints internalPoints
+                                newModel =
+                                    { model | tree = DomainModel.treeFromSourcePoints internalPoints }
                             in
-                            ( { model | tree = tree }
-                            , Cmd.none
-                              --sendToAll pointsAsJson model
+                            ( newModel
+                            , sendToAll (pointsAsJson newModel.tree) newModel
                             )
 
                         _ ->
@@ -142,7 +141,7 @@ update msg model =
                     case senderId of
                         Ok id ->
                             ( model
-                            , sendTrackToRenderer pointsAsJson id
+                            , sendTrackToRenderer (pointsAsJson model.tree) id
                             )
 
                         Err _ ->
@@ -174,8 +173,9 @@ sendTrackToRenderer pointsAsJson id =
 
 sendToAll pointsAsJson model =
     model.windows
-        |> Dict.values
+        |> Dict.keys
         |> List.map (sendTrackToRenderer pointsAsJson)
+        |> Cmd.batch
 
 
 subscriptions : Model -> Sub Msg

@@ -3749,6 +3749,14 @@ var $author$project$ServerProcess$Main$sendTrackToRenderer = F2(
 						_Utils_Tuple2('track', pointsAsJson)
 					])));
 	});
+var $author$project$ServerProcess$Main$sendToAll = F2(
+	function (pointsAsJson, model) {
+		return $elm$core$Platform$Cmd$batch(
+			A2(
+				$elm$core$List$map,
+				$author$project$ServerProcess$Main$sendTrackToRenderer(pointsAsJson),
+				$elm$core$Dict$keys(model.windows)));
+	});
 var $elm$json$Json$Decode$string = _Json_decodeString;
 var $author$project$ServerProcess$Main$toolWindow = {height: 100, rendererType: $author$project$Common$RendererType$RendererToolbox, width: 300};
 var $author$project$Common$DomainModel$GPXSource = F4(
@@ -4210,18 +4218,21 @@ var $author$project$ServerProcess$Main$update = F2(
 				timestamp: gpx.timestamp
 			};
 		};
-		var earthPoints = A2(
-			$elm$core$Maybe$map,
-			$author$project$Common$DomainModel$elidedEarthPoints(10),
-			model.tree);
-		var pointsAsJson = function () {
-			if (earthPoints.$ === 'Just') {
-				var points = earthPoints.a;
+		var earthPoints = function (tree) {
+			return A2(
+				$elm$core$Maybe$map,
+				$author$project$Common$DomainModel$elidedEarthPoints(10),
+				tree);
+		};
+		var pointsAsJson = function (tree) {
+			var _v8 = earthPoints(tree);
+			if (_v8.$ === 'Just') {
+				var points = _v8.a;
 				return A2($elm$json$Json$Encode$list, $author$project$Common$DomainModel$earthPointAsJson, points);
 			} else {
 				return $elm$json$Json$Encode$null;
 			}
-		}();
+		};
 		var cmd = A2(
 			$elm$json$Json$Decode$decodeValue,
 			A2($elm$json$Json$Decode$field, 'cmd', $elm$json$Json$Decode$string),
@@ -4244,12 +4255,17 @@ var $author$project$ServerProcess$Main$update = F2(
 						if (rawGpxPoints.$ === 'Ok') {
 							var rawPoints = rawGpxPoints.a;
 							var internalPoints = A2($elm$core$List$map, pointConverter, rawPoints);
-							var tree = $author$project$Common$DomainModel$treeFromSourcePoints(internalPoints);
+							var newModel = _Utils_update(
+								model,
+								{
+									tree: $author$project$Common$DomainModel$treeFromSourcePoints(internalPoints)
+								});
 							return _Utils_Tuple2(
-								_Utils_update(
-									model,
-									{tree: tree}),
-								$elm$core$Platform$Cmd$none);
+								newModel,
+								A2(
+									$author$project$ServerProcess$Main$sendToAll,
+									pointsAsJson(newModel.tree),
+									newModel));
 						} else {
 							return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 						}
@@ -4278,7 +4294,10 @@ var $author$project$ServerProcess$Main$update = F2(
 							var id = senderId.a;
 							return _Utils_Tuple2(
 								model,
-								A2($author$project$ServerProcess$Main$sendTrackToRenderer, pointsAsJson, id));
+								A2(
+									$author$project$ServerProcess$Main$sendTrackToRenderer,
+									pointsAsJson(model.tree),
+									id));
 						} else {
 							return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 						}

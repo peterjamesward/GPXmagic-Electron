@@ -119,7 +119,7 @@ function makeWindow(elmWindowdId, windowSpec) {
         // Emitted when the window is closed.
         window.on('close',
             function() {
-                const elmId = windowsElectronToElm.get(window.id);
+                const elmId = windowsElectronToElm.get(window.webContents.id);
                 elmPorts.fromJavascript.send({ cmd : "closed", id : elmId });
                 windowsElectronToElm.delete(window.id);
                 windowsElmToElectron.delete(elmId);
