@@ -3,57 +3,49 @@
 
 ## Electron PoC
 
-(DONE) Create a file loader Elm app that reads and parses, sends GPX data to server as JSON.
-
-Note the path from Elm to Main Process is (necessarily) not simple:
-1. Elm creates some JSON
-2. Elm sends JSON through a port with a "cmd" tag
-3. In JS a single routine sits at the port and dispatches on the "cmd" tag
-4. Call from there to the GPXmagicAPI exposed in preload.js; this is named functions
-5. Then it's messaging again up to main, where the event name should be the "cmd" tag
-6. In Main process, there's an ".on" method for each event type
-7. This will pass into Elm through a port in the server side
-8. Elm will pick up the Sub msg
-9. Elm logic in the server
-10. Route back is the reverse set of ports and messages.
-
-> Haven't quite got the tracking of windows right at the server.
-> (How to do "send to all"?)
-
-Server sends (elided) model to all renderers. (Maybe renderer specified elision when it registers.)
-Renderers locally render to WebGL, Canvas, Map as required (specialised, hence simpler).
-
-Traffic is two-way, so Toolbox is also a renderer, sends updates to server, whilst (say) "drag on map" also sends an update.
-(Generally, I suspect tools require access to a PeteTree.)
-
 Not sure where click detect happens; needs to be in server if renderers do not have full model but is that an abstraction leak?
 (It may not be if we're communicating in terms of (lon, lat) or 3D "rays". 
 
 Couple of funny cases such as requesting altitudes from Map, which at least requires that there is one Map. 
 I guess server could spawn an invisible worker if needed, or that tool is only enabled if there is a Map loaded (better).)
 
-Anyway, that's the concept. Then tools and views migrate without baggage (no Actions).
-More JS than before but we can keep it clean as renderers are specialised.
+Route maker will be odd, as always. At least this keeps the complexity in one process.
+
+## Bugs
+
+Is possible to induce an exception by closing several windows.
+
+## Next
+
+* Optimise primary renderer window size and placement.
+* Window splitting.
+* Docking toolbox (take aspect ratio into account - low and wide vs tall and narrow)
+* Maximize window not to obscure tool box.
+* Window locations stored.
+* Window location restored.
+* Error handling
+* Graceful failure on large tracks (!)
+* Tile windows on primary monitor, allowing for docked tool box(es).
+* Zoom, pan.
+* Change camera mode for 3D.
+* Click detect (index in main process).
+* Pointer update notification (mainly for map which always has full track)
+* Canvas charts.
+* Map.
+* WebGL & SVG chart.
+* Change window type (swap with same-place window, ideally without flicker).
+* Segments.
+* Google Street View.
+* Tools, with good code hygiene.
+* Tool show/hide by toolbox, stored and restored.
+* Menu bar to reset tools, change language, metric/imperial, follow dark/light.
+* Canvas snapshot buttons
+
+NB: The 3D views differ only in camera placement, so I see that being nicer.
 
 ## Questions & challenges
 
-Whether WebViews have their own process and are basically "embedded" pages in all respects.
-This could make window management a nice extension of v3, having panes but allowing >1 containers.
-
 Want to avoid re-loading map just because user switches views. Maybe just hide them. Maybe not worry.
-
-How best to implement simple view switch. (Depends on what WebView really is?)
-
-Thinking of keeping window management simple, not using WebView. 
-Each BrowserWindow to be only one view but with a consistent set of buttons for user to:
-* Switch to a different view (which reloads the window with new content)
-* Split vertically or horizontally (which clones the active view)
-* Close (also by title bar controls)
-Window positions and mode to be kept in localStorage like v3.
-Central option somewhere to Tile or Cascade all windows onto primary display.
-
-> Be nice to open a new view in free space. 
-> (But less important if we are splitting existing.)
 
 ---
 

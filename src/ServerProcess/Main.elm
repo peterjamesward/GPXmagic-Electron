@@ -208,9 +208,9 @@ toolWindow =
 
 rendererWindow rendererType =
     { rendererType = rendererType
-    , width = 800
-    , height = 600
-    , top = 125
+    , width = 1024
+    , height = 768 - 120 - 28
+    , top = 120 + 28 -- TODO: Get the actual title bar height and screen size.
     , left = 0
     }
 

@@ -3738,7 +3738,7 @@ var $author$project$Common$RendererType$rendererTypeFromString = function (name)
 	}
 };
 var $author$project$ServerProcess$Main$rendererWindow = function (rendererType) {
-	return {height: 600, left: 0, rendererType: rendererType, top: 125, width: 800};
+	return {height: (768 - 120) - 28, left: 0, rendererType: rendererType, top: 120 + 28, width: 1024};
 };
 var $author$project$ServerProcess$Main$sendTrackToRenderer = F2(
 	function (pointsAsJson, id) {

@@ -70,7 +70,7 @@ app.on('ready',
 function handleElmMessage(msg) {
 
 //    console.log('MAIN: Message from Elm', msg)
-    console.log("OUTBOUND MAPPING", windowsElmToElectron, msg.target);
+//    console.log("OUTBOUND MAPPING", windowsElmToElectron, msg.target);
     const targetRenderer = windowsElmToElectron.get(msg.target);
 
     switch (msg.cmd) {
@@ -93,38 +93,39 @@ function handleElmMessage(msg) {
 // Basic window lifecycle.
 function makeWindow(elmWindowId, windowSpec) {
 
-        console.log("MAIN:", windowSpec);
+//    console.log("MAIN:", windowSpec);
 
-        var window = new BrowserWindow(
-            {
-                width: windowSpec.width,
-                height: windowSpec.height,
-                x : windowSpec.left,
-                y : windowSpec.top,
-                webPreferences: {
-                    preload: path.join(__dirname, 'preload.js')
-                }
+    var window = new BrowserWindow(
+        {
+            width: windowSpec.width,
+            height: windowSpec.height,
+            x : windowSpec.left,
+            y : windowSpec.top,
+            acceptFirstMouse : true,
+            webPreferences: {
+                preload: path.join(__dirname, 'preload.js')
             }
-        );
+        }
+    );
 
-        // Keep track of windows on both sides.
-        windowsElectronToElm.set(window.webContents.id, elmWindowId);
-        windowsElmToElectron.set(elmWindowId, window.id);
-        console.log("MAPPING", windowsElectronToElm);
+    // Keep track of windows on both sides.
+    windowsElectronToElm.set(window.webContents.id, elmWindowId);
+    windowsElmToElectron.set(elmWindowId, window.id);
+    console.log("MAPPING", windowsElectronToElm);
 
-        // and load the index.html of the app.
-        window.loadURL('file://' + __dirname + '/src/Renderers/' + windowSpec.html + '/Renderer.html');
+    // and load the index.html of the app.
+    window.loadURL('file://' + __dirname + '/src/Renderers/' + windowSpec.html + '/Renderer.html');
 
-        // Open the devtools.
+    // Open the devtools.
 //        window.openDevTools();
 
-        // Emitted when the window is closed.
-        window.on('close',
-            function() {
-                const elmId = windowsElectronToElm.get(window.webContents.id);
-                elmPorts.fromJavascript.send({ cmd : "closed", id : elmId });
-                windowsElectronToElm.delete(window.id);
-                windowsElmToElectron.delete(elmId);
-            }
-        );
+    // Emitted when the window is closed.
+    window.on('close',
+        function() {
+            const elmId = windowsElectronToElm.get(window.webContents.id);
+            elmPorts.fromJavascript.send({ cmd : "closed", id : elmId });
+            windowsElectronToElm.delete(window.id);
+            windowsElmToElectron.delete(elmId);
+        }
+    );
 };
