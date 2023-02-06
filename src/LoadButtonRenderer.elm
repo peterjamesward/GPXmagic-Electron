@@ -14,6 +14,7 @@ import GpxPoint exposing (gpxPointAsJSON)
 import Html exposing (Html, div)
 import Json.Encode as E
 import LoadButtonIpcStubs
+import RendererType exposing (RendererType(..))
 import Task
 import Time
 
@@ -24,7 +25,7 @@ type Msg
     | GpxSelected File
     | GpxLoaded String
     | MessageFromMainProcess E.Value
-    | OpenView
+    | OpenView RendererType
 
 
 type alias Model =
@@ -95,9 +96,9 @@ update msg model =
         MessageFromMainProcess value ->
             ( model, Cmd.none )
 
-        OpenView ->
+        OpenView rendererType ->
             ( model
-            , LoadButtonIpcStubs.openView
+            , LoadButtonIpcStubs.newView rendererType
             )
 
 
@@ -119,8 +120,8 @@ view model =
 
         openView =
             button buttonStyles
-                { onPress = Just OpenView
-                , label = text "Open a viewer window"
+                { onPress = Just <| OpenView Renderer3D
+                , label = text "Open a 3D window"
                 }
     in
     layout

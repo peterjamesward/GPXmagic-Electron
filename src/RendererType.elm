@@ -1,0 +1,56 @@
+module RendererType exposing (..)
+
+import Json.Decode as D
+
+
+type RendererType
+    = RendererToolbox
+    | Renderer3D
+    | RendererProfile
+    | RendererCanvasChart
+    | RendererMap
+
+
+rendererTypeAsString : RendererType -> String
+rendererTypeAsString renderer =
+    case renderer of
+        RendererToolbox ->
+            "toolbox"
+
+        Renderer3D ->
+            "3d"
+
+        RendererProfile ->
+            -- Classic WebGL & SVG profile
+            "profile"
+
+        RendererCanvasChart ->
+            -- New style profile
+            "canvas"
+
+        RendererMap ->
+            "map"
+
+
+rendererTypeFromString : String -> Maybe RendererType
+rendererTypeFromString name =
+    case name of
+        "toolbox" ->
+            Just RendererToolbox
+
+        "3d" ->
+            Just Renderer3D
+
+        -- Classic WebGL & SVG profile
+        "profile" ->
+            Just RendererProfile
+
+        -- New style profile
+        "canvas" ->
+            Just RendererCanvasChart
+
+        "map" ->
+            Just RendererMap
+
+        _ ->
+            Nothing

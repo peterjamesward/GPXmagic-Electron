@@ -5785,15 +5785,35 @@ var $author$project$LoadButtonIpcStubs$loadNewGpx = function (pointsAsJSON) {
 					_Utils_Tuple2('content', pointsAsJSON)
 				])));
 };
+var $author$project$RendererType$rendererTypeAsString = function (renderer) {
+	switch (renderer.$) {
+		case 'RendererToolbox':
+			return 'toolbox';
+		case 'Renderer3D':
+			return '3d';
+		case 'RendererProfile':
+			return 'profile';
+		case 'RendererCanvasChart':
+			return 'canvas';
+		default:
+			return 'map';
+	}
+};
+var $author$project$LoadButtonIpcStubs$newView = function (renderer) {
+	return $author$project$LoadButtonIpcStubs$ipcRendererToMain(
+		$elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'cmd',
+					$elm$json$Json$Encode$string('newview')),
+					_Utils_Tuple2(
+					'renderer',
+					$elm$json$Json$Encode$string(
+						$author$project$RendererType$rendererTypeAsString(renderer)))
+				])));
+};
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $author$project$LoadButtonIpcStubs$openView = $author$project$LoadButtonIpcStubs$ipcRendererToMain(
-	$elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'cmd',
-				$elm$json$Json$Encode$string('openview'))
-			])));
 var $elm$regex$Regex$Match = F4(
 	function (match, index, number, submatches) {
 		return {index: index, match: match, number: number, submatches: submatches};
@@ -7797,11 +7817,17 @@ var $author$project$LoadButtonRenderer$update = F2(
 				var value = msg.a;
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			default:
-				return _Utils_Tuple2(model, $author$project$LoadButtonIpcStubs$openView);
+				var rendererType = msg.a;
+				return _Utils_Tuple2(
+					model,
+					$author$project$LoadButtonIpcStubs$newView(rendererType));
 		}
 	});
 var $author$project$LoadButtonRenderer$GpxRequested = {$: 'GpxRequested'};
-var $author$project$LoadButtonRenderer$OpenView = {$: 'OpenView'};
+var $author$project$LoadButtonRenderer$OpenView = function (a) {
+	return {$: 'OpenView', a: a};
+};
+var $author$project$RendererType$Renderer3D = {$: 'Renderer3D'};
 var $smucode$elm_flat_colors$FlatColors$ChinesePalette$antiFlashWhite = A3($mdgriffith$elm_ui$Element$rgb255, 241, 242, 246);
 var $mdgriffith$elm_ui$Internal$Model$Attr = function (a) {
 	return {$: 'Attr', a: a};
@@ -13742,8 +13768,9 @@ var $author$project$LoadButtonRenderer$view = function (model) {
 		$mdgriffith$elm_ui$Element$Input$button,
 		buttonStyles,
 		{
-			label: $mdgriffith$elm_ui$Element$text('Open a viewer window'),
-			onPress: $elm$core$Maybe$Just($author$project$LoadButtonRenderer$OpenView)
+			label: $mdgriffith$elm_ui$Element$text('Open a 3D window'),
+			onPress: $elm$core$Maybe$Just(
+				$author$project$LoadButtonRenderer$OpenView($author$project$RendererType$Renderer3D))
 		});
 	return A2(
 		$mdgriffith$elm_ui$Element$layout,

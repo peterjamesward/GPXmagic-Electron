@@ -9,6 +9,7 @@ import Json.Decode as D
 import Json.Encode as E
 import Length
 import Platform exposing (Program)
+import RendererType exposing (RendererType(..))
 
 
 port fromJavascript : (E.Value -> msg) -> Sub msg
@@ -87,7 +88,7 @@ update msg model =
                 Ok "ready" ->
                     --The Electron server is ready to execute our instructions.
                     --Begin by making a main window; this will become our toolbox, probably.
-                    makeToolWindow model
+                    makeNewWindow toolWindow model
 
                 Ok "newgpx" ->
                     let
@@ -114,20 +115,28 @@ update msg model =
                             --TODO: Return errors.
                             ( model, Cmd.none )
 
-                Ok "openview" ->
-                    --TODO: Create a list of views.
+                Ok "newview" ->
                     --When view added, send it a tree if available.
                     --When tree loaded, send to all views.
-                    ( model, Cmd.none )
+                    case D.decodeValue (D.field "renderer" D.string) jsonMessage of
+                        Ok foundRenderer ->
+                            case RendererType.rendererTypeFromString foundRenderer of
+                                Just renderer ->
+                                    makeNewWindow
+                                        (rendererWindow renderer)
+                                        model
 
-                Ok "ckised" ->
+                                Nothing ->
+                                    ( model, Cmd.none )
+
+                        Err _ ->
+                            ( model, Cmd.none )
+
+                Ok "closed" ->
                     --User closed a window, remove it.
                     let
                         windowId =
                             D.decodeValue (D.field "id" D.int) jsonMessage
-
-                        _ =
-                            Debug.log "WINDOWS" model.windows
                     in
                     case windowId of
                         Ok id ->
@@ -159,16 +168,6 @@ type alias RendererWindow =
     }
 
 
-type RendererType
-    = RendererToolbox
-
-
-
---| Renderer3D
---| RendererCanvasChart
---| RendererMap
-
-
 toolWindow =
     { rendererType = RendererToolbox
     , width = 300
@@ -176,17 +175,24 @@ toolWindow =
     }
 
 
-makeToolWindow : Model -> ( Model, Cmd Msg )
-makeToolWindow model =
+rendererWindow rendererType =
+    { rendererType = rendererType
+    , width = 800
+    , height = 600
+    }
+
+
+makeNewWindow : RendererWindow -> Model -> ( Model, Cmd Msg )
+makeNewWindow window model =
     ( { model
-        | windows = model.windows |> Dict.insert model.nextWindowId toolWindow
+        | windows = model.windows |> Dict.insert model.nextWindowId window
         , nextWindowId = 1 + model.nextWindowId
       }
     , toJavascript <|
         E.object
             [ ( "cmd", E.string "newwindow" )
             , ( "id", E.int model.nextWindowId )
-            , ( "window", windowAsJson toolWindow )
+            , ( "window", windowAsJson window )
             ]
     )
 
@@ -194,9 +200,22 @@ makeToolWindow model =
 rendererHtmlFile : RendererType -> String
 rendererHtmlFile rendererType =
     --Yes, this is crucial Electron-level config here.
+    --TODO: Add each type carefully.
     case rendererType of
         RendererToolbox ->
             "LoadButtonRenderer"
+
+        Renderer3D ->
+            "WebGLRenderer"
+
+        RendererProfile ->
+            "WebGLRenderer"
+
+        RendererCanvasChart ->
+            "WebGLRenderer"
+
+        RendererMap ->
+            "WebGLRenderer"
 
 
 windowAsJson : RendererWindow -> E.Value

@@ -3049,10 +3049,19 @@ var $elm$core$Dict$insert = F3(
 		}
 	});
 var $elm$json$Json$Encode$int = _Json_wrap;
-var $author$project$ServerProcessMain$RendererToolbox = {$: 'RendererToolbox'};
-var $author$project$ServerProcessMain$toolWindow = {height: 100, rendererType: $author$project$ServerProcessMain$RendererToolbox, width: 300};
 var $author$project$ServerProcessMain$rendererHtmlFile = function (rendererType) {
-	return 'LoadButtonRenderer';
+	switch (rendererType.$) {
+		case 'RendererToolbox':
+			return 'LoadButtonRenderer';
+		case 'Renderer3D':
+			return 'WebGLRenderer';
+		case 'RendererProfile':
+			return 'WebGLRenderer';
+		case 'RendererCanvasChart':
+			return 'WebGLRenderer';
+		default:
+			return 'WebGLRenderer';
+	}
 };
 var $author$project$ServerProcessMain$windowAsJson = function (window) {
 	return $elm$json$Json$Encode$object(
@@ -3070,29 +3079,30 @@ var $author$project$ServerProcessMain$windowAsJson = function (window) {
 				$elm$json$Json$Encode$int(window.height))
 			]));
 };
-var $author$project$ServerProcessMain$makeToolWindow = function (model) {
-	return _Utils_Tuple2(
-		_Utils_update(
-			model,
-			{
-				nextWindowId: 1 + model.nextWindowId,
-				windows: A3($elm$core$Dict$insert, model.nextWindowId, $author$project$ServerProcessMain$toolWindow, model.windows)
-			}),
-		$author$project$ServerProcessMain$toJavascript(
-			$elm$json$Json$Encode$object(
-				_List_fromArray(
-					[
-						_Utils_Tuple2(
-						'cmd',
-						$elm$json$Json$Encode$string('newwindow')),
-						_Utils_Tuple2(
-						'id',
-						$elm$json$Json$Encode$int(model.nextWindowId)),
-						_Utils_Tuple2(
-						'window',
-						$author$project$ServerProcessMain$windowAsJson($author$project$ServerProcessMain$toolWindow))
-					]))));
-};
+var $author$project$ServerProcessMain$makeNewWindow = F2(
+	function (window, model) {
+		return _Utils_Tuple2(
+			_Utils_update(
+				model,
+				{
+					nextWindowId: 1 + model.nextWindowId,
+					windows: A3($elm$core$Dict$insert, model.nextWindowId, window, model.windows)
+				}),
+			$author$project$ServerProcessMain$toJavascript(
+				$elm$json$Json$Encode$object(
+					_List_fromArray(
+						[
+							_Utils_Tuple2(
+							'cmd',
+							$elm$json$Json$Encode$string('newwindow')),
+							_Utils_Tuple2(
+							'id',
+							$elm$json$Json$Encode$int(model.nextWindowId)),
+							_Utils_Tuple2(
+							'window',
+							$author$project$ServerProcessMain$windowAsJson(window))
+						]))));
+	});
 var $elm$core$List$foldrHelper = F4(
 	function (fn, acc, ctr, ls) {
 		if (!ls.b) {
@@ -3529,7 +3539,32 @@ var $elm$core$Dict$remove = F2(
 			return x;
 		}
 	});
+var $author$project$RendererType$Renderer3D = {$: 'Renderer3D'};
+var $author$project$RendererType$RendererCanvasChart = {$: 'RendererCanvasChart'};
+var $author$project$RendererType$RendererMap = {$: 'RendererMap'};
+var $author$project$RendererType$RendererProfile = {$: 'RendererProfile'};
+var $author$project$RendererType$RendererToolbox = {$: 'RendererToolbox'};
+var $author$project$RendererType$rendererTypeFromString = function (name) {
+	switch (name) {
+		case 'toolbox':
+			return $elm$core$Maybe$Just($author$project$RendererType$RendererToolbox);
+		case '3d':
+			return $elm$core$Maybe$Just($author$project$RendererType$Renderer3D);
+		case 'profile':
+			return $elm$core$Maybe$Just($author$project$RendererType$RendererProfile);
+		case 'canvas':
+			return $elm$core$Maybe$Just($author$project$RendererType$RendererCanvasChart);
+		case 'map':
+			return $elm$core$Maybe$Just($author$project$RendererType$RendererMap);
+		default:
+			return $elm$core$Maybe$Nothing;
+	}
+};
+var $author$project$ServerProcessMain$rendererWindow = function (rendererType) {
+	return {height: 600, rendererType: rendererType, width: 800};
+};
 var $elm$json$Json$Decode$string = _Json_decodeString;
+var $author$project$ServerProcessMain$toolWindow = {height: 100, rendererType: $author$project$RendererType$RendererToolbox, width: 300};
 var $author$project$DomainModel$GPXSource = F4(
 	function (longitude, latitude, altitude, timestamp) {
 		return {altitude: altitude, latitude: latitude, longitude: longitude, timestamp: timestamp};
@@ -4020,7 +4055,7 @@ var $author$project$ServerProcessMain$update = F2(
 			if (cmd.$ === 'Ok') {
 				switch (cmd.a) {
 					case 'ready':
-						return $author$project$ServerProcessMain$makeToolWindow(model);
+						return A2($author$project$ServerProcessMain$makeNewWindow, $author$project$ServerProcessMain$toolWindow, model);
 					case 'newgpx':
 						var rawGpxPoints = A2(
 							$elm$json$Json$Decode$decodeValue,
@@ -4041,14 +4076,31 @@ var $author$project$ServerProcessMain$update = F2(
 						} else {
 							return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 						}
-					case 'openview':
-						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-					case 'ckised':
+					case 'newview':
+						var _v4 = A2(
+							$elm$json$Json$Decode$decodeValue,
+							A2($elm$json$Json$Decode$field, 'renderer', $elm$json$Json$Decode$string),
+							jsonMessage);
+						if (_v4.$ === 'Ok') {
+							var foundRenderer = _v4.a;
+							var _v5 = $author$project$RendererType$rendererTypeFromString(foundRenderer);
+							if (_v5.$ === 'Just') {
+								var renderer = _v5.a;
+								return A2(
+									$author$project$ServerProcessMain$makeNewWindow,
+									$author$project$ServerProcessMain$rendererWindow(renderer),
+									model);
+							} else {
+								return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+							}
+						} else {
+							return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+						}
+					case 'closed':
 						var windowId = A2(
 							$elm$json$Json$Decode$decodeValue,
 							A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int),
 							jsonMessage);
-						var _v4 = A2($elm$core$Debug$log, 'WINDOWS', model.windows);
 						if (windowId.$ === 'Ok') {
 							var id = windowId.a;
 							return _Utils_Tuple2(
