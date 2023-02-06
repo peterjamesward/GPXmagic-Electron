@@ -13,12 +13,17 @@ Route maker will be odd, as always. At least this keeps the complexity in one pr
 
 ## Bugs
 
-Is possible to induce an exception by closing several windows.
+It's possible to induce an exception by closing several windows.
+> Open 3, close 2, load new gpx.
+> Looks like the mapping gets out of synch.
 
 ## Next
 
-* Optimise primary renderer window size and placement.
 * Window splitting.
+> Try creating webViews, see if this removes the need to focus the window.
+> Test on Windows!
+
+* Optimise primary renderer window size and placement.
 * Docking toolbox (take aspect ratio into account - low and wide vs tall and narrow)
 * Maximize window not to obscure tool box.
 * Window locations stored.
