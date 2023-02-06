@@ -42,7 +42,7 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     --TODO: Remove dummy message put here to make sure the port exists.
     ( { scene = [] }
-    , Stubs.ipcRendererToMain E.null
+    , Stubs.ipcRendererToMain <| E.object [ ( "cmd", E.string "hello" ) ]
     )
 
 

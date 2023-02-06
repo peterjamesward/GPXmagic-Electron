@@ -5281,11 +5281,31 @@ var $elm$core$Task$perform = F2(
 	});
 var $elm$browser$Browser$element = _Browser_element;
 var $author$project$Renderers$LoadButton$IpcStubs$ipcRendererToMain = _Platform_outgoingPort('ipcRendererToMain', $elm$core$Basics$identity);
-var $elm$json$Json$Encode$null = _Json_encodeNull;
+var $elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, obj) {
+					var k = _v0.a;
+					var v = _v0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(_Utils_Tuple0),
+			pairs));
+};
+var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Renderers$WebGL$Renderer$init = function (_v0) {
 	return _Utils_Tuple2(
 		{scene: _List_Nil},
-		$author$project$Renderers$LoadButton$IpcStubs$ipcRendererToMain($elm$json$Json$Encode$null));
+		$author$project$Renderers$LoadButton$IpcStubs$ipcRendererToMain(
+			$elm$json$Json$Encode$object(
+				_List_fromArray(
+					[
+						_Utils_Tuple2(
+						'cmd',
+						$elm$json$Json$Encode$string('hello'))
+					]))));
 };
 var $author$project$Renderers$WebGL$Renderer$MessageFromMainProcess = function (a) {
 	return {$: 'MessageFromMainProcess', a: a};
@@ -5343,7 +5363,6 @@ var $mdgriffith$elm_ui$Internal$Style$classes = {above: 'a', active: 'atv', alig
 var $mdgriffith$elm_ui$Internal$Model$Attr = function (a) {
 	return {$: 'Attr', a: a};
 };
-var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
 		return A2(
@@ -8094,19 +8113,6 @@ var $elm$json$Json$Encode$list = F2(
 				_Json_emptyArray(_Utils_Tuple0),
 				entries));
 	});
-var $elm$json$Json$Encode$object = function (pairs) {
-	return _Json_wrap(
-		A3(
-			$elm$core$List$foldl,
-			F2(
-				function (_v0, obj) {
-					var k = _v0.a;
-					var v = _v0.b;
-					return A3(_Json_addField, k, v, obj);
-				}),
-			_Json_emptyObject(_Utils_Tuple0),
-			pairs));
-};
 var $elm$core$List$any = F2(
 	function (isOkay, list) {
 		any:

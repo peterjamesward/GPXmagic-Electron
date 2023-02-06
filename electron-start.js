@@ -106,9 +106,9 @@ function makeWindow(id, windowSpec, track) {
 
         // Send a track if we have one.
         if (track != null) {
-            window.on('ready-to-show',
+            window.on('did-finish-load',
                 function() {
-                    window.webContents.send('track', { cmd : 'track', track : track } );
+                    window.webContents.send('fromServer', { cmd : 'track', track : track } );
                 }
             );
         };
