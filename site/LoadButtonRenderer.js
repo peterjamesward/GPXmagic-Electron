@@ -5726,7 +5726,7 @@ var $elm$time$Time$posixToMillis = function (_v0) {
 	var millis = _v0.a;
 	return millis;
 };
-var $author$project$GpxPoint$gpxPointAsJSON = function (point) {
+var $author$project$Common$GpxPoint$gpxPointAsJSON = function (point) {
 	var _v0 = point.timestamp;
 	if (_v0.$ === 'Just') {
 		var timestamp = _v0.a;
@@ -5785,7 +5785,7 @@ var $author$project$Renderers$LoadButton$IpcStubs$loadNewGpx = function (pointsA
 					_Utils_Tuple2('content', pointsAsJSON)
 				])));
 };
-var $author$project$RendererType$rendererTypeAsString = function (renderer) {
+var $author$project$Common$RendererType$rendererTypeAsString = function (renderer) {
 	switch (renderer.$) {
 		case 'RendererToolbox':
 			return 'toolbox';
@@ -5810,7 +5810,7 @@ var $author$project$Renderers$LoadButton$IpcStubs$newView = function (renderer) 
 					_Utils_Tuple2(
 					'renderer',
 					$elm$json$Json$Encode$string(
-						$author$project$RendererType$rendererTypeAsString(renderer)))
+						$author$project$Common$RendererType$rendererTypeAsString(renderer)))
 				])));
 };
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
@@ -5835,7 +5835,7 @@ var $elm$core$Maybe$withDefault = F2(
 			return _default;
 		}
 	});
-var $author$project$GpxParser$asRegex = function (t) {
+var $author$project$Renderers$LoadButton$GpxParser$asRegex = function (t) {
 	return A2(
 		$elm$core$Maybe$withDefault,
 		$elm$regex$Regex$never,
@@ -5904,7 +5904,7 @@ var $elm_community$list_extra$List$Extra$getAt = F2(
 var $elm$core$Basics$negate = function (n) {
 	return -n;
 };
-var $author$project$GpxPoint$GpxPoint = F4(
+var $author$project$Common$GpxPoint$GpxPoint = F4(
 	function (longitude, latitude, altitude, timestamp) {
 		return {altitude: altitude, latitude: latitude, longitude: longitude, timestamp: timestamp};
 	});
@@ -5922,7 +5922,7 @@ var $elm$core$Basics$composeR = F3(
 		return g(
 			f(x));
 	});
-var $author$project$GpxParser$deDupe = F2(
+var $author$project$Renderers$LoadButton$GpxParser$deDupe = F2(
 	function (areSame, inputList) {
 		var helper = F2(
 			function (inputs, outputs) {
@@ -6781,7 +6781,7 @@ var $elm$parser$Parser$run = F2(
 var $rtfeldman$elm_iso8601_date_strings$Iso8601$toTime = function (str) {
 	return A2($elm$parser$Parser$run, $rtfeldman$elm_iso8601_date_strings$Iso8601$iso8601, str);
 };
-var $author$project$GpxParser$parseGPXPoints = function (xml) {
+var $author$project$Renderers$LoadButton$GpxParser$parseGPXPoints = function (xml) {
 	var value = function (x) {
 		var _v6 = x.submatches;
 		if (_v6.b && (_v6.a.$ === 'Just')) {
@@ -6793,7 +6793,7 @@ var $author$project$GpxParser$parseGPXPoints = function (xml) {
 	};
 	var trkpts = A2(
 		$elm$regex$Regex$find,
-		$author$project$GpxParser$asRegex('(<trkpt(.|\\s)*?)(trkpt>|\\/>)'),
+		$author$project$Renderers$LoadButton$GpxParser$asRegex('(<trkpt(.|\\s)*?)(trkpt>|\\/>)'),
 		xml);
 	var timestamp = function (trkpt) {
 		return A2(
@@ -6811,7 +6811,7 @@ var $author$project$GpxParser$parseGPXPoints = function (xml) {
 						$elm$core$List$head(
 							A2(
 								$elm$regex$Regex$find,
-								$author$project$GpxParser$asRegex('<time>(.*)<\\/time>'),
+								$author$project$Renderers$LoadButton$GpxParser$asRegex('<time>(.*)<\\/time>'),
 								trkpt))))));
 	};
 	var sameLocation = F2(
@@ -6827,21 +6827,21 @@ var $author$project$GpxParser$parseGPXPoints = function (xml) {
 		return matches(
 			A2(
 				$elm$regex$Regex$find,
-				$author$project$GpxParser$asRegex('lon=\\\"([\\d\\.-]*)\\\"'),
+				$author$project$Renderers$LoadButton$GpxParser$asRegex('lon=\\\"([\\d\\.-]*)\\\"'),
 				trkpt));
 	};
 	var latitude = function (trkpt) {
 		return matches(
 			A2(
 				$elm$regex$Regex$find,
-				$author$project$GpxParser$asRegex('lat=\\\"([\\d\\.-]*)\\\"'),
+				$author$project$Renderers$LoadButton$GpxParser$asRegex('lat=\\\"([\\d\\.-]*)\\\"'),
 				trkpt));
 	};
 	var elevation = function (trkpt) {
 		var _v3 = matches(
 			A2(
 				$elm$regex$Regex$find,
-				$author$project$GpxParser$asRegex('<ele>([\\d\\.-]*)<\\/ele>'),
+				$author$project$Renderers$LoadButton$GpxParser$asRegex('<ele>([\\d\\.-]*)<\\/ele>'),
 				trkpt));
 		if (_v3.b && (_v3.a.$ === 'Just')) {
 			var alt = _v3.a.a;
@@ -6863,7 +6863,7 @@ var $author$project$GpxParser$parseGPXPoints = function (xml) {
 			return $elm$core$Maybe$Just(
 				_Utils_Tuple2(
 					A4(
-						$author$project$GpxPoint$GpxPoint,
+						$author$project$Common$GpxPoint$GpxPoint,
 						lon,
 						lat,
 						elevation(trkptString),
@@ -6874,7 +6874,7 @@ var $author$project$GpxParser$parseGPXPoints = function (xml) {
 		}
 	};
 	return A2(
-		$author$project$GpxParser$deDupe,
+		$author$project$Renderers$LoadButton$GpxParser$deDupe,
 		sameLocation,
 		A2($elm$core$List$filterMap, earthVector, trkpts));
 };
@@ -7706,7 +7706,7 @@ var $marcosh$elm_html_to_unicode$ElmEscapeHtml$unescapeChars = function (list) {
 	return A3($marcosh$elm_html_to_unicode$ElmEscapeHtml$parser, list, _List_Nil, _List_Nil);
 };
 var $marcosh$elm_html_to_unicode$ElmEscapeHtml$unescape = $marcosh$elm_html_to_unicode$ElmEscapeHtml$convert($marcosh$elm_html_to_unicode$ElmEscapeHtml$unescapeChars);
-var $author$project$GpxParser$parseSegments = function (xml) {
+var $author$project$Renderers$LoadButton$GpxParser$parseSegments = function (xml) {
 	var trackSegmentStarts = A2(
 		$elm$core$List$map,
 		function ($) {
@@ -7714,9 +7714,9 @@ var $author$project$GpxParser$parseSegments = function (xml) {
 		},
 		A2(
 			$elm$regex$Regex$find,
-			$author$project$GpxParser$asRegex('<trkseg>'),
+			$author$project$Renderers$LoadButton$GpxParser$asRegex('<trkseg>'),
 			xml));
-	var trackPoints = $author$project$GpxParser$parseGPXPoints(xml);
+	var trackPoints = $author$project$Renderers$LoadButton$GpxParser$parseGPXPoints(xml);
 	var segmentExtent = function (match) {
 		var segmentIndex = (-1) + A2(
 			$elm$core$Maybe$withDefault,
@@ -7770,7 +7770,7 @@ var $author$project$GpxParser$parseSegments = function (xml) {
 	};
 	var namedSegments = A2(
 		$elm$regex$Regex$find,
-		$author$project$GpxParser$asRegex('namedSegment>(.*)<\\/.*:namedSegment'),
+		$author$project$Renderers$LoadButton$GpxParser$asRegex('namedSegment>(.*)<\\/.*:namedSegment'),
 		xml);
 	return _Utils_Tuple2(
 		A2($elm$core$List$map, $elm$core$Tuple$first, trackPoints),
@@ -7805,14 +7805,14 @@ var $author$project$Renderers$LoadButton$Renderer$update = F2(
 						$elm$file$File$toString(file)));
 			case 'GpxLoaded':
 				var content = msg.a;
-				var gpxPoints = $author$project$GpxParser$parseSegments(content).a;
+				var gpxPoints = $author$project$Renderers$LoadButton$GpxParser$parseSegments(content).a;
 				return _Utils_Tuple2(
 					model,
 					$author$project$Renderers$LoadButton$IpcStubs$loadNewGpx(
 						A2(
 							$elm$json$Json$Encode$list,
 							$elm$core$Basics$identity,
-							A2($elm$core$List$map, $author$project$GpxPoint$gpxPointAsJSON, gpxPoints))));
+							A2($elm$core$List$map, $author$project$Common$GpxPoint$gpxPointAsJSON, gpxPoints))));
 			case 'MessageFromMainProcess':
 				var value = msg.a;
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -7827,7 +7827,7 @@ var $author$project$Renderers$LoadButton$Renderer$GpxRequested = {$: 'GpxRequest
 var $author$project$Renderers$LoadButton$Renderer$OpenView = function (a) {
 	return {$: 'OpenView', a: a};
 };
-var $author$project$RendererType$Renderer3D = {$: 'Renderer3D'};
+var $author$project$Common$RendererType$Renderer3D = {$: 'Renderer3D'};
 var $smucode$elm_flat_colors$FlatColors$ChinesePalette$antiFlashWhite = A3($mdgriffith$elm_ui$Element$rgb255, 241, 242, 246);
 var $mdgriffith$elm_ui$Internal$Model$Attr = function (a) {
 	return {$: 'Attr', a: a};
@@ -13770,7 +13770,7 @@ var $author$project$Renderers$LoadButton$Renderer$view = function (model) {
 		{
 			label: $mdgriffith$elm_ui$Element$text('Open a 3D window'),
 			onPress: $elm$core$Maybe$Just(
-				$author$project$Renderers$LoadButton$Renderer$OpenView($author$project$RendererType$Renderer3D))
+				$author$project$Renderers$LoadButton$Renderer$OpenView($author$project$Common$RendererType$Renderer3D))
 		});
 	return A2(
 		$mdgriffith$elm_ui$Element$layout,

@@ -105,11 +105,13 @@ function makeWindow(id, windowSpec, track) {
         //window.openDevTools();
 
         // Send a track if we have one.
-        window.on('ready-to-show',
-            function() {
-                window.webContents.send('track', track );
-            }
-        );
+        if (track != null) {
+            window.on('ready-to-show',
+                function() {
+                    window.webContents.send('track', { cmd : 'track', track : track } );
+                }
+            );
+        };
 
         // Emitted when the window is closed.
         window.on('close',

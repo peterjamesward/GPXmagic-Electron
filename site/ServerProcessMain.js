@@ -2939,6 +2939,156 @@ var $author$project$Common$GpxPoint$gpxDecoder = A5(
 			A2($elm$json$Json$Decode$field, 'time', $elm$json$Json$Decode$int))));
 var $elm$json$Json$Decode$list = _Json_decodeList;
 var $elm$core$Debug$log = _Debug_log;
+var $elm$json$Json$Encode$float = _Json_wrap;
+var $ianmackenzie$elm_units$Length$inMeters = function (_v0) {
+	var numMeters = _v0.a;
+	return numMeters;
+};
+var $ianmackenzie$elm_geometry$Point3d$xCoordinate = function (_v0) {
+	var p = _v0.a;
+	return $ianmackenzie$elm_units$Quantity$Quantity(p.x);
+};
+var $ianmackenzie$elm_geometry$Point3d$yCoordinate = function (_v0) {
+	var p = _v0.a;
+	return $ianmackenzie$elm_units$Quantity$Quantity(p.y);
+};
+var $ianmackenzie$elm_geometry$Point3d$zCoordinate = function (_v0) {
+	var p = _v0.a;
+	return $ianmackenzie$elm_units$Quantity$Quantity(p.z);
+};
+var $ianmackenzie$elm_geometry$Point3d$toTuple = F2(
+	function (fromQuantity, point) {
+		return _Utils_Tuple3(
+			fromQuantity(
+				$ianmackenzie$elm_geometry$Point3d$xCoordinate(point)),
+			fromQuantity(
+				$ianmackenzie$elm_geometry$Point3d$yCoordinate(point)),
+			fromQuantity(
+				$ianmackenzie$elm_geometry$Point3d$zCoordinate(point)));
+	});
+var $author$project$Common$DomainModel$earthPointAsJson = function (earth) {
+	var _v0 = A2($ianmackenzie$elm_geometry$Point3d$toTuple, $ianmackenzie$elm_units$Length$inMeters, earth.space);
+	var x = _v0.a;
+	var y = _v0.b;
+	var z = _v0.c;
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'x',
+				$elm$json$Json$Encode$float(x)),
+				_Utils_Tuple2(
+				'y',
+				$elm$json$Json$Encode$float(y)),
+				_Utils_Tuple2(
+				'z',
+				$elm$json$Json$Encode$float(z))
+			]));
+};
+var $elm$core$List$drop = F2(
+	function (n, list) {
+		drop:
+		while (true) {
+			if (n <= 0) {
+				return list;
+			} else {
+				if (!list.b) {
+					return list;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs;
+					n = $temp$n;
+					list = $temp$list;
+					continue drop;
+				}
+			}
+		}
+	});
+var $author$project$Common$DomainModel$skipCount = function (treeNode) {
+	if (treeNode.$ === 'Leaf') {
+		return 1;
+	} else {
+		var node = treeNode.a;
+		return node.nodeContent.skipCount;
+	}
+};
+var $elm$core$Basics$ge = _Utils_ge;
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var $author$project$Common$DomainModel$traverseTreeBetweenLimitsToDepth = F7(
+	function (startingAt, endingAt, depthFunction, currentDepth, thisNode, foldFn, accum) {
+		if (_Utils_cmp(
+			startingAt,
+			$author$project$Common$DomainModel$skipCount(thisNode)) > -1) {
+			return accum;
+		} else {
+			if (endingAt <= 0) {
+				return accum;
+			} else {
+				if (thisNode.$ === 'Leaf') {
+					var leafNode = thisNode.a;
+					return A2(foldFn, leafNode, accum);
+				} else {
+					var node = thisNode.a;
+					var maximumDepth = A2(
+						$elm$core$Maybe$withDefault,
+						999,
+						depthFunction(node.nodeContent));
+					return (_Utils_cmp(currentDepth, maximumDepth) > -1) ? A2(foldFn, node.nodeContent, accum) : A7(
+						$author$project$Common$DomainModel$traverseTreeBetweenLimitsToDepth,
+						startingAt - $author$project$Common$DomainModel$skipCount(node.left),
+						endingAt - $author$project$Common$DomainModel$skipCount(node.left),
+						depthFunction,
+						currentDepth + 1,
+						node.right,
+						foldFn,
+						A7($author$project$Common$DomainModel$traverseTreeBetweenLimitsToDepth, startingAt, endingAt, depthFunction, currentDepth + 1, node.left, foldFn, accum));
+				}
+			}
+		}
+	});
+var $author$project$Common$DomainModel$traverseTreeBetween = F5(
+	function (startingAt, endingAt, someNode, foldFn, accum) {
+		return A7(
+			$author$project$Common$DomainModel$traverseTreeBetweenLimitsToDepth,
+			startingAt,
+			endingAt,
+			$elm$core$Basics$always($elm$core$Maybe$Nothing),
+			0,
+			someNode,
+			foldFn,
+			accum);
+	});
+var $author$project$Common$DomainModel$elidedEarthPoints = F2(
+	function (maxDepth, trackTree) {
+		var myFoldFn = F2(
+			function (road, accum) {
+				return A2(
+					$elm$core$List$cons,
+					road.endPoint,
+					A2(
+						$elm$core$List$cons,
+						road.startPoint,
+						A2($elm$core$List$drop, 1, accum)));
+			});
+		return $elm$core$List$reverse(
+			A5(
+				$author$project$Common$DomainModel$traverseTreeBetween,
+				0,
+				$author$project$Common$DomainModel$skipCount(trackTree),
+				trackTree,
+				myFoldFn,
+				_List_Nil));
+	});
 var $elm$core$Dict$Black = {$: 'Black'};
 var $elm$core$Dict$RBNode_elm_builtin = F5(
 	function (a, b, c, d, e) {
@@ -3049,6 +3199,26 @@ var $elm$core$Dict$insert = F3(
 		}
 	});
 var $elm$json$Json$Encode$int = _Json_wrap;
+var $elm$json$Json$Encode$list = F2(
+	function (func, entries) {
+		return _Json_wrap(
+			A3(
+				$elm$core$List$foldl,
+				_Json_addEntry(func),
+				_Json_emptyArray(_Utils_Tuple0),
+				entries));
+	});
+var $elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return $elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $elm$json$Json$Encode$null = _Json_encodeNull;
 var $author$project$ServerProcess$Main$rendererHtmlFile = function (rendererType) {
 	switch (rendererType.$) {
 		case 'RendererToolbox':
@@ -3081,6 +3251,33 @@ var $author$project$ServerProcess$Main$windowAsJson = function (window) {
 };
 var $author$project$ServerProcess$Main$makeNewWindow = F2(
 	function (window, model) {
+		var earthPoints = A2(
+			$elm$core$Maybe$map,
+			$author$project$Common$DomainModel$elidedEarthPoints(10),
+			model.tree);
+		var pointsAsJson = function () {
+			if (earthPoints.$ === 'Just') {
+				var points = earthPoints.a;
+				return A2($elm$json$Json$Encode$list, $author$project$Common$DomainModel$earthPointAsJson, points);
+			} else {
+				return $elm$json$Json$Encode$null;
+			}
+		}();
+		var newWindowCommand = $author$project$ServerProcess$Main$toJavascript(
+			$elm$json$Json$Encode$object(
+				_List_fromArray(
+					[
+						_Utils_Tuple2(
+						'cmd',
+						$elm$json$Json$Encode$string('newwindow')),
+						_Utils_Tuple2(
+						'id',
+						$elm$json$Json$Encode$int(model.nextWindowId)),
+						_Utils_Tuple2(
+						'window',
+						$author$project$ServerProcess$Main$windowAsJson(window)),
+						_Utils_Tuple2('track', pointsAsJson)
+					])));
 		return _Utils_Tuple2(
 			_Utils_update(
 				model,
@@ -3088,20 +3285,7 @@ var $author$project$ServerProcess$Main$makeNewWindow = F2(
 					nextWindowId: 1 + model.nextWindowId,
 					windows: A3($elm$core$Dict$insert, model.nextWindowId, window, model.windows)
 				}),
-			$author$project$ServerProcess$Main$toJavascript(
-				$elm$json$Json$Encode$object(
-					_List_fromArray(
-						[
-							_Utils_Tuple2(
-							'cmd',
-							$elm$json$Json$Encode$string('newwindow')),
-							_Utils_Tuple2(
-							'id',
-							$elm$json$Json$Encode$int(model.nextWindowId)),
-							_Utils_Tuple2(
-							'window',
-							$author$project$ServerProcess$Main$windowAsJson(window))
-						]))));
+			newWindowCommand);
 	});
 var $elm$core$List$foldrHelper = F4(
 	function (fn, acc, ctr, ls) {
@@ -3690,15 +3874,6 @@ var $ianmackenzie$elm_geometry$BoundingBox3d$union = F2(
 				minZ: A2($ianmackenzie$elm_units$Quantity$min, b1.minZ, b2.minZ)
 			});
 	});
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
 var $ianmackenzie$elm_units$Quantity$zero = $ianmackenzie$elm_units$Quantity$Quantity(0);
 var $author$project$Common$DomainModel$combineInfo = F2(
 	function (info1, info2) {
@@ -3781,18 +3956,6 @@ var $author$project$Common$Spherical$findBearingToTarget = F2(
 		var x = ($elm$core$Basics$cos(lat1) * $elm$core$Basics$sin(lat2)) - (($elm$core$Basics$sin(lat1) * $elm$core$Basics$cos(lat2)) * $elm$core$Basics$cos(lon2 - lon1));
 		return A2($elm$core$Basics$atan2, y, x);
 	});
-var $ianmackenzie$elm_geometry$Point3d$xCoordinate = function (_v0) {
-	var p = _v0.a;
-	return $ianmackenzie$elm_units$Quantity$Quantity(p.x);
-};
-var $ianmackenzie$elm_geometry$Point3d$yCoordinate = function (_v0) {
-	var p = _v0.a;
-	return $ianmackenzie$elm_units$Quantity$Quantity(p.y);
-};
-var $ianmackenzie$elm_geometry$Point3d$zCoordinate = function (_v0) {
-	var p = _v0.a;
-	return $ianmackenzie$elm_units$Quantity$Quantity(p.z);
-};
 var $ianmackenzie$elm_geometry$BoundingBox3d$from = F2(
 	function (firstPoint, secondPoint) {
 		var z2 = $ianmackenzie$elm_geometry$Point3d$zCoordinate(secondPoint);
@@ -3814,10 +3977,6 @@ var $ianmackenzie$elm_geometry$BoundingBox3d$from = F2(
 var $ianmackenzie$elm_units$Quantity$greaterThanZero = function (_v0) {
 	var x = _v0.a;
 	return x > 0;
-};
-var $ianmackenzie$elm_units$Length$inMeters = function (_v0) {
-	var numMeters = _v0.a;
-	return numMeters;
 };
 var $ianmackenzie$elm_units$Angle$inRadians = function (_v0) {
 	var numRadians = _v0.a;

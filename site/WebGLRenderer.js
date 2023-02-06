@@ -5280,12 +5280,12 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $elm$core$Platform$Cmd$batch = _Platform_batch;
-var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $author$project$Renderers$LoadButton$IpcStubs$ipcRendererToMain = _Platform_outgoingPort('ipcRendererToMain', $elm$core$Basics$identity);
+var $elm$json$Json$Encode$null = _Json_encodeNull;
 var $author$project$Renderers$WebGL$Renderer$init = function (_v0) {
 	return _Utils_Tuple2(
 		{scene: _List_Nil},
-		$elm$core$Platform$Cmd$none);
+		$author$project$Renderers$LoadButton$IpcStubs$ipcRendererToMain($elm$json$Json$Encode$null));
 };
 var $author$project$Renderers$WebGL$Renderer$MessageFromMainProcess = function (a) {
 	return {$: 'MessageFromMainProcess', a: a};
@@ -5300,10 +5300,25 @@ var $author$project$Renderers$WebGL$Renderer$subscriptions = function (_v0) {
 				$author$project$Renderers$LoadButton$IpcStubs$ipcMainToRenderer($author$project$Renderers$WebGL$Renderer$MessageFromMainProcess)
 			]));
 };
+var $elm$json$Json$Decode$decodeValue = _Json_run;
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $elm$core$Debug$log = _Debug_log;
+var $elm$core$Platform$Cmd$batch = _Platform_batch;
+var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $elm$json$Json$Decode$string = _Json_decodeString;
 var $author$project$Renderers$WebGL$Renderer$update = F2(
 	function (msg, model) {
-		var value = msg.a;
-		return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		var jsonMessage = msg.a;
+		var cmd = A2(
+			$elm$json$Json$Decode$decodeValue,
+			A2($elm$json$Json$Decode$field, 'cmd', $elm$json$Json$Decode$string),
+			jsonMessage);
+		var _v1 = A2($elm$core$Debug$log, 'CMD', cmd);
+		if ((cmd.$ === 'Ok') && (cmd.a === 'track')) {
+			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		} else {
+			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		}
 	});
 var $author$project$Common$About$aboutText = '\n# GPXmagic App v4 pre-release\n\n## Acknowledgements\n\n* Thanks to all those who\'ve provided support, comments, bug reports, and help along the way.\n\n* Thanks to RGT for the Magic Roads concept and an excellent indoor cycling platform.\n\n* Thanks to David Ogle for discussion and contribution to the UI design.\n\n## Legal guff\n\nCompatible with Strava, for the purpose of loading route and segment data.\n\nGPXmagicV4 is open source at https://github.com/boxingpepperjumpy/GPXmagicV4\n\nContains many libraries under various licence terms, all of which are available in source\nform via https://package.elm-lang.org.\n\nMap component provided by MapBox.com.\n\nLand use data courtesy of Open Street Map via the Overpass API.\n\nIcons from www.flaticon.com/free-icons/.';
 var $mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
@@ -11278,6 +11293,12 @@ var $mdgriffith$elm_ui$Element$paragraph = F2(
 						attrs))),
 			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
+var $mdgriffith$elm_ui$Element$Font$size = function (i) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$fontSize,
+		$mdgriffith$elm_ui$Internal$Model$FontSize(i));
+};
 var $elm_explorations$markdown$Markdown$defaultOptions = {
 	defaultHighlighting: $elm$core$Maybe$Nothing,
 	githubFlavored: $elm$core$Maybe$Just(
@@ -11303,7 +11324,8 @@ var $author$project$Renderers$WebGL$Renderer$view = function (model) {
 			_List_fromArray(
 				[
 					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-					$mdgriffith$elm_ui$Element$padding(20)
+					$mdgriffith$elm_ui$Element$padding(20),
+					$mdgriffith$elm_ui$Element$Font$size(14)
 				]),
 			_List_fromArray(
 				[

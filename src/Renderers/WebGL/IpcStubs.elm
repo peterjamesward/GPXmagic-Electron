@@ -1,7 +1,6 @@
 port module Renderers.WebGL.IpcStubs exposing (..)
 
 import Json.Encode as E
-import RendererType exposing (RendererType)
 
 
 port ipcRendererToMain : E.Value -> Cmd msg
