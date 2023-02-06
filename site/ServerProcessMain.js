@@ -3235,7 +3235,13 @@ var $author$project$ServerProcess$Main$windowAsJson = function (window) {
 				$elm$json$Json$Encode$int(window.width)),
 				_Utils_Tuple2(
 				'height',
-				$elm$json$Json$Encode$int(window.height))
+				$elm$json$Json$Encode$int(window.height)),
+				_Utils_Tuple2(
+				'left',
+				$elm$json$Json$Encode$int(window.left)),
+				_Utils_Tuple2(
+				'top',
+				$elm$json$Json$Encode$int(window.top))
 			]));
 };
 var $author$project$ServerProcess$Main$makeNewWindow = F2(
@@ -3732,7 +3738,7 @@ var $author$project$Common$RendererType$rendererTypeFromString = function (name)
 	}
 };
 var $author$project$ServerProcess$Main$rendererWindow = function (rendererType) {
-	return {height: 600, rendererType: rendererType, width: 800};
+	return {height: 600, left: 0, rendererType: rendererType, top: 125, width: 800};
 };
 var $author$project$ServerProcess$Main$sendTrackToRenderer = F2(
 	function (pointsAsJson, id) {
@@ -3758,7 +3764,7 @@ var $author$project$ServerProcess$Main$sendToAll = F2(
 				$elm$core$Dict$keys(model.windows)));
 	});
 var $elm$json$Json$Decode$string = _Json_decodeString;
-var $author$project$ServerProcess$Main$toolWindow = {height: 100, rendererType: $author$project$Common$RendererType$RendererToolbox, width: 300};
+var $author$project$ServerProcess$Main$toolWindow = {height: 120, left: 300, rendererType: $author$project$Common$RendererType$RendererToolbox, top: 0, width: 300};
 var $author$project$Common$DomainModel$GPXSource = F4(
 	function (longitude, latitude, altitude, timestamp) {
 		return {altitude: altitude, latitude: latitude, longitude: longitude, timestamp: timestamp};

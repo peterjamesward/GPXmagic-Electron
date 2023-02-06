@@ -192,13 +192,17 @@ type alias RendererWindow =
     { rendererType : RendererType
     , width : Int
     , height : Int
+    , top : Int
+    , left : Int
     }
 
 
 toolWindow =
     { rendererType = RendererToolbox
     , width = 300
-    , height = 100
+    , height = 120
+    , top = 0
+    , left = 300
     }
 
 
@@ -206,6 +210,8 @@ rendererWindow rendererType =
     { rendererType = rendererType
     , width = 800
     , height = 600
+    , top = 125
+    , left = 0
     }
 
 
@@ -256,4 +262,6 @@ windowAsJson window =
         [ ( "html", E.string <| rendererHtmlFile window.rendererType )
         , ( "width", E.int window.width )
         , ( "height", E.int window.height )
+        , ( "left", E.int window.left )
+        , ( "top", E.int window.top )
         ]

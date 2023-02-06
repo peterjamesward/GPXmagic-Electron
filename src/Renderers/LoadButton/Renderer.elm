@@ -128,7 +128,7 @@ view model =
         [ Background.color model.backgroundColour ]
     <|
         column
-            [ centerX, centerY ]
+            [ centerX, centerY, spaceEvenly ]
             [ loadGpxButton
             , openView
             ]

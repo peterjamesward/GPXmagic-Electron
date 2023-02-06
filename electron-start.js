@@ -91,14 +91,16 @@ function handleElmMessage(msg) {
 };
 
 // Basic window lifecycle.
-function makeWindow(elmWindowdId, windowSpec) {
+function makeWindow(elmWindowId, windowSpec) {
 
-//        console.log("MAIN:", windowSpec);
+        console.log("MAIN:", windowSpec);
 
         var window = new BrowserWindow(
             {
                 width: windowSpec.width,
                 height: windowSpec.height,
+                x : windowSpec.left,
+                y : windowSpec.top,
                 webPreferences: {
                     preload: path.join(__dirname, 'preload.js')
                 }
@@ -106,8 +108,8 @@ function makeWindow(elmWindowdId, windowSpec) {
         );
 
         // Keep track of windows on both sides.
-        windowsElectronToElm.set(window.webContents.id, elmWindowdId);
-        windowsElmToElectron.set(elmWindowdId, window.id);
+        windowsElectronToElm.set(window.webContents.id, elmWindowId);
+        windowsElmToElectron.set(elmWindowId, window.id);
         console.log("MAPPING", windowsElectronToElm);
 
         // and load the index.html of the app.
