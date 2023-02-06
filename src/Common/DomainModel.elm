@@ -6,8 +6,10 @@ module Common.DomainModel exposing
     , asRecord
     , boundingBox
     , distanceFromIndex
+    , earthPointAsJson
     , earthPointFromIndex
     , effectiveLatitude
+    , elidedEarthPoints
     , endPoint
     , estimateTimeAtDistance
     , extractPointsInRange
@@ -130,6 +132,19 @@ withoutTime pt =
 withTime : Maybe Time.Posix -> Point3d Meters LocalCoords -> EarthPoint
 withTime time pt =
     { space = pt, time = time }
+
+
+earthPointAsJson : EarthPoint -> E.Value
+earthPointAsJson earth =
+    let
+        ( x, y, z ) =
+            Point3d.toTuple Length.inMeters earth.space
+    in
+    E.object
+        [ ( "x", E.float x )
+        , ( "y", E.float y )
+        , ( "z", E.float z )
+        ]
 
 
 asRecord : PeteTree -> RoadSection
@@ -927,6 +942,26 @@ extractPointsInRange fromStart fromEnd trackTree =
                 trackTree
                 myFoldFn
                 []
+
+
+elidedEarthPoints : Int -> PeteTree -> List EarthPoint
+elidedEarthPoints maxDepth trackTree =
+    -- Going for an inefficient but more likely correct approach.
+    -- "Make it right, then make it fast."
+    let
+        myFoldFn : RoadSection -> List EarthPoint -> List EarthPoint
+        myFoldFn road accum =
+            road.endPoint
+                :: road.startPoint
+                :: List.drop 1 accum
+    in
+    List.reverse <|
+        traverseTreeBetween
+            0
+            (skipCount trackTree)
+            trackTree
+            myFoldFn
+            []
 
 
 foldOverRoute : (RoadSection -> a -> a) -> PeteTree -> a -> a

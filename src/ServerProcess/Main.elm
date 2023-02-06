@@ -1,7 +1,7 @@
 port module ServerProcess.Main exposing (main)
 
 import Angle
-import Common.DomainModel as DomainModel exposing (GPXSource)
+import Common.DomainModel as DomainModel exposing (GPXSource, earthPointAsJson)
 import Common.GpxPoint as GpxPoint exposing (GpxPoint)
 import Common.RendererType as RendererType exposing (RendererType(..))
 import Dict exposing (Dict)
@@ -184,16 +184,33 @@ rendererWindow rendererType =
 
 makeNewWindow : RendererWindow -> Model -> ( Model, Cmd Msg )
 makeNewWindow window model =
+    let
+        earthPoints =
+            Maybe.map (DomainModel.elidedEarthPoints 10) model.tree
+
+        pointsAsJson =
+            case earthPoints of
+                Just points ->
+                    E.list earthPointAsJson points
+
+                Nothing ->
+                    E.null
+
+        newWindowCommand =
+            --Try passing the track to send to the new window only.
+            toJavascript <|
+                E.object
+                    [ ( "cmd", E.string "newwindow" )
+                    , ( "id", E.int model.nextWindowId )
+                    , ( "window", windowAsJson window )
+                    , ( "track", pointsAsJson )
+                    ]
+    in
     ( { model
         | windows = model.windows |> Dict.insert model.nextWindowId window
         , nextWindowId = 1 + model.nextWindowId
       }
-    , toJavascript <|
-        E.object
-            [ ( "cmd", E.string "newwindow" )
-            , ( "id", E.int model.nextWindowId )
-            , ( "window", windowAsJson window )
-            ]
+    , newWindowCommand
     )
 
 
