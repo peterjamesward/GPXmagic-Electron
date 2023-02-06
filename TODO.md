@@ -21,27 +21,28 @@ It's possible to induce an exception by closing several windows.
 
 * Window splitting.
 > Try creating webViews, see if this removes the need to focus the window.
-> Test on Windows!
+> Keep the cupboards/drawers/windows options for each WebView (small toolbar).
+> Test on Windows 10.
 
 * Optimise primary renderer window size and placement.
-* Docking toolbox (take aspect ratio into account - low and wide vs tall and narrow)
-* Maximize window not to obscure tool box.
-* Window locations stored.
-* Window location restored.
+* Docking toolbox (top, bottom, left, right)
+* Additional toolboxes as required.
+* Window locations and panes stored.
+* Window locations and panes restored.
 * Error handling
 * Graceful failure on large tracks (!)
-* Tile windows on primary monitor, allowing for docked tool box(es).
-* Zoom, pan.
-* Change camera mode for 3D.
+* Zoom, pan 3D view.
+* Change camera mode for 3D (1st, 3rd, Plan)
 * Click detect (index in main process).
+* Display Options at WebWindow/WebView level, with defaults for new views.
 * Pointer update notification (mainly for map which always has full track)
-* Canvas charts.
+* Canvas charts (add distance to the broadcast points)
 * Map.
 * WebGL & SVG chart.
 * Change window type (swap with same-place window, ideally without flicker).
 * Segments.
-* Google Street View.
-* Tools, with good code hygiene.
+* Google Street View (with follow Orange).
+* Migrate all Tools, with good code hygiene.
 * Tool show/hide by toolbox, stored and restored.
 * Menu bar to reset tools, change language, metric/imperial, follow dark/light.
 * Canvas snapshot buttons
