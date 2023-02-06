@@ -45,6 +45,7 @@ It's possible to induce an exception by closing several windows.
 * Tool show/hide by toolbox, stored and restored.
 * Menu bar to reset tools, change language, metric/imperial, follow dark/light.
 * Canvas snapshot buttons
+* electron-build for installers.
 
 NB: The 3D views differ only in camera placement, so I see that being nicer.
 
