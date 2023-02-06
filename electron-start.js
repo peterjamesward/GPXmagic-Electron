@@ -70,7 +70,7 @@ function handleElmMessage(msg) {
 
     switch (msg.cmd) {
         case 'newwindow':
-            makeWindow(msg.id, msg.window)
+            makeWindow(msg.id, msg.window, msg.track);
             break;
 
         default:
@@ -80,7 +80,7 @@ function handleElmMessage(msg) {
 };
 
 // Basic window lifecycle.
-function makeWindow(id, windowSpec) {
+function makeWindow(id, windowSpec, track) {
 
         console.log(windowSpec);
 
@@ -102,7 +102,14 @@ function makeWindow(id, windowSpec) {
         window.loadURL('file://' + __dirname + '/src/Renderers/' + windowSpec.html + '/Renderer.html');
 
         // Open the devtools.
-        //mainWindow.openDevTools();
+        //window.openDevTools();
+
+        // Send a track if we have one.
+        window.on('ready-to-show',
+            function() {
+                window.webContents.send('track', track );
+            }
+        );
 
         // Emitted when the window is closed.
         window.on('close',
