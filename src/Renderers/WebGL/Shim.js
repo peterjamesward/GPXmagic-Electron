@@ -20,6 +20,6 @@ function ipcElmToMain(msg) {
 gpxMagicAPI.fromServer(
     (_event, value) => {
         console.log(value);
-        app.ports.ipcRendererToMain.send(value);
+        app.ports.ipcMainToRenderer.send(value);
     }
 );

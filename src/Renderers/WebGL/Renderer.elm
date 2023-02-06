@@ -4,19 +4,13 @@ import Browser
 import Common.About as About
 import Common.LocalCoords exposing (LocalCoords)
 import Element exposing (..)
-import Element.Background as Background
-import Element.Border as Border
 import Element.Font as Font
-import FlatColors.ChinesePalette
-import FlatColors.FlatUIPalette
 import Html exposing (Html, div)
 import Json.Decode as D
 import Json.Encode as E
 import Markdown
 import Renderers.LoadButton.IpcStubs as Stubs
 import Scene3d exposing (Entity)
-import Task
-import Time
 
 
 type Msg
@@ -40,7 +34,6 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    --TODO: Remove dummy message put here to make sure the port exists.
     ( { scene = [] }
     , Stubs.ipcRendererToMain <| E.object [ ( "cmd", E.string "hello" ) ]
     )

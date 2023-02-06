@@ -12,7 +12,7 @@ const ipcMain = electron.ipcMain;
 const Elm = require('./site/ServerProcessMain').Elm;
 
 const elmPorts = Elm.ServerProcess.Main.init().ports;
-console.log(elmPorts);
+console.log("MAIN: ", elmPorts);
 
 elmPorts.toJavascript.subscribe(handleElmMessage);
 
@@ -57,9 +57,8 @@ app.on('ready',
         // Forward IPC calls to Elm.
         ipcMain.on('elmMessage', (event, elmMessage) => {
 
-//            console.log("EVENT", event.sender);
             elmMessage.sender = event.sender.id;
-            console.log("sending to elm", elmMessage);
+            console.log("MAIN: sending to Main", elmMessage);
             elmPorts.fromJavascript.send( elmMessage );
 
         });
@@ -69,7 +68,7 @@ app.on('ready',
 // Collect and act on messages from Elm port on server.
 function handleElmMessage(msg) {
 
-    console.log('Message from Elm', msg)
+    console.log('MAIN: Message from Elm', msg)
 
     switch (msg.cmd) {
         case 'newwindow':
@@ -78,11 +77,13 @@ function handleElmMessage(msg) {
 
         case 'track':
             // Send track to specified window only.
-            webContents.fromId(msg.target).send('update', msg);
+            console.log("MAIN: Sending track ", msg.target);
+            console.log("TARGET IS:", webContents.fromId(msg.target) );
+            webContents.fromId(msg.target).send('fromServer', msg);
             break;
 
         default:
-            console.log(msg.cmd, " unknown command")
+            console.log("MAIN: ", msg.cmd, " unknown command")
     };
 
 };
@@ -90,7 +91,7 @@ function handleElmMessage(msg) {
 // Basic window lifecycle.
 function makeWindow(id, windowSpec) {
 
-        console.log(windowSpec);
+//        console.log("MAIN:", windowSpec);
 
         var window = new BrowserWindow(
             {
@@ -110,7 +111,7 @@ function makeWindow(id, windowSpec) {
         window.loadURL('file://' + __dirname + '/src/Renderers/' + windowSpec.html + '/Renderer.html');
 
         // Open the devtools.
-        //window.openDevTools();
+        window.openDevTools();
 
         // Emitted when the window is closed.
         window.on('close',
