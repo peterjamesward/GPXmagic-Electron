@@ -1,8 +1,13 @@
 module Renderers.WebGL.Renderer exposing (Model, Msg, main)
 
+import Angle
 import Browser
+import Camera3d
+import Color
 import Common.About as About
 import Common.LocalCoords exposing (LocalCoords)
+import Direction2d
+import Direction3d exposing (negativeZ, positiveZ)
 import Element exposing (..)
 import Element.Font as Font
 import Html exposing (Html, div)
@@ -10,10 +15,12 @@ import Json.Decode as D
 import Json.Encode as E
 import Length
 import Markdown
+import Pixels exposing (pixels)
 import Point3d
 import Renderers.LoadButton.IpcStubs as Stubs
 import Renderers.WebGL.SceneBuilder3D as Builder
-import Scene3d exposing (Entity)
+import Scene3d exposing (Entity, backgroundColor)
+import Viewpoint3d
 
 
 type Msg
@@ -104,11 +111,40 @@ localPointDecoder =
 
 view : Model -> Html Msg
 view model =
+    let
+        cameraViewpoint =
+            Viewpoint3d.orbitZ
+                { focalPoint = Point3d.origin
+                , azimuth = Direction2d.toAngle Direction2d.negativeX
+                , elevation = Angle.degrees 45
+                , distance = Length.kilometer
+                }
+
+        camera =
+            Camera3d.perspective
+                { viewpoint = cameraViewpoint
+                , verticalFieldOfView = Angle.degrees 45
+                }
+    in
     layout [] <|
-        paragraph
-            [ width fill, padding 20, Font.size 14 ]
-        <|
-            [ html <| Markdown.toHtml [] About.aboutText ]
+        if List.length model.scene == 0 then
+            paragraph
+                [ width fill, padding 20, Font.size 14 ]
+            <|
+                [ html <| Markdown.toHtml [] About.aboutText ]
+
+        else
+            html <|
+                Scene3d.sunny
+                    { camera = camera
+                    , dimensions = ( pixels 800, pixels 600 )
+                    , background = backgroundColor Color.lightBlue
+                    , clipDepth = Length.meters 1
+                    , entities = model.scene
+                    , upDirection = positiveZ
+                    , sunlightDirection = negativeZ
+                    , shadows = False
+                    }
 
 
 subscriptions : Model -> Sub Msg
