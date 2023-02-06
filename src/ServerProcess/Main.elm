@@ -1,4 +1,4 @@
-port module ServerProcessMain exposing (main)
+port module ServerProcess.Main exposing (main)
 
 import Angle
 import Dict exposing (Dict)

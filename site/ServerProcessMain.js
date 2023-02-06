@@ -2850,15 +2850,15 @@ var $elm$json$Json$Encode$object = function (pairs) {
 };
 var $elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
 var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
-var $author$project$ServerProcessMain$startModel = {filename: $elm$core$Maybe$Nothing, nextWindowId: 0, tree: $elm$core$Maybe$Nothing, windows: $elm$core$Dict$empty};
+var $author$project$ServerProcess$Main$startModel = {filename: $elm$core$Maybe$Nothing, nextWindowId: 0, tree: $elm$core$Maybe$Nothing, windows: $elm$core$Dict$empty};
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$core$Basics$identity = function (x) {
 	return x;
 };
-var $author$project$ServerProcessMain$toJavascript = _Platform_outgoingPort('toJavascript', $elm$core$Basics$identity);
-var $author$project$ServerProcessMain$init = _Utils_Tuple2(
-	$author$project$ServerProcessMain$startModel,
-	$author$project$ServerProcessMain$toJavascript(
+var $author$project$ServerProcess$Main$toJavascript = _Platform_outgoingPort('toJavascript', $elm$core$Basics$identity);
+var $author$project$ServerProcess$Main$init = _Utils_Tuple2(
+	$author$project$ServerProcess$Main$startModel,
+	$author$project$ServerProcess$Main$toJavascript(
 		$elm$json$Json$Encode$object(
 			_List_fromArray(
 				[
@@ -2866,17 +2866,17 @@ var $author$project$ServerProcessMain$init = _Utils_Tuple2(
 					'msg',
 					$elm$json$Json$Encode$string('Hello from Elm'))
 				]))));
-var $author$project$ServerProcessMain$MessageFromRenderer = function (a) {
+var $author$project$ServerProcess$Main$MessageFromRenderer = function (a) {
 	return {$: 'MessageFromRenderer', a: a};
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$json$Json$Decode$value = _Json_decodeValue;
-var $author$project$ServerProcessMain$fromJavascript = _Platform_incomingPort('fromJavascript', $elm$json$Json$Decode$value);
-var $author$project$ServerProcessMain$subscriptions = function (_v0) {
+var $author$project$ServerProcess$Main$fromJavascript = _Platform_incomingPort('fromJavascript', $elm$json$Json$Decode$value);
+var $author$project$ServerProcess$Main$subscriptions = function (_v0) {
 	return $elm$core$Platform$Sub$batch(
 		_List_fromArray(
 			[
-				$author$project$ServerProcessMain$fromJavascript($author$project$ServerProcessMain$MessageFromRenderer)
+				$author$project$ServerProcess$Main$fromJavascript($author$project$ServerProcess$Main$MessageFromRenderer)
 			]));
 };
 var $elm$json$Json$Decode$succeed = _Json_succeed;
@@ -3049,7 +3049,7 @@ var $elm$core$Dict$insert = F3(
 		}
 	});
 var $elm$json$Json$Encode$int = _Json_wrap;
-var $author$project$ServerProcessMain$rendererHtmlFile = function (rendererType) {
+var $author$project$ServerProcess$Main$rendererHtmlFile = function (rendererType) {
 	switch (rendererType.$) {
 		case 'RendererToolbox':
 			return 'LoadButton';
@@ -3063,14 +3063,14 @@ var $author$project$ServerProcessMain$rendererHtmlFile = function (rendererType)
 			return 'WebGL';
 	}
 };
-var $author$project$ServerProcessMain$windowAsJson = function (window) {
+var $author$project$ServerProcess$Main$windowAsJson = function (window) {
 	return $elm$json$Json$Encode$object(
 		_List_fromArray(
 			[
 				_Utils_Tuple2(
 				'html',
 				$elm$json$Json$Encode$string(
-					$author$project$ServerProcessMain$rendererHtmlFile(window.rendererType))),
+					$author$project$ServerProcess$Main$rendererHtmlFile(window.rendererType))),
 				_Utils_Tuple2(
 				'width',
 				$elm$json$Json$Encode$int(window.width)),
@@ -3079,7 +3079,7 @@ var $author$project$ServerProcessMain$windowAsJson = function (window) {
 				$elm$json$Json$Encode$int(window.height))
 			]));
 };
-var $author$project$ServerProcessMain$makeNewWindow = F2(
+var $author$project$ServerProcess$Main$makeNewWindow = F2(
 	function (window, model) {
 		return _Utils_Tuple2(
 			_Utils_update(
@@ -3088,7 +3088,7 @@ var $author$project$ServerProcessMain$makeNewWindow = F2(
 					nextWindowId: 1 + model.nextWindowId,
 					windows: A3($elm$core$Dict$insert, model.nextWindowId, window, model.windows)
 				}),
-			$author$project$ServerProcessMain$toJavascript(
+			$author$project$ServerProcess$Main$toJavascript(
 				$elm$json$Json$Encode$object(
 					_List_fromArray(
 						[
@@ -3100,7 +3100,7 @@ var $author$project$ServerProcessMain$makeNewWindow = F2(
 							$elm$json$Json$Encode$int(model.nextWindowId)),
 							_Utils_Tuple2(
 							'window',
-							$author$project$ServerProcessMain$windowAsJson(window))
+							$author$project$ServerProcess$Main$windowAsJson(window))
 						]))));
 	});
 var $elm$core$List$foldrHelper = F4(
@@ -3560,11 +3560,11 @@ var $author$project$RendererType$rendererTypeFromString = function (name) {
 			return $elm$core$Maybe$Nothing;
 	}
 };
-var $author$project$ServerProcessMain$rendererWindow = function (rendererType) {
+var $author$project$ServerProcess$Main$rendererWindow = function (rendererType) {
 	return {height: 600, rendererType: rendererType, width: 800};
 };
 var $elm$json$Json$Decode$string = _Json_decodeString;
-var $author$project$ServerProcessMain$toolWindow = {height: 100, rendererType: $author$project$RendererType$RendererToolbox, width: 300};
+var $author$project$ServerProcess$Main$toolWindow = {height: 100, rendererType: $author$project$RendererType$RendererToolbox, width: 300};
 var $author$project$DomainModel$GPXSource = F4(
 	function (longitude, latitude, altitude, timestamp) {
 		return {altitude: altitude, latitude: latitude, longitude: longitude, timestamp: timestamp};
@@ -4033,7 +4033,7 @@ var $author$project$DomainModel$treeFromSourcePoints = function (track) {
 		$elm$core$List$head(track));
 	return A2($author$project$DomainModel$treeFromSourcesWithExistingReference, referencePoint, track);
 };
-var $author$project$ServerProcessMain$update = F2(
+var $author$project$ServerProcess$Main$update = F2(
 	function (msg, model) {
 		var jsonMessage = msg.a;
 		var pointConverter = function (gpx) {
@@ -4055,7 +4055,7 @@ var $author$project$ServerProcessMain$update = F2(
 			if (cmd.$ === 'Ok') {
 				switch (cmd.a) {
 					case 'ready':
-						return A2($author$project$ServerProcessMain$makeNewWindow, $author$project$ServerProcessMain$toolWindow, model);
+						return A2($author$project$ServerProcess$Main$makeNewWindow, $author$project$ServerProcess$Main$toolWindow, model);
 					case 'newgpx':
 						var rawGpxPoints = A2(
 							$elm$json$Json$Decode$decodeValue,
@@ -4087,8 +4087,8 @@ var $author$project$ServerProcessMain$update = F2(
 							if (_v5.$ === 'Just') {
 								var renderer = _v5.a;
 								return A2(
-									$author$project$ServerProcessMain$makeNewWindow,
-									$author$project$ServerProcessMain$rendererWindow(renderer),
+									$author$project$ServerProcess$Main$makeNewWindow,
+									$author$project$ServerProcess$Main$rendererWindow(renderer),
 									model);
 							} else {
 								return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -4123,11 +4123,11 @@ var $author$project$ServerProcessMain$update = F2(
 		return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 	});
 var $elm$core$Platform$worker = _Platform_worker;
-var $author$project$ServerProcessMain$main = $elm$core$Platform$worker(
+var $author$project$ServerProcess$Main$main = $elm$core$Platform$worker(
 	{
-		init: $elm$core$Basics$always($author$project$ServerProcessMain$init),
-		subscriptions: $author$project$ServerProcessMain$subscriptions,
-		update: $author$project$ServerProcessMain$update
+		init: $elm$core$Basics$always($author$project$ServerProcess$Main$init),
+		subscriptions: $author$project$ServerProcess$Main$subscriptions,
+		update: $author$project$ServerProcess$Main$update
 	});
-_Platform_export({'ServerProcessMain':{'init':$author$project$ServerProcessMain$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
+_Platform_export({'ServerProcess':{'Main':{'init':$author$project$ServerProcess$Main$main(
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}}});}(this));

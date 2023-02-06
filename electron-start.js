@@ -10,7 +10,7 @@ const ipcMain = electron.ipcMain;
 // Connect to Elm, where we will keep our domain logic.
 const Elm = require('./site/ServerProcessMain').Elm;
 
-const elmPorts = Elm.ServerProcessMain.init().ports;
+const elmPorts = Elm.ServerProcess.Main.init().ports;
 console.log(elmPorts);
 
 elmPorts.toJavascript.subscribe(handleElmMessage);
