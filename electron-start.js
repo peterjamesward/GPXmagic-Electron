@@ -40,10 +40,6 @@ app.setAboutPanelOptions({
     authors: "Peter Ward"
 });
 
-// JS dictionary of windows, should match the Elm version. Could go badly wrong.
-var windowsElmToElectron = new Map();
-var windowsElectronToElm = new Map();
-
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // TODO: Move window management into Elm, make this a mere servant.
@@ -58,8 +54,9 @@ app.on('ready',
         ipcMain.on('elmMessage', (event, elmMessage) => {
 
             // Use the Elm source id, map back on response.
-            elmMessage.sender = windowsElectronToElm.get(event.sender.id);
-            console.log("MAIN: sending to Main", elmMessage.cmd);
+            //TODO: Find better id, this is not good.
+            elmMessage.sender = event.sender.id;
+            console.log("MAIN:", elmMessage.sender, " sent", elmMessage.cmd);
             elmPorts.fromJavascript.send( elmMessage );
 
         });
@@ -71,7 +68,6 @@ function handleElmMessage(msg) {
 
 //    console.log('MAIN: Message from Elm', msg)
 //    console.log("OUTBOUND MAPPING", windowsElmToElectron, msg.target);
-    const targetRenderer = windowsElmToElectron.get(msg.target);
 
     switch (msg.cmd) {
         case 'newwindow':
@@ -81,7 +77,7 @@ function handleElmMessage(msg) {
         case 'track':
             // Send track to specified window only.
             console.log("MAIN: Sending track ", msg.target);
-            webContents.fromId(targetRenderer).send('fromServer', msg);
+            webContents.fromId(msg.target).send('fromServer', msg);
             break;
 
         case 'ElmReady':
@@ -115,19 +111,12 @@ function makeWindow(elmWindowId, windowSpec) {
 
     window.on('close',
         function() {
-            const elmId = windowsElectronToElm.get(window.webContents.id);
-            elmPorts.fromJavascript.send({ cmd : "closed", id : elmId });
-            windowsElectronToElm.delete(window.webContents.id);
-            windowsElmToElectron.delete(elmId);
+            elmPorts.fromJavascript.send({ cmd : "closed", id : window.webContents.id });
         }
     );
 
     // and load the index.html of the app.
     window.webContents.loadURL('file://' + __dirname + '/src/Renderers/' + windowSpec.html + '/Renderer.html');
-
-    // Maps for messaging at Window level.
-    windowsElectronToElm.set(window.webContents.id, elmWindowId);
-    windowsElmToElectron.set(elmWindowId, window.webContents.id);
 
     // Make any child views
     contentSize = window.getContentSize();
@@ -160,10 +149,6 @@ function makeWindow(elmWindowId, windowSpec) {
             }
         );
 
-        // Keep track of windows between Electron and Elm.
-        windowsElectronToElm.set(view.webContents.id, elmWindowId);
-        windowsElmToElectron.set(elmWindowId, view.webContents.id);
-
         // and load the index.html of the view.
         view.webContents.loadURL('file://' + __dirname + '/src/Renderers/' + viewSpec.html + '/Renderer.html');
 
@@ -172,10 +157,7 @@ function makeWindow(elmWindowId, windowSpec) {
 
         view.webContents.on('close',
             function() {
-                const elmId = windowsElectronToElm.get(view.webContents.id);
-                elmPorts.fromJavascript.send({ cmd : "closed", id : elmId });
-                windowsElectronToElm.delete(view.webContents.id);
-                windowsElmToElectron.delete(elmId);
+                elmPorts.fromJavascript.send({ cmd : "closed", id : view.webContents.id });
             }
         );
     };
