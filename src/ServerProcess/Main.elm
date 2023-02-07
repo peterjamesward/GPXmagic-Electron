@@ -127,7 +127,7 @@ update msg model =
                             case RendererType.rendererTypeFromString foundRenderer of
                                 Just renderer ->
                                     makeNewWindow
-                                        (rendererWindow renderer)
+                                        windowGrid
                                         model
 
                                 Nothing ->
@@ -296,8 +296,8 @@ windowDrawers =
     { emptyWindow | views = [ paneTop, paneBottom ] }
 
 
-windowWindow : RendererWindow
-windowWindow =
+windowGrid : RendererWindow
+windowGrid =
     { emptyWindow | views = [ paneTopLeft, paneTopRight, paneBottomLeft, paneBottomRight ] }
 
 
@@ -347,7 +347,7 @@ rendererHtmlFile rendererType =
             "WebGL"
 
         RendererMultiPane ->
-            "MultiPane"
+            "ViewContainer"
 
 
 windowAsJson : RendererWindow -> E.Value
@@ -358,4 +358,16 @@ windowAsJson window =
         , ( "height", E.int window.height )
         , ( "left", E.int window.left )
         , ( "top", E.int window.top )
+        , ( "views", E.list viewAsJson window.views )
+        ]
+
+
+viewAsJson : RendererView -> E.Value
+viewAsJson view =
+    E.object
+        [ ( "html", E.string <| rendererHtmlFile view.rendererType )
+        , ( "width", E.float view.widthPercent )
+        , ( "height", E.float view.heightPercent )
+        , ( "top", E.float view.topPercent )
+        , ( "left", E.float view.leftPercent )
         ]

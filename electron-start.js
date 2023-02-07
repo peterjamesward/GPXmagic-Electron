@@ -97,12 +97,13 @@ function handleElmMessage(msg) {
 // Basic window lifecycle.
 function makeWindow(elmWindowId, windowSpec) {
 
-//    console.log("MAIN:", windowSpec);
+    //TODO: Make children as per specified.
+    console.log("MAIN:", windowSpec);
 
     var window = new BrowserWindow(
         {
-            width: 800, //windowSpec.width,
-            height: 200, //windowSpec.height,
+            width: windowSpec.width,
+            height: windowSpec.height,
             x : windowSpec.left,
             y : windowSpec.top,
             acceptFirstMouse : true,
@@ -112,94 +113,71 @@ function makeWindow(elmWindowId, windowSpec) {
         }
     );
 
-    //TODO: Neaten this and generalise for different pane layouts. - In Elm or in JS??
-    contentSize = window.getContentSize();
-
-    const viewLeft = new BrowserView(
-        {
-            width: contentSize[0] / 2,
-            height: contentSize[1],
-            x : 0,
-            y : 100,
-            webPreferences: {
-                preload: path.join(__dirname, 'preload.js')
-            }
+    window.on('close',
+        function() {
+            const elmId = windowsElectronToElm.get(window.webContents.id);
+            elmPorts.fromJavascript.send({ cmd : "closed", id : elmId });
+            windowsElectronToElm.delete(window.webContents.id);
+            windowsElmToElectron.delete(elmId);
         }
     );
-    const viewRight = new BrowserView(
-        {
-            width: contentSize[0] / 2,
-            height: contentSize[1],
-            x : 100,
-            y : 0,
-            webPreferences: {
-                preload: path.join(__dirname, 'preload.js')
-            }
-        }
-    );
-    window.addBrowserView(viewLeft);
-    window.addBrowserView(viewRight);
-    viewLeft.setBounds(
-        {
-            width: 300,
-            height: 100,
-            x: 0,
-            y: 0
-        });
-    viewRight.setBounds(
-        {
-            width: 400,
-            height: 400,
-            x : 300,
-            y : 0
-        });
-
-    // Keep track of windows between Electron and Elm.
-    windowsElectronToElm.set(viewLeft.webContents.id, elmWindowId);
-    windowsElectronToElm.set(viewRight.webContents.id, elmWindowId);
-    windowsElmToElectron.set(elmWindowId, viewLeft.webContents.id);
-    windowsElmToElectron.set(elmWindowId, viewRight.webContents.id);
-//    console.log("MAPPING", windowsElectronToElm);
-
-//    viewLeft.setAutoResize(
-//        {
-//            width : true,
-//            height : true,
-//            horizontal : true,
-//            vertical : true
-//        }
-//    );
-//    viewRight.setAutoResize(
-//        {
-//            width : true,
-//            height : true,
-//            horizontal : true,
-//            vertical : true
-//        }
-//    );
 
     // and load the index.html of the app.
-    viewLeft.webContents.loadURL('file://' + __dirname + '/src/Renderers/' + windowSpec.html + '/Renderer.html');
-    viewRight.webContents.loadURL('file://' + __dirname + '/src/Renderers/' + windowSpec.html + '/Renderer.html');
+    window.webContents.loadURL('file://' + __dirname + '/src/Renderers/' + windowSpec.html + '/Renderer.html');
 
-    // Open the devtools.
-//    view.webContents.openDevTools();
+    // Maps for messaging at Window level.
+    windowsElectronToElm.set(window.webContents.id, elmWindowId);
+    windowsElmToElectron.set(elmWindowId, window.webContents.id);
 
-    // Emitted when the window is closed.
-    viewLeft.webContents.on('close',
-        function() {
-            const elmId = windowsElectronToElm.get(viewLeft.webContents.id);
-            elmPorts.fromJavascript.send({ cmd : "closed", id : elmId });
-            windowsElectronToElm.delete(viewLeft.webContents.id);
-            windowsElmToElectron.delete(elmId);
-        }
-    );
-    viewRight.webContents.on('close',
-        function() {
-            const elmId = windowsElectronToElm.get(viewRight.webContents.id);
-            elmPorts.fromJavascript.send({ cmd : "closed", id : elmId });
-            windowsElectronToElm.delete(viewRight.webContents.id);
-            windowsElmToElectron.delete(elmId);
-        }
-    );
+    // Make any child views
+    contentSize = window.getContentSize();
+    widthPercent = contentSize[0] / 100;
+    heightPercent = contentSize[1] / 100;
+    windowSpec.views.map((viewSpec) => { createAndAddView(viewSpec)});
+
+    function createAndAddView(viewSpec) {
+
+        console.log("making view", viewSpec);
+
+        const view = new BrowserView(
+            {
+                width: viewSpec.width * widthPercent,
+                height: viewSpec.height * heightPercent,
+                x : viewSpec.left * widthPercent,
+                y : viewSpec.top * heightPercent,
+                webPreferences: {
+                    preload: path.join(__dirname, 'preload.js')
+                }
+            }
+        );
+        window.addBrowserView(view);
+        view.setBounds(
+            {
+                width: viewSpec.width * widthPercent,
+                height: viewSpec.height * heightPercent,
+                x : viewSpec.left * widthPercent,
+                y : viewSpec.top * heightPercent,
+            }
+        );
+
+        // Keep track of windows between Electron and Elm.
+        windowsElectronToElm.set(view.webContents.id, elmWindowId);
+        windowsElmToElectron.set(elmWindowId, view.webContents.id);
+
+        // and load the index.html of the view.
+        view.webContents.loadURL('file://' + __dirname + '/src/Renderers/' + viewSpec.html + '/Renderer.html');
+
+        // Open the devtools.
+        //    view.webContents.openDevTools();
+
+        view.webContents.on('close',
+            function() {
+                const elmId = windowsElectronToElm.get(view.webContents.id);
+                elmPorts.fromJavascript.send({ cmd : "closed", id : elmId });
+                windowsElectronToElm.delete(view.webContents.id);
+                windowsElmToElectron.delete(elmId);
+            }
+        );
+    };
+
 };

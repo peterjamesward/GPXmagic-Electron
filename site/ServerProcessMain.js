@@ -3218,9 +3218,33 @@ var $author$project$ServerProcess$Main$rendererHtmlFile = function (rendererType
 			return 'WebGL';
 		case 'RendererCanvasChart':
 			return 'WebGL';
-		default:
+		case 'RendererMap':
 			return 'WebGL';
+		default:
+			return 'ViewContainer';
 	}
+};
+var $author$project$ServerProcess$Main$viewAsJson = function (view) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'html',
+				$elm$json$Json$Encode$string(
+					$author$project$ServerProcess$Main$rendererHtmlFile(view.rendererType))),
+				_Utils_Tuple2(
+				'width',
+				$elm$json$Json$Encode$float(view.widthPercent)),
+				_Utils_Tuple2(
+				'height',
+				$elm$json$Json$Encode$float(view.heightPercent)),
+				_Utils_Tuple2(
+				'top',
+				$elm$json$Json$Encode$float(view.topPercent)),
+				_Utils_Tuple2(
+				'left',
+				$elm$json$Json$Encode$float(view.leftPercent))
+			]));
 };
 var $author$project$ServerProcess$Main$windowAsJson = function (window) {
 	return $elm$json$Json$Encode$object(
@@ -3229,7 +3253,7 @@ var $author$project$ServerProcess$Main$windowAsJson = function (window) {
 				_Utils_Tuple2(
 				'html',
 				$elm$json$Json$Encode$string(
-					$author$project$ServerProcess$Main$rendererHtmlFile(window.rendererType))),
+					$author$project$ServerProcess$Main$rendererHtmlFile(window.containerRenderer))),
 				_Utils_Tuple2(
 				'width',
 				$elm$json$Json$Encode$int(window.width)),
@@ -3241,7 +3265,10 @@ var $author$project$ServerProcess$Main$windowAsJson = function (window) {
 				$elm$json$Json$Encode$int(window.left)),
 				_Utils_Tuple2(
 				'top',
-				$elm$json$Json$Encode$int(window.top))
+				$elm$json$Json$Encode$int(window.top)),
+				_Utils_Tuple2(
+				'views',
+				A2($elm$json$Json$Encode$list, $author$project$ServerProcess$Main$viewAsJson, window.views))
 			]));
 };
 var $author$project$ServerProcess$Main$makeNewWindow = F2(
@@ -3719,6 +3746,7 @@ var $elm$core$Dict$remove = F2(
 var $author$project$Common$RendererType$Renderer3D = {$: 'Renderer3D'};
 var $author$project$Common$RendererType$RendererCanvasChart = {$: 'RendererCanvasChart'};
 var $author$project$Common$RendererType$RendererMap = {$: 'RendererMap'};
+var $author$project$Common$RendererType$RendererMultiPane = {$: 'RendererMultiPane'};
 var $author$project$Common$RendererType$RendererProfile = {$: 'RendererProfile'};
 var $author$project$Common$RendererType$RendererToolbox = {$: 'RendererToolbox'};
 var $author$project$Common$RendererType$rendererTypeFromString = function (name) {
@@ -3733,12 +3761,11 @@ var $author$project$Common$RendererType$rendererTypeFromString = function (name)
 			return $elm$core$Maybe$Just($author$project$Common$RendererType$RendererCanvasChart);
 		case 'map':
 			return $elm$core$Maybe$Just($author$project$Common$RendererType$RendererMap);
+		case 'panes':
+			return $elm$core$Maybe$Just($author$project$Common$RendererType$RendererMultiPane);
 		default:
 			return $elm$core$Maybe$Nothing;
 	}
-};
-var $author$project$ServerProcess$Main$rendererWindow = function (rendererType) {
-	return {height: (768 - 120) - 28, left: 0, rendererType: rendererType, top: 120 + 28, width: 1024};
 };
 var $author$project$ServerProcess$Main$sendTrackToRenderer = F2(
 	function (pointsAsJson, id) {
@@ -3764,7 +3791,7 @@ var $author$project$ServerProcess$Main$sendToAll = F2(
 				$elm$core$Dict$keys(model.windows)));
 	});
 var $elm$json$Json$Decode$string = _Json_decodeString;
-var $author$project$ServerProcess$Main$toolWindow = {height: 120, left: 300, rendererType: $author$project$Common$RendererType$RendererToolbox, top: 0, width: 300};
+var $author$project$ServerProcess$Main$toolWindow = {containerRenderer: $author$project$Common$RendererType$RendererToolbox, height: 120, left: 300, top: 0, views: _List_Nil, width: 300};
 var $author$project$Common$DomainModel$GPXSource = F4(
 	function (longitude, latitude, altitude, timestamp) {
 		return {altitude: altitude, latitude: latitude, longitude: longitude, timestamp: timestamp};
@@ -4208,6 +4235,32 @@ var $author$project$Common$DomainModel$treeFromSourcePoints = function (track) {
 		$elm$core$List$head(track));
 	return A2($author$project$Common$DomainModel$treeFromSourcesWithExistingReference, referencePoint, track);
 };
+var $author$project$ServerProcess$Main$emptyWindow = {containerRenderer: $author$project$Common$RendererType$RendererMultiPane, height: 750, left: 0, top: 120 + 28, views: _List_Nil, width: 1000};
+var $author$project$ServerProcess$Main$paneFull = {heightPercent: 100.0, leftPercent: 0.0, rendererType: $author$project$Common$RendererType$Renderer3D, topPercent: 0.0, widthPercent: 100.0};
+var $author$project$ServerProcess$Main$paneLeft = _Utils_update(
+	$author$project$ServerProcess$Main$paneFull,
+	{widthPercent: 50.0});
+var $author$project$ServerProcess$Main$paneTopLeft = _Utils_update(
+	$author$project$ServerProcess$Main$paneLeft,
+	{heightPercent: 50.0});
+var $author$project$ServerProcess$Main$paneBottomLeft = _Utils_update(
+	$author$project$ServerProcess$Main$paneTopLeft,
+	{topPercent: 50.0});
+var $author$project$ServerProcess$Main$paneRight = _Utils_update(
+	$author$project$ServerProcess$Main$paneLeft,
+	{leftPercent: 50.0});
+var $author$project$ServerProcess$Main$paneTopRight = _Utils_update(
+	$author$project$ServerProcess$Main$paneRight,
+	{heightPercent: 50.0});
+var $author$project$ServerProcess$Main$paneBottomRight = _Utils_update(
+	$author$project$ServerProcess$Main$paneTopRight,
+	{topPercent: 50.0});
+var $author$project$ServerProcess$Main$windowGrid = _Utils_update(
+	$author$project$ServerProcess$Main$emptyWindow,
+	{
+		views: _List_fromArray(
+			[$author$project$ServerProcess$Main$paneTopLeft, $author$project$ServerProcess$Main$paneTopRight, $author$project$ServerProcess$Main$paneBottomLeft, $author$project$ServerProcess$Main$paneBottomRight])
+	});
 var $author$project$ServerProcess$Main$update = F2(
 	function (msg, model) {
 		var jsonMessage = msg.a;
@@ -4285,10 +4338,7 @@ var $author$project$ServerProcess$Main$update = F2(
 							var _v5 = $author$project$Common$RendererType$rendererTypeFromString(foundRenderer);
 							if (_v5.$ === 'Just') {
 								var renderer = _v5.a;
-								return A2(
-									$author$project$ServerProcess$Main$makeNewWindow,
-									$author$project$ServerProcess$Main$rendererWindow(renderer),
-									model);
+								return A2($author$project$ServerProcess$Main$makeNewWindow, $author$project$ServerProcess$Main$windowGrid, model);
 							} else {
 								return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 							}
