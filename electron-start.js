@@ -98,7 +98,7 @@ function makeWindow(elmWindowId, windowSpec) {
     var window = new BrowserWindow(
         {
             width: 800, //windowSpec.width,
-            height: 60, //windowSpec.height,
+            height: 200, //windowSpec.height,
             x : windowSpec.left,
             y : windowSpec.top,
             acceptFirstMouse : true,
@@ -110,30 +110,34 @@ function makeWindow(elmWindowId, windowSpec) {
 
     const view = new BrowserView(
         {
-            width: windowSpec.width,
-            height: windowSpec.height,
+            width: window.getContentBounds().width / 2,
+            height: window.getContentBounds().height,
             x : 0,
             y : 0,
-            acceptFirstMouse : true,
             webPreferences: {
                 preload: path.join(__dirname, 'preload.js')
             }
         }
-    )
-    window.setBrowserView(view)
-//    view.setBounds({ x: 0, y: 20, width: 300, height: 120 })
-    view.setAutoResize( { height : true, width : true } )
+    );
+    window.addBrowserView(view);
+    view.setBounds(
+        { x: 0,
+          y: 0,
+          width: window.getContentBounds().width / 2,
+          height: window.getContentBounds().height
+        });
+//    view.setAutoResize( { height : true, width : true } )
 
     // Keep track of windows on both sides.
-    windowsElectronToElm.set(view.webContents.id, elmWindowId)
-    windowsElmToElectron.set(elmWindowId, view.webContents.id)
-    console.log("MAPPING", windowsElectronToElm)
+    windowsElectronToElm.set(view.webContents.id, elmWindowId);
+    windowsElmToElectron.set(elmWindowId, view.webContents.id);
+    console.log("MAPPING", windowsElectronToElm);
 
     // and load the index.html of the app.
     view.webContents.loadURL('file://' + __dirname + '/src/Renderers/' + windowSpec.html + '/Renderer.html');
 
     // Open the devtools.
-    view.webContents.openDevTools();
+//    view.webContents.openDevTools();
 
     // Emitted when the window is closed.
     view.webContents.on('close',
