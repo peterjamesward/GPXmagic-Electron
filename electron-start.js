@@ -1,12 +1,12 @@
 const path = require('path')
-var electron = require('electron')
+//var electron = require('electron')
 
-var app = electron.app; // Module to control application life.
-var BrowserWindow = electron.BrowserWindow; // Module to create native browser window.
-const { webContents } = require('electron');
+//var app = electron.app; // Module to control application life.
+//var BrowserWindow = electron.BrowserWindow; // Module to create native browser window.
+const { electron, app, ipcMain, webContents, BrowserWindow, BrowserView } = require('electron');
 
 // Need this for talking to the main process, which handles the OAuth (partly).
-const ipcMain = electron.ipcMain;
+//const ipcMain = electron.ipcMain;
 
 // Connect to Elm, where we will keep our domain logic.
 const Elm = require('./site/ServerProcessMain').Elm;
@@ -108,23 +108,39 @@ function makeWindow(elmWindowId, windowSpec) {
         }
     );
 
+    const view = new BrowserView(
+        {
+            width: windowSpec.width,
+            height: windowSpec.height,
+            x : windowSpec.left,
+            y : windowSpec.top,
+            acceptFirstMouse : true,
+            webPreferences: {
+                preload: path.join(__dirname, 'preload.js')
+            }
+        }
+    )
+    window.setBrowserView(view)
+    view.setBounds({ x: 0, y: 20, width: 300, height: 120 })
+    view.setAutoResize( { height : true, width : true } )
+
     // Keep track of windows on both sides.
-    windowsElectronToElm.set(window.webContents.id, elmWindowId);
-    windowsElmToElectron.set(elmWindowId, window.id);
-    console.log("MAPPING", windowsElectronToElm);
+    windowsElectronToElm.set(view.webContents.id, elmWindowId)
+    windowsElmToElectron.set(elmWindowId, view.webContents.id)
+    console.log("MAPPING", windowsElectronToElm)
 
     // and load the index.html of the app.
-    window.loadURL('file://' + __dirname + '/src/Renderers/' + windowSpec.html + '/Renderer.html');
+    view.webContents.loadURL('file://' + __dirname + '/src/Renderers/' + windowSpec.html + '/Renderer.html');
 
     // Open the devtools.
-//        window.openDevTools();
+    view.webContents.openDevTools();
 
     // Emitted when the window is closed.
-    window.on('close',
+    view.webContents.on('close',
         function() {
-            const elmId = windowsElectronToElm.get(window.webContents.id);
+            const elmId = windowsElectronToElm.get(view.webContents.id);
             elmPorts.fromJavascript.send({ cmd : "closed", id : elmId });
-            windowsElectronToElm.delete(window.id);
+            windowsElectronToElm.delete(view.webContents.id);
             windowsElmToElectron.delete(elmId);
         }
     );
