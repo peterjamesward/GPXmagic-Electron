@@ -5,6 +5,7 @@ import Json.Decode as D
 
 type RendererType
     = RendererToolbox
+    | RendererMultiPane
     | Renderer3D
     | RendererProfile
     | RendererCanvasChart
@@ -31,6 +32,9 @@ rendererTypeAsString renderer =
         RendererMap ->
             "map"
 
+        RendererMultiPane ->
+            "panes"
+
 
 rendererTypeFromString : String -> Maybe RendererType
 rendererTypeFromString name =
@@ -51,6 +55,9 @@ rendererTypeFromString name =
 
         "map" ->
             Just RendererMap
+
+        "panes" ->
+            Just RendererMultiPane
 
         _ ->
             Nothing

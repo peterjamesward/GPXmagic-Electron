@@ -20,11 +20,11 @@ It's possible to induce an exception by closing several windows.
 ## Next
 
 * Window splitting.
-> WebView looks promising,
-> Try creating grid and using show/hide to switch layout.
+> WebView looks promising, make Elm code to drive creation of 1, 2, or 4 views.
+> Window should be responsible for saving and loading state of hidden views.
 > Test on Windows 10.
 
-* Optimise primary renderer window size and placement.
+* Optimise primary renderer window size and placement for available display.
 * Docking toolbox (top, bottom, left, right)
 * Additional toolboxes as required.
 * Window locations and panes stored.
