@@ -3754,7 +3754,7 @@ var $author$project$Common$RendererType$rendererTypeFromString = function (name)
 			return $elm$core$Maybe$Just($author$project$Common$RendererType$RendererCanvasChart);
 		case 'map':
 			return $elm$core$Maybe$Just($author$project$Common$RendererType$RendererMap);
-		case 'panes':
+		case 'ViewContainer':
 			return $elm$core$Maybe$Just($author$project$Common$RendererType$RendererMultiPane);
 		default:
 			return $elm$core$Maybe$Nothing;

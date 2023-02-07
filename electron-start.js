@@ -148,6 +148,14 @@ function makeWindow(elmWindowId, windowSpec) {
                 y : viewSpec.top * heightPercent,
             }
         );
+        view.setAutoResize(
+            {
+                width: true,
+                height: true,
+                horizontal : true,
+                vertical : true
+            }
+        );
 
         // and load the index.html of the view.
         view.webContents.loadURL('file://' + __dirname + '/src/Renderers/' + viewSpec.html + '/Renderer.html');

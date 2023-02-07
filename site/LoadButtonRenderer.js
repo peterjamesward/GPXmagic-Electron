@@ -5809,7 +5809,7 @@ var $author$project$Common$RendererType$rendererTypeAsString = function (rendere
 		case 'RendererMap':
 			return 'map';
 		default:
-			return 'panes';
+			return 'ViewContainer';
 	}
 };
 var $author$project$Renderers$LoadButton$IpcStubs$newView = function (renderer) {

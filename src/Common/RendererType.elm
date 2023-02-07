@@ -33,7 +33,7 @@ rendererTypeAsString renderer =
             "map"
 
         RendererMultiPane ->
-            "panes"
+            "ViewContainer"
 
 
 rendererTypeFromString : String -> Maybe RendererType
@@ -56,7 +56,7 @@ rendererTypeFromString name =
         "map" ->
             Just RendererMap
 
-        "panes" ->
+        "ViewContainer" ->
             Just RendererMultiPane
 
         _ ->
