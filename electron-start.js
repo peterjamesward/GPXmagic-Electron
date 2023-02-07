@@ -97,8 +97,8 @@ function makeWindow(elmWindowId, windowSpec) {
 
     var window = new BrowserWindow(
         {
-            width: windowSpec.width,
-            height: windowSpec.height,
+            width: 800, //windowSpec.width,
+            height: 60, //windowSpec.height,
             x : windowSpec.left,
             y : windowSpec.top,
             acceptFirstMouse : true,
@@ -112,8 +112,8 @@ function makeWindow(elmWindowId, windowSpec) {
         {
             width: windowSpec.width,
             height: windowSpec.height,
-            x : windowSpec.left,
-            y : windowSpec.top,
+            x : 0,
+            y : 0,
             acceptFirstMouse : true,
             webPreferences: {
                 preload: path.join(__dirname, 'preload.js')
@@ -121,7 +121,7 @@ function makeWindow(elmWindowId, windowSpec) {
         }
     )
     window.setBrowserView(view)
-    view.setBounds({ x: 0, y: 20, width: 300, height: 120 })
+//    view.setBounds({ x: 0, y: 20, width: 300, height: 120 })
     view.setAutoResize( { height : true, width : true } )
 
     // Keep track of windows on both sides.

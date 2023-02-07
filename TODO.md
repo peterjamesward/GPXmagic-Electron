@@ -20,8 +20,8 @@ It's possible to induce an exception by closing several windows.
 ## Next
 
 * Window splitting.
-> Try creating webViews, see if this removes the need to focus the window.
-> Keep the cupboards/drawers/windows options for each WebView (small toolbar).
+> WebView looks promising,
+> Try creating grid and using show/hide to switch layout.
 > Test on Windows 10.
 
 * Optimise primary renderer window size and placement.
