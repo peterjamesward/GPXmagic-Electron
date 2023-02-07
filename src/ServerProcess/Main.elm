@@ -220,6 +220,8 @@ type alias RendererWindow =
     , top : Int
     , left : Int
     , views : List RendererView
+    , reservedLeft : Int
+    , reservedTop : Int
     }
 
 
@@ -241,6 +243,8 @@ toolWindow =
     , top = 0
     , left = 300
     , views = []
+    , reservedLeft = 0
+    , reservedTop = 0
     }
 
 
@@ -249,9 +253,11 @@ emptyWindow =
     { containerRenderer = RendererMultiPane
     , width = 1000
     , height = 750
-    , top = 120 + 28 -- TODO: Get the actual title bar height and screen size.
+    , top = 120 + 28 --TODO: Get the actual title bar height and screen size.
     , left = 0
     , views = []
+    , reservedLeft = 20
+    , reservedTop = 0
     }
 
 
@@ -380,6 +386,8 @@ windowAsJson window =
         , ( "left", E.int window.left )
         , ( "top", E.int window.top )
         , ( "views", E.list viewAsJson window.views )
+        , ( "reservedLeft", E.int window.reservedLeft )
+        , ( "reservedTop", E.int window.reservedTop )
         ]
 
 

@@ -3,24 +3,29 @@ module Renderers.ViewContainer.Renderer exposing (Model, Msg, main)
 import Browser
 import Common.GpxPoint as GpxPoint exposing (gpxPointAsJSON)
 import Common.RendererType as RendererType exposing (RendererType(..))
+import Common.ViewPureStyles exposing (useIcon)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
+import Element.Font as Font
 import Element.Input as Input exposing (button)
+import FeatherIcons
 import File exposing (File)
 import File.Select as Select
+import FlatColors.AussiePalette
 import FlatColors.ChinesePalette
 import FlatColors.FlatUIPalette
 import Html exposing (Html, div)
+import Html.Attributes exposing (style)
+import Html.Events.Extra.Mouse as Mouse
 import Json.Encode as E
-import Renderers.LoadButton.GpxParser as GpxParser
 import Renderers.LoadButton.IpcStubs as Stubs
-import Task
-import Time
 
 
 type Msg
     = MessageFromMainProcess E.Value
+    | NoOp
+    | Layout
 
 
 type alias Model =
@@ -58,6 +63,12 @@ update msg model =
         MessageFromMainProcess value ->
             ( model, Cmd.none )
 
+        NoOp ->
+            ( model, Cmd.none )
+
+        Layout ->
+            ( model, Cmd.none )
+
 
 view : Model -> Html Msg
 view model =
@@ -70,9 +81,53 @@ view model =
             ]
     in
     layout
-        [ Background.color model.backgroundColour ]
+        [ Background.color model.backgroundColour
+        , centerY
+        , alignLeft
+        ]
     <|
-        none
+        modeButtons
+
+
+stopProp =
+    { stopPropagation = True, preventDefault = False }
+
+
+modeButtons =
+    column
+        [ alignTop
+        , alignLeft
+        , moveDown 2
+        , moveRight 2
+        , Background.color FlatColors.FlatUIPalette.clouds
+        , Font.size 40
+        , padding 6
+        , spacing 8
+        , Border.width 1
+        , Border.rounded 4
+        , Border.color FlatColors.AussiePalette.blurple
+        , htmlAttribute <| Mouse.onWithOptions "click" stopProp (always NoOp)
+        , htmlAttribute <| Mouse.onWithOptions "dblclick" stopProp (always NoOp)
+        , htmlAttribute <| Mouse.onWithOptions "mousedown" stopProp (always NoOp)
+        , htmlAttribute <| Mouse.onWithOptions "mouseup" stopProp (always NoOp)
+        ]
+        [ Input.button []
+            { onPress = Just Layout
+            , label = useIcon FeatherIcons.columns
+            }
+        , Input.button []
+            { onPress = Just Layout
+            , label = useIcon FeatherIcons.server
+            }
+        , Input.button []
+            { onPress = Just Layout
+            , label = useIcon FeatherIcons.grid
+            }
+        , Input.button []
+            { onPress = Just Layout
+            , label = useIcon FeatherIcons.maximize
+            }
+        ]
 
 
 subscriptions : Model -> Sub Msg

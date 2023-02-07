@@ -120,9 +120,10 @@ function makeWindow(elmWindowId, windowSpec) {
 
     // Make any child views
     contentSize = window.getContentSize();
-    widthPercent = contentSize[0] / 100;
-    heightPercent = contentSize[1] / 100;
+    widthPercent = (contentSize[0] - windowSpec.reservedLeft) / 100;
+    heightPercent = (contentSize[1] - windowSpec.reservedTop) / 100;
     windowSpec.views.map((viewSpec) => { createAndAddView(viewSpec)});
+
 
     function createAndAddView(viewSpec) {
 
@@ -130,10 +131,10 @@ function makeWindow(elmWindowId, windowSpec) {
 
         const view = new BrowserView(
             {
-                width: viewSpec.width * widthPercent,
-                height: viewSpec.height * heightPercent,
-                x : viewSpec.left * widthPercent,
-                y : viewSpec.top * heightPercent,
+                width: Math.floor(viewSpec.width * widthPercent),
+                height: Math.floor(viewSpec.height * heightPercent),
+                x :  windowSpec.reservedLeft + Math.floor(viewSpec.left * widthPercent),
+                y : windowSpec.reservedTop + Math.floor(viewSpec.top * heightPercent),
                 webPreferences: {
                     preload: path.join(__dirname, 'preload.js')
                 }
@@ -142,10 +143,10 @@ function makeWindow(elmWindowId, windowSpec) {
         window.addBrowserView(view);
         view.setBounds(
             {
-                width: viewSpec.width * widthPercent,
-                height: viewSpec.height * heightPercent,
-                x : viewSpec.left * widthPercent,
-                y : viewSpec.top * heightPercent,
+                width: Math.floor(viewSpec.width * widthPercent),
+                height: Math.floor(viewSpec.height * heightPercent),
+                x :  windowSpec.reservedLeft + Math.floor(viewSpec.left * widthPercent),
+                y : windowSpec.reservedTop + Math.floor(viewSpec.top * heightPercent),
             }
         );
         view.setAutoResize(

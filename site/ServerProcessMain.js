@@ -3268,7 +3268,13 @@ var $author$project$ServerProcess$Main$windowAsJson = function (window) {
 				$elm$json$Json$Encode$int(window.top)),
 				_Utils_Tuple2(
 				'views',
-				A2($elm$json$Json$Encode$list, $author$project$ServerProcess$Main$viewAsJson, window.views))
+				A2($elm$json$Json$Encode$list, $author$project$ServerProcess$Main$viewAsJson, window.views)),
+				_Utils_Tuple2(
+				'reservedLeft',
+				$elm$json$Json$Encode$int(window.reservedLeft)),
+				_Utils_Tuple2(
+				'reservedTop',
+				$elm$json$Json$Encode$int(window.reservedTop))
 			]));
 };
 var $author$project$ServerProcess$Main$makeNewWindow = F2(
@@ -3784,7 +3790,7 @@ var $author$project$ServerProcess$Main$sendToAll = F2(
 				$elm$core$Dict$keys(model.windowsAndViews)));
 	});
 var $elm$json$Json$Decode$string = _Json_decodeString;
-var $author$project$ServerProcess$Main$toolWindow = {containerRenderer: $author$project$Common$RendererType$RendererToolbox, height: 120, left: 300, top: 0, views: _List_Nil, width: 300};
+var $author$project$ServerProcess$Main$toolWindow = {containerRenderer: $author$project$Common$RendererType$RendererToolbox, height: 120, left: 300, reservedLeft: 0, reservedTop: 0, top: 0, views: _List_Nil, width: 300};
 var $author$project$Common$DomainModel$GPXSource = F4(
 	function (longitude, latitude, altitude, timestamp) {
 		return {altitude: altitude, latitude: latitude, longitude: longitude, timestamp: timestamp};
@@ -4228,7 +4234,7 @@ var $author$project$Common$DomainModel$treeFromSourcePoints = function (track) {
 		$elm$core$List$head(track));
 	return A2($author$project$Common$DomainModel$treeFromSourcesWithExistingReference, referencePoint, track);
 };
-var $author$project$ServerProcess$Main$emptyWindow = {containerRenderer: $author$project$Common$RendererType$RendererMultiPane, height: 750, left: 0, top: 120 + 28, views: _List_Nil, width: 1000};
+var $author$project$ServerProcess$Main$emptyWindow = {containerRenderer: $author$project$Common$RendererType$RendererMultiPane, height: 750, left: 0, reservedLeft: 20, reservedTop: 0, top: 120 + 28, views: _List_Nil, width: 1000};
 var $author$project$ServerProcess$Main$paneFull = {heightPercent: 100.0, leftPercent: 0.0, rendererType: $author$project$Common$RendererType$Renderer3D, topPercent: 0.0, widthPercent: 100.0};
 var $author$project$ServerProcess$Main$paneLeft = _Utils_update(
 	$author$project$ServerProcess$Main$paneFull,
