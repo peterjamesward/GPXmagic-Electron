@@ -84,6 +84,10 @@ function handleElmMessage(msg) {
             webContents.fromId(targetRenderer).send('fromServer', msg);
             break;
 
+        case 'ElmReady':
+            console.log("Elm is ready.");
+            break;
+
         default:
             console.log("MAIN: ", msg.cmd, " unknown command")
     };
@@ -108,43 +112,93 @@ function makeWindow(elmWindowId, windowSpec) {
         }
     );
 
-    const view = new BrowserView(
+    //TODO: Neaten this and generalise for different pane layouts. - In Elm or in JS??
+    contentSize = window.getContentSize();
+
+    const viewLeft = new BrowserView(
         {
-            width: window.getContentBounds().width / 2,
-            height: window.getContentBounds().height,
+            width: contentSize[0] / 2,
+            height: contentSize[1],
             x : 0,
+            y : 100,
+            webPreferences: {
+                preload: path.join(__dirname, 'preload.js')
+            }
+        }
+    );
+    const viewRight = new BrowserView(
+        {
+            width: contentSize[0] / 2,
+            height: contentSize[1],
+            x : 100,
             y : 0,
             webPreferences: {
                 preload: path.join(__dirname, 'preload.js')
             }
         }
     );
-    window.addBrowserView(view);
-    view.setBounds(
-        { x: 0,
-          y: 0,
-          width: window.getContentBounds().width / 2,
-          height: window.getContentBounds().height
+    window.addBrowserView(viewLeft);
+    window.addBrowserView(viewRight);
+    viewLeft.setBounds(
+        {
+            width: 300,
+            height: 100,
+            x: 0,
+            y: 0
         });
-//    view.setAutoResize( { height : true, width : true } )
+    viewRight.setBounds(
+        {
+            width: 400,
+            height: 400,
+            x : 300,
+            y : 0
+        });
 
-    // Keep track of windows on both sides.
-    windowsElectronToElm.set(view.webContents.id, elmWindowId);
-    windowsElmToElectron.set(elmWindowId, view.webContents.id);
-    console.log("MAPPING", windowsElectronToElm);
+    // Keep track of windows between Electron and Elm.
+    windowsElectronToElm.set(viewLeft.webContents.id, elmWindowId);
+    windowsElectronToElm.set(viewRight.webContents.id, elmWindowId);
+    windowsElmToElectron.set(elmWindowId, viewLeft.webContents.id);
+    windowsElmToElectron.set(elmWindowId, viewRight.webContents.id);
+//    console.log("MAPPING", windowsElectronToElm);
+
+//    viewLeft.setAutoResize(
+//        {
+//            width : true,
+//            height : true,
+//            horizontal : true,
+//            vertical : true
+//        }
+//    );
+//    viewRight.setAutoResize(
+//        {
+//            width : true,
+//            height : true,
+//            horizontal : true,
+//            vertical : true
+//        }
+//    );
 
     // and load the index.html of the app.
-    view.webContents.loadURL('file://' + __dirname + '/src/Renderers/' + windowSpec.html + '/Renderer.html');
+    viewLeft.webContents.loadURL('file://' + __dirname + '/src/Renderers/' + windowSpec.html + '/Renderer.html');
+    viewRight.webContents.loadURL('file://' + __dirname + '/src/Renderers/' + windowSpec.html + '/Renderer.html');
 
     // Open the devtools.
 //    view.webContents.openDevTools();
 
     // Emitted when the window is closed.
-    view.webContents.on('close',
+    viewLeft.webContents.on('close',
         function() {
-            const elmId = windowsElectronToElm.get(view.webContents.id);
+            const elmId = windowsElectronToElm.get(viewLeft.webContents.id);
             elmPorts.fromJavascript.send({ cmd : "closed", id : elmId });
-            windowsElectronToElm.delete(view.webContents.id);
+            windowsElectronToElm.delete(viewLeft.webContents.id);
+            windowsElmToElectron.delete(elmId);
+        }
+    );
+    viewRight.webContents.on('close',
+        function() {
+            const elmId = windowsElectronToElm.get(viewRight.webContents.id);
+            elmPorts.fromJavascript.send({ cmd : "closed", id : elmId });
+            windowsElectronToElm.delete(viewRight.webContents.id);
             windowsElmToElectron.delete(elmId);
         }
     );

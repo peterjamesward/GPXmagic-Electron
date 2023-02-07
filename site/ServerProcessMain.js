@@ -2863,8 +2863,8 @@ var $author$project$ServerProcess$Main$init = _Utils_Tuple2(
 			_List_fromArray(
 				[
 					_Utils_Tuple2(
-					'msg',
-					$elm$json$Json$Encode$string('Hello from Elm'))
+					'cmd',
+					$elm$json$Json$Encode$string('ElmReady'))
 				]))));
 var $author$project$ServerProcess$Main$MessageFromRenderer = function (a) {
 	return {$: 'MessageFromRenderer', a: a};

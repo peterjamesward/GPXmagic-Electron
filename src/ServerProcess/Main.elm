@@ -52,7 +52,7 @@ main =
 
 init =
     ( startModel
-    , toJavascript <| E.object [ ( "msg", E.string "Hello from Elm" ) ]
+    , toJavascript <| E.object [ ( "cmd", E.string "ElmReady" ) ]
     )
 
 
