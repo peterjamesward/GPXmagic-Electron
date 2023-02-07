@@ -5181,6 +5181,15 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
+var $mdgriffith$elm_ui$Internal$Model$Rgba = F4(
+	function (a, b, c, d) {
+		return {$: 'Rgba', a: a, b: b, c: c, d: d};
+	});
+var $mdgriffith$elm_ui$Element$rgb255 = F3(
+	function (red, green, blue) {
+		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
+	});
+var $smucode$elm_flat_colors$FlatColors$FlatUIPalette$clouds = A3($mdgriffith$elm_ui$Element$rgb255, 236, 240, 241);
 var $author$project$Renderers$LoadButton$IpcStubs$ipcRendererToMain = _Platform_outgoingPort('ipcRendererToMain', $elm$core$Basics$identity);
 var $elm$json$Json$Encode$object = function (pairs) {
 	return _Json_wrap(
@@ -5195,19 +5204,10 @@ var $elm$json$Json$Encode$object = function (pairs) {
 			_Json_emptyObject(_Utils_Tuple0),
 			pairs));
 };
-var $mdgriffith$elm_ui$Internal$Model$Rgba = F4(
-	function (a, b, c, d) {
-		return {$: 'Rgba', a: a, b: b, c: c, d: d};
-	});
-var $mdgriffith$elm_ui$Element$rgb255 = F3(
-	function (red, green, blue) {
-		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
-	});
-var $smucode$elm_flat_colors$FlatColors$FlatUIPalette$silver = A3($mdgriffith$elm_ui$Element$rgb255, 189, 195, 199);
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Renderers$ViewContainer$Renderer$init = function (_v0) {
 	return _Utils_Tuple2(
-		{backgroundColour: $smucode$elm_flat_colors$FlatColors$FlatUIPalette$silver},
+		{backgroundColour: $smucode$elm_flat_colors$FlatColors$FlatUIPalette$clouds},
 		$author$project$Renderers$LoadButton$IpcStubs$ipcRendererToMain(
 			$elm$json$Json$Encode$object(
 				_List_fromArray(

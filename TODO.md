@@ -11,18 +11,11 @@ I guess server could spawn an invisible worker if needed, or that tool is only e
 
 Route maker will be odd, as always. At least this keeps the complexity in one process.
 
-## Bugs
-
-It's possible to induce an exception by closing several windows.
-> Open 3, close 2, load new gpx.
-> Looks like the mapping gets out of synch.
-
 ## Next
 
 * Window splitting.
-> Use "hello" to pass renderer type and add to map. Cleaner.
+> Change between available layouts.
 
-* Optimise primary renderer window size and placement for available display.
 * Docking toolbox (top, bottom, left, right)
 * Additional toolboxes as required.
 * Window locations and panes stored.
