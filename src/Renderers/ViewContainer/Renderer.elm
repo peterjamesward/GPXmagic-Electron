@@ -44,7 +44,11 @@ main =
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( { backgroundColour = FlatColors.FlatUIPalette.silver }
-    , Cmd.none
+    , Stubs.ipcRendererToMain <|
+        E.object
+            [ ( "cmd", E.string "hello" )
+            , ( "renderer", E.string "ViewContainer" )
+            ]
     )
 
 

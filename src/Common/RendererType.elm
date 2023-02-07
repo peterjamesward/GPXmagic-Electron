@@ -19,7 +19,7 @@ rendererTypeAsString renderer =
             "toolbox"
 
         Renderer3D ->
-            "3d"
+            "WebGL"
 
         RendererProfile ->
             -- Classic WebGL & SVG profile
@@ -42,7 +42,7 @@ rendererTypeFromString name =
         "toolbox" ->
             Just RendererToolbox
 
-        "3d" ->
+        "WebGL" ->
             Just Renderer3D
 
         -- Classic WebGL & SVG profile

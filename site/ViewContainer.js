@@ -5181,8 +5181,20 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $elm$core$Platform$Cmd$batch = _Platform_batch;
-var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $author$project$Renderers$LoadButton$IpcStubs$ipcRendererToMain = _Platform_outgoingPort('ipcRendererToMain', $elm$core$Basics$identity);
+var $elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, obj) {
+					var k = _v0.a;
+					var v = _v0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(_Utils_Tuple0),
+			pairs));
+};
 var $mdgriffith$elm_ui$Internal$Model$Rgba = F4(
 	function (a, b, c, d) {
 		return {$: 'Rgba', a: a, b: b, c: c, d: d};
@@ -5192,10 +5204,21 @@ var $mdgriffith$elm_ui$Element$rgb255 = F3(
 		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
 	});
 var $smucode$elm_flat_colors$FlatColors$FlatUIPalette$silver = A3($mdgriffith$elm_ui$Element$rgb255, 189, 195, 199);
+var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Renderers$ViewContainer$Renderer$init = function (_v0) {
 	return _Utils_Tuple2(
 		{backgroundColour: $smucode$elm_flat_colors$FlatColors$FlatUIPalette$silver},
-		$elm$core$Platform$Cmd$none);
+		$author$project$Renderers$LoadButton$IpcStubs$ipcRendererToMain(
+			$elm$json$Json$Encode$object(
+				_List_fromArray(
+					[
+						_Utils_Tuple2(
+						'cmd',
+						$elm$json$Json$Encode$string('hello')),
+						_Utils_Tuple2(
+						'renderer',
+						$elm$json$Json$Encode$string('ViewContainer'))
+					]))));
 };
 var $author$project$Renderers$ViewContainer$Renderer$MessageFromMainProcess = function (a) {
 	return {$: 'MessageFromMainProcess', a: a};
@@ -5210,6 +5233,8 @@ var $author$project$Renderers$ViewContainer$Renderer$subscriptions = function (_
 				$author$project$Renderers$LoadButton$IpcStubs$ipcMainToRenderer($author$project$Renderers$ViewContainer$Renderer$MessageFromMainProcess)
 			]));
 };
+var $elm$core$Platform$Cmd$batch = _Platform_batch;
+var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Renderers$ViewContainer$Renderer$update = F2(
 	function (msg, model) {
 		var value = msg.a;
@@ -5272,7 +5297,6 @@ var $mdgriffith$elm_ui$Internal$Style$classes = {above: 'a', active: 'atv', alig
 var $mdgriffith$elm_ui$Internal$Model$Attr = function (a) {
 	return {$: 'Attr', a: a};
 };
-var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
 		return A2(
@@ -8011,19 +8035,6 @@ var $elm$json$Json$Encode$list = F2(
 				_Json_emptyArray(_Utils_Tuple0),
 				entries));
 	});
-var $elm$json$Json$Encode$object = function (pairs) {
-	return _Json_wrap(
-		A3(
-			$elm$core$List$foldl,
-			F2(
-				function (_v0, obj) {
-					var k = _v0.a;
-					var v = _v0.b;
-					return A3(_Json_addField, k, v, obj);
-				}),
-			_Json_emptyObject(_Utils_Tuple0),
-			pairs));
-};
 var $elm$core$List$any = F2(
 	function (isOkay, list) {
 		any:

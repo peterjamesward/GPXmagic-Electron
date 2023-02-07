@@ -2850,7 +2850,7 @@ var $elm$json$Json$Encode$object = function (pairs) {
 };
 var $elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
 var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
-var $author$project$ServerProcess$Main$startModel = {filename: $elm$core$Maybe$Nothing, nextWindowId: 0, tree: $elm$core$Maybe$Nothing, windows: $elm$core$Dict$empty};
+var $author$project$ServerProcess$Main$startModel = {filename: $elm$core$Maybe$Nothing, nextWindowId: 0, tree: $elm$core$Maybe$Nothing, windowsAndViews: $elm$core$Dict$empty};
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$core$Basics$identity = function (x) {
 	return x;
@@ -3087,17 +3087,6 @@ var $author$project$Common$GpxPoint$gpxDecoder = A5(
 			$elm$json$Json$Decode$map,
 			$elm$time$Time$millisToPosix,
 			A2($elm$json$Json$Decode$field, 'time', $elm$json$Json$Decode$int))));
-var $elm$json$Json$Decode$list = _Json_decodeList;
-var $elm$json$Json$Encode$list = F2(
-	function (func, entries) {
-		return _Json_wrap(
-			A3(
-				$elm$core$List$foldl,
-				_Json_addEntry(func),
-				_Json_emptyArray(_Utils_Tuple0),
-				entries));
-	});
-var $elm$core$Debug$log = _Debug_log;
 var $elm$core$Dict$Black = {$: 'Black'};
 var $elm$core$Dict$RBNode_elm_builtin = F5(
 	function (a, b, c, d, e) {
@@ -3207,6 +3196,17 @@ var $elm$core$Dict$insert = F3(
 			return x;
 		}
 	});
+var $elm$json$Json$Decode$list = _Json_decodeList;
+var $elm$json$Json$Encode$list = F2(
+	function (func, entries) {
+		return _Json_wrap(
+			A3(
+				$elm$core$List$foldl,
+				_Json_addEntry(func),
+				_Json_emptyArray(_Utils_Tuple0),
+				entries));
+	});
+var $elm$core$Debug$log = _Debug_log;
 var $elm$json$Json$Encode$int = _Json_wrap;
 var $author$project$ServerProcess$Main$rendererHtmlFile = function (rendererType) {
 	switch (rendererType.$) {
@@ -3287,14 +3287,7 @@ var $author$project$ServerProcess$Main$makeNewWindow = F2(
 						'window',
 						$author$project$ServerProcess$Main$windowAsJson(window))
 					])));
-		return _Utils_Tuple2(
-			_Utils_update(
-				model,
-				{
-					nextWindowId: 1 + model.nextWindowId,
-					windows: A3($elm$core$Dict$insert, model.nextWindowId, window, model.windows)
-				}),
-			newWindowCommand);
+		return _Utils_Tuple2(model, newWindowCommand);
 	});
 var $elm$core$List$foldrHelper = F4(
 	function (fn, acc, ctr, ls) {
@@ -3753,7 +3746,7 @@ var $author$project$Common$RendererType$rendererTypeFromString = function (name)
 	switch (name) {
 		case 'toolbox':
 			return $elm$core$Maybe$Just($author$project$Common$RendererType$RendererToolbox);
-		case '3d':
+		case 'WebGL':
 			return $elm$core$Maybe$Just($author$project$Common$RendererType$Renderer3D);
 		case 'profile':
 			return $elm$core$Maybe$Just($author$project$Common$RendererType$RendererProfile);
@@ -3788,7 +3781,7 @@ var $author$project$ServerProcess$Main$sendToAll = F2(
 			A2(
 				$elm$core$List$map,
 				$author$project$ServerProcess$Main$sendTrackToRenderer(pointsAsJson),
-				$elm$core$Dict$keys(model.windows)));
+				$elm$core$Dict$keys(model.windowsAndViews)));
 	});
 var $elm$json$Json$Decode$string = _Json_decodeString;
 var $author$project$ServerProcess$Main$toolWindow = {containerRenderer: $author$project$Common$RendererType$RendererToolbox, height: 120, left: 300, top: 0, views: _List_Nil, width: 300};
@@ -4268,6 +4261,10 @@ var $author$project$ServerProcess$Main$update = F2(
 			$elm$json$Json$Decode$decodeValue,
 			A2($elm$json$Json$Decode$field, 'sender', $elm$json$Json$Decode$int),
 			jsonMessage);
+		var renderer = A2(
+			$elm$json$Json$Decode$decodeValue,
+			A2($elm$json$Json$Decode$field, 'renderer', $elm$json$Json$Decode$string),
+			jsonMessage);
 		var pointConverter = function (gpx) {
 			return {
 				altitude: $ianmackenzie$elm_units$Length$meters(gpx.altitude),
@@ -4284,9 +4281,9 @@ var $author$project$ServerProcess$Main$update = F2(
 				tree);
 		};
 		var pointsAsJson = function (tree) {
-			var _v8 = earthPoints(tree);
-			if (_v8.$ === 'Just') {
-				var points = _v8.a;
+			var _v11 = earthPoints(tree);
+			if (_v11.$ === 'Just') {
+				var points = _v11.a;
 				return A2($elm$json$Json$Encode$list, $author$project$Common$DomainModel$earthPointAsJson, points);
 			} else {
 				return $elm$json$Json$Encode$null;
@@ -4296,7 +4293,10 @@ var $author$project$ServerProcess$Main$update = F2(
 			$elm$json$Json$Decode$decodeValue,
 			A2($elm$json$Json$Decode$field, 'cmd', $elm$json$Json$Decode$string),
 			jsonMessage);
-		var _v1 = A2($elm$core$Debug$log, 'CMD', cmd);
+		var _v1 = A2(
+			$elm$core$Debug$log,
+			'CMD',
+			_Utils_Tuple2(cmd, senderId));
 		_v2$5:
 		while (true) {
 			if (cmd.$ === 'Ok') {
@@ -4329,15 +4329,11 @@ var $author$project$ServerProcess$Main$update = F2(
 							return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 						}
 					case 'newview':
-						var _v4 = A2(
-							$elm$json$Json$Decode$decodeValue,
-							A2($elm$json$Json$Decode$field, 'renderer', $elm$json$Json$Decode$string),
-							jsonMessage);
-						if (_v4.$ === 'Ok') {
-							var foundRenderer = _v4.a;
+						if (renderer.$ === 'Ok') {
+							var foundRenderer = renderer.a;
 							var _v5 = $author$project$Common$RendererType$rendererTypeFromString(foundRenderer);
 							if (_v5.$ === 'Just') {
-								var renderer = _v5.a;
+								var rendererType = _v5.a;
 								return A2($author$project$ServerProcess$Main$makeNewWindow, $author$project$ServerProcess$Main$windowGrid, model);
 							} else {
 								return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -4346,15 +4342,32 @@ var $author$project$ServerProcess$Main$update = F2(
 							return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 						}
 					case 'hello':
-						if (senderId.$ === 'Ok') {
-							var id = senderId.a;
-							return _Utils_Tuple2(
-								model,
-								A2(
-									$author$project$ServerProcess$Main$sendTrackToRenderer,
-									pointsAsJson(model.tree),
-									id));
+						var _v6 = _Utils_Tuple2(senderId, renderer);
+						if ((_v6.a.$ === 'Ok') && (_v6.b.$ === 'Ok')) {
+							var id = _v6.a.a;
+							var foundRenderer = _v6.b.a;
+							var _v7 = $author$project$Common$RendererType$rendererTypeFromString(foundRenderer);
+							if (_v7.$ === 'Just') {
+								var rendererType = _v7.a;
+								return _Utils_Tuple2(
+									_Utils_update(
+										model,
+										{
+											windowsAndViews: A3($elm$core$Dict$insert, id, rendererType, model.windowsAndViews)
+										}),
+									A2(
+										$author$project$ServerProcess$Main$sendTrackToRenderer,
+										pointsAsJson(model.tree),
+										id));
+							} else {
+								var _v8 = A2($elm$core$Debug$log, 'unknown renderer', renderer);
+								return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+							}
 						} else {
+							var _v9 = A2(
+								$elm$core$Debug$log,
+								'unknown',
+								_Utils_Tuple2(senderId, renderer));
 							return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 						}
 					case 'closed':
@@ -4364,7 +4377,7 @@ var $author$project$ServerProcess$Main$update = F2(
 								_Utils_update(
 									model,
 									{
-										windows: A2($elm$core$Dict$remove, id, model.windows)
+										windowsAndViews: A2($elm$core$Dict$remove, id, model.windowsAndViews)
 									}),
 								$elm$core$Platform$Cmd$none);
 						} else {

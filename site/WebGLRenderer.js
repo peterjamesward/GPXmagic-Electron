@@ -7159,7 +7159,10 @@ var $author$project$Renderers$WebGL$Renderer$init = function (_v0) {
 					[
 						_Utils_Tuple2(
 						'cmd',
-						$elm$json$Json$Encode$string('hello'))
+						$elm$json$Json$Encode$string('hello')),
+						_Utils_Tuple2(
+						'renderer',
+						$elm$json$Json$Encode$string('WebGL'))
 					]))));
 };
 var $author$project$Renderers$WebGL$Renderer$MessageFromMainProcess = function (a) {

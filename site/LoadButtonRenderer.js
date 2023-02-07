@@ -5652,10 +5652,24 @@ var $elm$time$Time$Zone = F2(
 	});
 var $elm$time$Time$customZone = $elm$time$Time$Zone;
 var $elm$time$Time$here = _Time_here(_Utils_Tuple0);
+var $author$project$Renderers$LoadButton$IpcStubs$ipcRendererToMain = _Platform_outgoingPort('ipcRendererToMain', $elm$core$Basics$identity);
 var $elm$time$Time$Posix = function (a) {
 	return {$: 'Posix', a: a};
 };
 var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
+var $elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, obj) {
+					var k = _v0.a;
+					var v = _v0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(_Utils_Tuple0),
+			pairs));
+};
 var $mdgriffith$elm_ui$Internal$Model$Rgba = F4(
 	function (a, b, c, d) {
 		return {$: 'Rgba', a: a, b: b, c: c, d: d};
@@ -5665,6 +5679,7 @@ var $mdgriffith$elm_ui$Element$rgb255 = F3(
 		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
 	});
 var $smucode$elm_flat_colors$FlatColors$FlatUIPalette$silver = A3($mdgriffith$elm_ui$Element$rgb255, 189, 195, 199);
+var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$time$Time$utc = A2($elm$time$Time$Zone, 0, _List_Nil);
 var $author$project$Renderers$LoadButton$Renderer$init = function (_v0) {
 	return _Utils_Tuple2(
@@ -5678,7 +5693,18 @@ var $author$project$Renderers$LoadButton$Renderer$init = function (_v0) {
 		$elm$core$Platform$Cmd$batch(
 			_List_fromArray(
 				[
-					A2($elm$core$Task$perform, $author$project$Renderers$LoadButton$Renderer$AdjustTimeZone, $elm$time$Time$here)
+					A2($elm$core$Task$perform, $author$project$Renderers$LoadButton$Renderer$AdjustTimeZone, $elm$time$Time$here),
+					$author$project$Renderers$LoadButton$IpcStubs$ipcRendererToMain(
+					$elm$json$Json$Encode$object(
+						_List_fromArray(
+							[
+								_Utils_Tuple2(
+								'cmd',
+								$elm$json$Json$Encode$string('hello')),
+								_Utils_Tuple2(
+								'renderer',
+								$elm$json$Json$Encode$string('LoadButton'))
+							])))
 				])));
 };
 var $author$project$Renderers$LoadButton$Renderer$MessageFromMainProcess = function (a) {
@@ -5709,19 +5735,6 @@ var $elm$file$File$Select$file = F2(
 	});
 var $elm$json$Json$Encode$float = _Json_wrap;
 var $elm$json$Json$Encode$int = _Json_wrap;
-var $elm$json$Json$Encode$object = function (pairs) {
-	return _Json_wrap(
-		A3(
-			$elm$core$List$foldl,
-			F2(
-				function (_v0, obj) {
-					var k = _v0.a;
-					var v = _v0.b;
-					return A3(_Json_addField, k, v, obj);
-				}),
-			_Json_emptyObject(_Utils_Tuple0),
-			pairs));
-};
 var $elm$time$Time$posixToMillis = function (_v0) {
 	var millis = _v0.a;
 	return millis;
@@ -5772,8 +5785,6 @@ var $elm$json$Json$Encode$list = F2(
 				_Json_emptyArray(_Utils_Tuple0),
 				entries));
 	});
-var $author$project$Renderers$LoadButton$IpcStubs$ipcRendererToMain = _Platform_outgoingPort('ipcRendererToMain', $elm$core$Basics$identity);
-var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Renderers$LoadButton$IpcStubs$loadNewGpx = function (pointsAsJSON) {
 	return $author$project$Renderers$LoadButton$IpcStubs$ipcRendererToMain(
 		$elm$json$Json$Encode$object(
@@ -5790,7 +5801,7 @@ var $author$project$Common$RendererType$rendererTypeAsString = function (rendere
 		case 'RendererToolbox':
 			return 'toolbox';
 		case 'Renderer3D':
-			return '3d';
+			return 'WebGL';
 		case 'RendererProfile':
 			return 'profile';
 		case 'RendererCanvasChart':

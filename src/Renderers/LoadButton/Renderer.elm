@@ -59,7 +59,13 @@ init _ =
       , backgroundColour = FlatColors.FlatUIPalette.silver
       }
     , Cmd.batch
-        [ Task.perform AdjustTimeZone Time.here ]
+        [ Task.perform AdjustTimeZone Time.here
+        , Stubs.ipcRendererToMain <|
+            E.object
+                [ ( "cmd", E.string "hello" )
+                , ( "renderer", E.string "LoadButton" )
+                ]
+        ]
     )
 
 

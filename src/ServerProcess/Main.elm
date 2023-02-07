@@ -28,15 +28,16 @@ type alias Model =
     -- Note we don't keep a copy of the GPX here!
     { filename : Maybe String
     , tree : Maybe DomainModel.PeteTree
-    , windows : Dict Int RendererWindow
+    , windowsAndViews : Dict Int RendererType -- should suffice that we know what to send to each view.
     , nextWindowId : Int
     }
 
 
+startModel : Model
 startModel =
     { filename = Nothing
     , tree = Nothing
-    , windows = Dict.empty
+    , windowsAndViews = Dict.empty
     , nextWindowId = 0
     }
 
@@ -67,6 +68,9 @@ update msg model =
                 cmd =
                     D.decodeValue (D.field "cmd" D.string) jsonMessage
 
+                renderer =
+                    D.decodeValue (D.field "renderer" D.string) jsonMessage
+
                 pointConverter : GpxPoint -> DomainModel.GPXSource
                 pointConverter gpx =
                     { longitude = Direction2d.fromAngle <| Angle.degrees gpx.longitude
@@ -87,7 +91,7 @@ update msg model =
                             E.null
 
                 _ =
-                    Debug.log "CMD" cmd
+                    Debug.log "CMD" ( cmd, senderId )
             in
             case cmd of
                 Ok "ready" ->
@@ -122,10 +126,11 @@ update msg model =
 
                 Ok "newview" ->
                     -- Just open a new window - it will say "hello" when ready.
-                    case D.decodeValue (D.field "renderer" D.string) jsonMessage of
+                    case renderer of
                         Ok foundRenderer ->
                             case RendererType.rendererTypeFromString foundRenderer of
-                                Just renderer ->
+                                Just rendererType ->
+                                    --TODO: Use rendererType
                                     makeNewWindow
                                         windowGrid
                                         model
@@ -137,21 +142,38 @@ update msg model =
                             ( model, Cmd.none )
 
                 Ok "hello" ->
-                    -- Window is ready, send it track
-                    case senderId of
-                        Ok id ->
-                            ( model
-                            , sendTrackToRenderer (pointsAsJson model.tree) id
-                            )
+                    -- Window is ready, send it track in appropriate format and detail.
+                    case ( senderId, renderer ) of
+                        ( Ok id, Ok foundRenderer ) ->
+                            case RendererType.rendererTypeFromString foundRenderer of
+                                Just rendererType ->
+                                    ( { model
+                                        | windowsAndViews =
+                                            Dict.insert id rendererType model.windowsAndViews
+                                      }
+                                      --TODO: Use renderer type
+                                    , sendTrackToRenderer (pointsAsJson model.tree) id
+                                    )
 
-                        Err _ ->
+                                Nothing ->
+                                    let
+                                        _ =
+                                            Debug.log "unknown renderer" renderer
+                                    in
+                                    ( model, Cmd.none )
+
+                        _ ->
+                            let
+                                _ =
+                                    Debug.log "unknown" ( senderId, renderer )
+                            in
                             ( model, Cmd.none )
 
                 Ok "closed" ->
                     --User closed a window, remove it.
                     case senderId of
                         Ok id ->
-                            ( { model | windows = Dict.remove id model.windows }
+                            ( { model | windowsAndViews = Dict.remove id model.windowsAndViews }
                             , Cmd.none
                             )
 
@@ -171,8 +193,10 @@ sendTrackToRenderer pointsAsJson id =
             ]
 
 
+sendToAll : E.Value -> Model -> Cmd Msg
 sendToAll pointsAsJson model =
-    model.windows
+    --TODO: Use renderer type.
+    model.windowsAndViews
         |> Dict.keys
         |> List.map (sendTrackToRenderer pointsAsJson)
         |> Cmd.batch
@@ -318,10 +342,7 @@ makeNewWindow window model =
                     , ( "window", windowAsJson window )
                     ]
     in
-    ( { model
-        | windows = model.windows |> Dict.insert model.nextWindowId window
-        , nextWindowId = 1 + model.nextWindowId
-      }
+    ( model
     , newWindowCommand
     )
 

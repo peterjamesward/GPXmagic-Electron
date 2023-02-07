@@ -45,7 +45,11 @@ main =
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( { scene = [] }
-    , Stubs.ipcRendererToMain <| E.object [ ( "cmd", E.string "hello" ) ]
+    , Stubs.ipcRendererToMain <|
+        E.object
+            [ ( "cmd", E.string "hello" )
+            , ( "renderer", E.string "WebGL" )
+            ]
     )
 
 
