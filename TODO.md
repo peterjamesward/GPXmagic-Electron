@@ -12,6 +12,10 @@ Route maker will be odd, as always. At least this keeps the complexity in one pr
 
 * Window layout.
  
+> Why not put the v3 layout into the ViewContainer, with splitters and tools,
+> but use the content area for separate renderers. Then make the tool area also a renderer.
+> Prefer this stepwise approach, and it keeps flexibility and continuity from v3.
+
 > Protocol change: Just create view container. When ready, it sends desired
 > layout to ServerMain, which will create the views. Each view (as now) registers
 > with ServerMain.
@@ -19,9 +23,6 @@ Route maker will be odd, as always. At least this keeps the complexity in one pr
 > Window state can hold the contexts of any hidden panes, for each renderer used.
 > (The view cannot, since it's a new view when you switch renderers.
 > I guess the key would be something like { window, pane number, renderer }.)
-
-> Now thinking of putting the toolbox back into window, as in v3.
-> (We still get multiple windows, still get process isolation, but reduce focus problem.)
 
 * Send sizes to each pane when window size changes, and initially.
 * Docking toolbox (top, bottom, left, right)
