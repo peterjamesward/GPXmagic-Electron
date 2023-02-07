@@ -11790,7 +11790,7 @@ var $author$project$Renderers$ViewContainer$Renderer$modeButtons = A2(
 			$mdgriffith$elm_ui$Element$moveRight(2),
 			$mdgriffith$elm_ui$Element$Background$color($smucode$elm_flat_colors$FlatColors$FlatUIPalette$clouds),
 			$mdgriffith$elm_ui$Element$Font$size(40),
-			$mdgriffith$elm_ui$Element$padding(6),
+			$mdgriffith$elm_ui$Element$padding(2),
 			$mdgriffith$elm_ui$Element$spacing(8),
 			$mdgriffith$elm_ui$Element$Border$width(1),
 			$mdgriffith$elm_ui$Element$Border$rounded(4),

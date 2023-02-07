@@ -53,8 +53,6 @@ app.on('ready',
         // Forward IPC calls to Elm.
         ipcMain.on('elmMessage', (event, elmMessage) => {
 
-            // Use the Elm source id, map back on response.
-            //TODO: Find better id, this is not good.
             elmMessage.sender = event.sender.id;
             console.log("MAIN:", elmMessage.sender, " sent", elmMessage.cmd);
             elmPorts.fromJavascript.send( elmMessage );
@@ -93,8 +91,7 @@ function handleElmMessage(msg) {
 // Basic window lifecycle.
 function makeWindow(elmWindowId, windowSpec) {
 
-    //TODO: Make children as per specified.
-    console.log("MAIN:", windowSpec);
+//    console.log("MAIN:", windowSpec);
 
     var window = new BrowserWindow(
         {
@@ -111,7 +108,7 @@ function makeWindow(elmWindowId, windowSpec) {
 
     window.on('close',
         function() {
-            elmPorts.fromJavascript.send({ cmd : "closed", id : window.webContents.id });
+            elmPorts.fromJavascript.send({ cmd : "closed", sender : window.webContents.id });
         }
     );
 
@@ -127,7 +124,7 @@ function makeWindow(elmWindowId, windowSpec) {
 
     function createAndAddView(viewSpec) {
 
-        console.log("making view", viewSpec);
+//        console.log("making view", viewSpec);
 
         const view = new BrowserView(
             {
@@ -166,7 +163,7 @@ function makeWindow(elmWindowId, windowSpec) {
 
         view.webContents.on('close',
             function() {
-                elmPorts.fromJavascript.send({ cmd : "closed", id : view.webContents.id });
+                elmPorts.fromJavascript.send({ cmd : "closed", sender : view.webContents.id });
             }
         );
     };

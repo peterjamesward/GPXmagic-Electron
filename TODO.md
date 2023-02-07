@@ -3,9 +3,6 @@
 
 ## Electron PoC
 
-Not sure where click detect happens; needs to be in server if renderers do not have full model but is that an abstraction leak?
-(It may not be if we're communicating in terms of (lon, lat) or 3D "rays". 
-
 Couple of funny cases such as requesting altitudes from Map, which at least requires that there is one Map. 
 I guess server could spawn an invisible worker if needed, or that tool is only enabled if there is a Map loaded (better).)
 
@@ -13,9 +10,15 @@ Route maker will be odd, as always. At least this keeps the complexity in one pr
 
 ## Next
 
-* Window splitting.
-> Change between available layouts.
+* Window layout.
+> Change between available layouts. The window should determine the layout.
+> Window state can hold the contexts of any hidden panes, for each renderer used.
+> (The view cannot, since it's a new view when you switch renderers.
+> I guess the key would be something like { window, pane number, renderer }.)
+> Now thinking of putting the toolbox back into window, as in v3.
+> (We still get multiple windows, still get process isolation, but reduce focus problem.)
 
+* Send sizes to each pane when window size changes, and initially.
 * Docking toolbox (top, bottom, left, right)
 * Additional toolboxes as required.
 * Window locations and panes stored.
@@ -38,6 +41,7 @@ Route maker will be odd, as always. At least this keeps the complexity in one pr
 * Menu bar to reset tools, change language, metric/imperial, follow dark/light.
 * Canvas snapshot buttons
 * electron-build for installers.
+* If all the preload scripts are the same, make it the one.
 
 NB: The 3D views differ only in camera placement, so I see that being nicer.
 

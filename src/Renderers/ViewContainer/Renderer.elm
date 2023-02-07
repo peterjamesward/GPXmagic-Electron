@@ -101,7 +101,7 @@ modeButtons =
         , moveRight 2
         , Background.color FlatColors.FlatUIPalette.clouds
         , Font.size 40
-        , padding 6
+        , padding 2
         , spacing 8
         , Border.width 1
         , Border.rounded 4

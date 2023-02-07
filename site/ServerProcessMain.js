@@ -3208,7 +3208,7 @@ var $elm$json$Json$Encode$list = F2(
 	});
 var $elm$core$Debug$log = _Debug_log;
 var $elm$json$Json$Encode$int = _Json_wrap;
-var $author$project$ServerProcess$Main$rendererHtmlFile = function (rendererType) {
+var $author$project$Common$Layouts$rendererHtmlFile = function (rendererType) {
 	switch (rendererType.$) {
 		case 'RendererToolbox':
 			return 'LoadButton';
@@ -3224,14 +3224,14 @@ var $author$project$ServerProcess$Main$rendererHtmlFile = function (rendererType
 			return 'ViewContainer';
 	}
 };
-var $author$project$ServerProcess$Main$viewAsJson = function (view) {
+var $author$project$Common$Layouts$viewAsJson = function (view) {
 	return $elm$json$Json$Encode$object(
 		_List_fromArray(
 			[
 				_Utils_Tuple2(
 				'html',
 				$elm$json$Json$Encode$string(
-					$author$project$ServerProcess$Main$rendererHtmlFile(view.rendererType))),
+					$author$project$Common$Layouts$rendererHtmlFile(view.rendererType))),
 				_Utils_Tuple2(
 				'width',
 				$elm$json$Json$Encode$float(view.widthPercent)),
@@ -3246,14 +3246,14 @@ var $author$project$ServerProcess$Main$viewAsJson = function (view) {
 				$elm$json$Json$Encode$float(view.leftPercent))
 			]));
 };
-var $author$project$ServerProcess$Main$windowAsJson = function (window) {
+var $author$project$Common$Layouts$windowAsJson = function (window) {
 	return $elm$json$Json$Encode$object(
 		_List_fromArray(
 			[
 				_Utils_Tuple2(
 				'html',
 				$elm$json$Json$Encode$string(
-					$author$project$ServerProcess$Main$rendererHtmlFile(window.containerRenderer))),
+					$author$project$Common$Layouts$rendererHtmlFile(window.containerRenderer))),
 				_Utils_Tuple2(
 				'width',
 				$elm$json$Json$Encode$int(window.width)),
@@ -3268,7 +3268,7 @@ var $author$project$ServerProcess$Main$windowAsJson = function (window) {
 				$elm$json$Json$Encode$int(window.top)),
 				_Utils_Tuple2(
 				'views',
-				A2($elm$json$Json$Encode$list, $author$project$ServerProcess$Main$viewAsJson, window.views)),
+				A2($elm$json$Json$Encode$list, $author$project$Common$Layouts$viewAsJson, window.views)),
 				_Utils_Tuple2(
 				'reservedLeft',
 				$elm$json$Json$Encode$int(window.reservedLeft)),
@@ -3291,7 +3291,7 @@ var $author$project$ServerProcess$Main$makeNewWindow = F2(
 						$elm$json$Json$Encode$int(model.nextWindowId)),
 						_Utils_Tuple2(
 						'window',
-						$author$project$ServerProcess$Main$windowAsJson(window))
+						$author$project$Common$Layouts$windowAsJson(window))
 					])));
 		return _Utils_Tuple2(model, newWindowCommand);
 	});
@@ -3790,7 +3790,7 @@ var $author$project$ServerProcess$Main$sendToAll = F2(
 				$elm$core$Dict$keys(model.windowsAndViews)));
 	});
 var $elm$json$Json$Decode$string = _Json_decodeString;
-var $author$project$ServerProcess$Main$toolWindow = {containerRenderer: $author$project$Common$RendererType$RendererToolbox, height: 120, left: 300, reservedLeft: 0, reservedTop: 0, top: 0, views: _List_Nil, width: 300};
+var $author$project$Common$Layouts$toolWindow = {containerRenderer: $author$project$Common$RendererType$RendererToolbox, height: 120, left: 300, reservedLeft: 0, reservedTop: 0, top: 0, views: _List_Nil, width: 300};
 var $author$project$Common$DomainModel$GPXSource = F4(
 	function (longitude, latitude, altitude, timestamp) {
 		return {altitude: altitude, latitude: latitude, longitude: longitude, timestamp: timestamp};
@@ -4234,31 +4234,31 @@ var $author$project$Common$DomainModel$treeFromSourcePoints = function (track) {
 		$elm$core$List$head(track));
 	return A2($author$project$Common$DomainModel$treeFromSourcesWithExistingReference, referencePoint, track);
 };
-var $author$project$ServerProcess$Main$emptyWindow = {containerRenderer: $author$project$Common$RendererType$RendererMultiPane, height: 750, left: 0, reservedLeft: 20, reservedTop: 0, top: 120 + 28, views: _List_Nil, width: 1000};
-var $author$project$ServerProcess$Main$paneFull = {heightPercent: 100.0, leftPercent: 0.0, rendererType: $author$project$Common$RendererType$Renderer3D, topPercent: 0.0, widthPercent: 100.0};
-var $author$project$ServerProcess$Main$paneLeft = _Utils_update(
-	$author$project$ServerProcess$Main$paneFull,
+var $author$project$Common$Layouts$emptyWindow = {containerRenderer: $author$project$Common$RendererType$RendererMultiPane, height: 750, left: 0, reservedLeft: 35, reservedTop: 0, top: 120 + 28, views: _List_Nil, width: 1000};
+var $author$project$Common$Layouts$paneFull = {heightPercent: 100.0, leftPercent: 0.0, rendererType: $author$project$Common$RendererType$Renderer3D, topPercent: 0.0, widthPercent: 100.0};
+var $author$project$Common$Layouts$paneLeft = _Utils_update(
+	$author$project$Common$Layouts$paneFull,
 	{widthPercent: 50.0});
-var $author$project$ServerProcess$Main$paneTopLeft = _Utils_update(
-	$author$project$ServerProcess$Main$paneLeft,
+var $author$project$Common$Layouts$paneTopLeft = _Utils_update(
+	$author$project$Common$Layouts$paneLeft,
 	{heightPercent: 50.0});
-var $author$project$ServerProcess$Main$paneBottomLeft = _Utils_update(
-	$author$project$ServerProcess$Main$paneTopLeft,
+var $author$project$Common$Layouts$paneBottomLeft = _Utils_update(
+	$author$project$Common$Layouts$paneTopLeft,
 	{topPercent: 50.0});
-var $author$project$ServerProcess$Main$paneRight = _Utils_update(
-	$author$project$ServerProcess$Main$paneLeft,
+var $author$project$Common$Layouts$paneRight = _Utils_update(
+	$author$project$Common$Layouts$paneLeft,
 	{leftPercent: 50.0});
-var $author$project$ServerProcess$Main$paneTopRight = _Utils_update(
-	$author$project$ServerProcess$Main$paneRight,
+var $author$project$Common$Layouts$paneTopRight = _Utils_update(
+	$author$project$Common$Layouts$paneRight,
 	{heightPercent: 50.0});
-var $author$project$ServerProcess$Main$paneBottomRight = _Utils_update(
-	$author$project$ServerProcess$Main$paneTopRight,
+var $author$project$Common$Layouts$paneBottomRight = _Utils_update(
+	$author$project$Common$Layouts$paneTopRight,
 	{topPercent: 50.0});
-var $author$project$ServerProcess$Main$windowGrid = _Utils_update(
-	$author$project$ServerProcess$Main$emptyWindow,
+var $author$project$Common$Layouts$windowGrid = _Utils_update(
+	$author$project$Common$Layouts$emptyWindow,
 	{
 		views: _List_fromArray(
-			[$author$project$ServerProcess$Main$paneTopLeft, $author$project$ServerProcess$Main$paneTopRight, $author$project$ServerProcess$Main$paneBottomLeft, $author$project$ServerProcess$Main$paneBottomRight])
+			[$author$project$Common$Layouts$paneTopLeft, $author$project$Common$Layouts$paneTopRight, $author$project$Common$Layouts$paneBottomLeft, $author$project$Common$Layouts$paneBottomRight])
 	});
 var $author$project$ServerProcess$Main$update = F2(
 	function (msg, model) {
@@ -4308,7 +4308,7 @@ var $author$project$ServerProcess$Main$update = F2(
 			if (cmd.$ === 'Ok') {
 				switch (cmd.a) {
 					case 'ready':
-						return A2($author$project$ServerProcess$Main$makeNewWindow, $author$project$ServerProcess$Main$toolWindow, model);
+						return A2($author$project$ServerProcess$Main$makeNewWindow, $author$project$Common$Layouts$toolWindow, model);
 					case 'newgpx':
 						var rawGpxPoints = A2(
 							$elm$json$Json$Decode$decodeValue,
@@ -4340,7 +4340,7 @@ var $author$project$ServerProcess$Main$update = F2(
 							var _v5 = $author$project$Common$RendererType$rendererTypeFromString(foundRenderer);
 							if (_v5.$ === 'Just') {
 								var rendererType = _v5.a;
-								return A2($author$project$ServerProcess$Main$makeNewWindow, $author$project$ServerProcess$Main$windowGrid, model);
+								return A2($author$project$ServerProcess$Main$makeNewWindow, $author$project$Common$Layouts$windowGrid, model);
 							} else {
 								return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 							}
