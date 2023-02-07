@@ -5181,6 +5181,7 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
+var $author$project$Common$Layouts$LayoutSingle = {$: 'LayoutSingle'};
 var $mdgriffith$elm_ui$Internal$Model$Rgba = F4(
 	function (a, b, c, d) {
 		return {$: 'Rgba', a: a, b: b, c: c, d: d};
@@ -5207,7 +5208,7 @@ var $elm$json$Json$Encode$object = function (pairs) {
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Renderers$ViewContainer$Renderer$init = function (_v0) {
 	return _Utils_Tuple2(
-		{backgroundColour: $smucode$elm_flat_colors$FlatColors$FlatUIPalette$clouds},
+		{backgroundColour: $smucode$elm_flat_colors$FlatColors$FlatUIPalette$clouds, layout: $author$project$Common$Layouts$LayoutSingle},
 		$author$project$Renderers$LoadButton$IpcStubs$ipcRendererToMain(
 			$elm$json$Json$Encode$object(
 				_List_fromArray(
@@ -5244,6 +5245,7 @@ var $author$project$Renderers$ViewContainer$Renderer$update = F2(
 			case 'NoOp':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			default:
+				var layout = msg.a;
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
@@ -11155,7 +11157,12 @@ var $mdgriffith$elm_ui$Element$layoutWith = F3(
 	});
 var $mdgriffith$elm_ui$Element$layout = $mdgriffith$elm_ui$Element$layoutWith(
 	{options: _List_Nil});
-var $author$project$Renderers$ViewContainer$Renderer$Layout = {$: 'Layout'};
+var $author$project$Renderers$ViewContainer$Renderer$Layout = function (a) {
+	return {$: 'Layout', a: a};
+};
+var $author$project$Common$Layouts$LayoutCupboards = {$: 'LayoutCupboards'};
+var $author$project$Common$Layouts$LayoutDrawers = {$: 'LayoutDrawers'};
+var $author$project$Common$Layouts$LayoutGrid = {$: 'LayoutGrid'};
 var $author$project$Renderers$ViewContainer$Renderer$NoOp = {$: 'NoOp'};
 var $mdgriffith$elm_ui$Internal$Model$Top = {$: 'Top'};
 var $mdgriffith$elm_ui$Element$alignTop = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$Top);
@@ -11827,28 +11834,32 @@ var $author$project$Renderers$ViewContainer$Renderer$modeButtons = A2(
 			_List_Nil,
 			{
 				label: $author$project$Common$ViewPureStyles$useIcon($feathericons$elm_feather$FeatherIcons$columns),
-				onPress: $elm$core$Maybe$Just($author$project$Renderers$ViewContainer$Renderer$Layout)
+				onPress: $elm$core$Maybe$Just(
+					$author$project$Renderers$ViewContainer$Renderer$Layout($author$project$Common$Layouts$LayoutCupboards))
 			}),
 			A2(
 			$mdgriffith$elm_ui$Element$Input$button,
 			_List_Nil,
 			{
 				label: $author$project$Common$ViewPureStyles$useIcon($feathericons$elm_feather$FeatherIcons$server),
-				onPress: $elm$core$Maybe$Just($author$project$Renderers$ViewContainer$Renderer$Layout)
+				onPress: $elm$core$Maybe$Just(
+					$author$project$Renderers$ViewContainer$Renderer$Layout($author$project$Common$Layouts$LayoutDrawers))
 			}),
 			A2(
 			$mdgriffith$elm_ui$Element$Input$button,
 			_List_Nil,
 			{
 				label: $author$project$Common$ViewPureStyles$useIcon($feathericons$elm_feather$FeatherIcons$grid),
-				onPress: $elm$core$Maybe$Just($author$project$Renderers$ViewContainer$Renderer$Layout)
+				onPress: $elm$core$Maybe$Just(
+					$author$project$Renderers$ViewContainer$Renderer$Layout($author$project$Common$Layouts$LayoutGrid))
 			}),
 			A2(
 			$mdgriffith$elm_ui$Element$Input$button,
 			_List_Nil,
 			{
 				label: $author$project$Common$ViewPureStyles$useIcon($feathericons$elm_feather$FeatherIcons$maximize),
-				onPress: $elm$core$Maybe$Just($author$project$Renderers$ViewContainer$Renderer$Layout)
+				onPress: $elm$core$Maybe$Just(
+					$author$project$Renderers$ViewContainer$Renderer$Layout($author$project$Common$Layouts$LayoutSingle))
 			})
 		]));
 var $smucode$elm_flat_colors$FlatColors$FlatUIPalette$peterRiver = A3($mdgriffith$elm_ui$Element$rgb255, 52, 152, 219);

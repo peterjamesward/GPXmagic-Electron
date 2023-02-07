@@ -1,8 +1,7 @@
 module Renderers.ViewContainer.Renderer exposing (Model, Msg, main)
 
 import Browser
-import Common.GpxPoint as GpxPoint exposing (gpxPointAsJSON)
-import Common.RendererType as RendererType exposing (RendererType(..))
+import Common.Layouts as Layout
 import Common.ViewPureStyles exposing (useIcon)
 import Element exposing (..)
 import Element.Background as Background
@@ -10,13 +9,10 @@ import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input exposing (button)
 import FeatherIcons
-import File exposing (File)
-import File.Select as Select
 import FlatColors.AussiePalette
 import FlatColors.ChinesePalette
 import FlatColors.FlatUIPalette
-import Html exposing (Html, div)
-import Html.Attributes exposing (style)
+import Html exposing (Html)
 import Html.Events.Extra.Mouse as Mouse
 import Json.Encode as E
 import Renderers.LoadButton.IpcStubs as Stubs
@@ -25,7 +21,7 @@ import Renderers.LoadButton.IpcStubs as Stubs
 type Msg
     = MessageFromMainProcess E.Value
     | NoOp
-    | Layout
+    | Layout Layout.LayoutStyle
 
 
 type alias Model =
@@ -33,6 +29,7 @@ type alias Model =
     -- with only a "Load GPX" button, will become the toolbox.
     -- Note we don't keep a copy of the GPX here!
     { backgroundColour : Element.Color
+    , layout : Layout.LayoutStyle
     }
 
 
@@ -48,7 +45,9 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { backgroundColour = FlatColors.FlatUIPalette.clouds }
+    ( { backgroundColour = FlatColors.FlatUIPalette.clouds
+      , layout = Layout.LayoutSingle
+      }
     , Stubs.ipcRendererToMain <|
         E.object
             [ ( "cmd", E.string "hello" )
@@ -66,7 +65,7 @@ update msg model =
         NoOp ->
             ( model, Cmd.none )
 
-        Layout ->
+        Layout layout ->
             ( model, Cmd.none )
 
 
@@ -112,19 +111,19 @@ modeButtons =
         , htmlAttribute <| Mouse.onWithOptions "mouseup" stopProp (always NoOp)
         ]
         [ Input.button []
-            { onPress = Just Layout
+            { onPress = Just <| Layout Layout.LayoutCupboards
             , label = useIcon FeatherIcons.columns
             }
         , Input.button []
-            { onPress = Just Layout
+            { onPress = Just <| Layout Layout.LayoutDrawers
             , label = useIcon FeatherIcons.server
             }
         , Input.button []
-            { onPress = Just Layout
+            { onPress = Just <| Layout Layout.LayoutGrid
             , label = useIcon FeatherIcons.grid
             }
         , Input.button []
-            { onPress = Just Layout
+            { onPress = Just <| Layout Layout.LayoutSingle
             , label = useIcon FeatherIcons.maximize
             }
         ]

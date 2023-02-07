@@ -3208,20 +3208,56 @@ var $elm$json$Json$Encode$list = F2(
 	});
 var $elm$core$Debug$log = _Debug_log;
 var $elm$json$Json$Encode$int = _Json_wrap;
-var $author$project$Common$Layouts$rendererHtmlFile = function (rendererType) {
-	switch (rendererType.$) {
-		case 'RendererToolbox':
-			return 'LoadButton';
-		case 'Renderer3D':
-			return 'WebGL';
-		case 'RendererProfile':
-			return 'WebGL';
-		case 'RendererCanvasChart':
-			return 'WebGL';
-		case 'RendererMap':
-			return 'WebGL';
-		default:
-			return 'ViewContainer';
+var $elm_community$list_extra$List$Extra$find = F2(
+	function (predicate, list) {
+		find:
+		while (true) {
+			if (!list.b) {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				var first = list.a;
+				var rest = list.b;
+				if (predicate(first)) {
+					return $elm$core$Maybe$Just(first);
+				} else {
+					var $temp$predicate = predicate,
+						$temp$list = rest;
+					predicate = $temp$predicate;
+					list = $temp$list;
+					continue find;
+				}
+			}
+		}
+	});
+var $author$project$Common$RendererType$Renderer3D = {$: 'Renderer3D'};
+var $author$project$Common$RendererType$RendererCanvasChart = {$: 'RendererCanvasChart'};
+var $author$project$Common$RendererType$RendererMap = {$: 'RendererMap'};
+var $author$project$Common$RendererType$RendererMultiPane = {$: 'RendererMultiPane'};
+var $author$project$Common$RendererType$RendererProfile = {$: 'RendererProfile'};
+var $author$project$Common$RendererType$RendererToolbox = {$: 'RendererToolbox'};
+var $author$project$Common$Layouts$renderTypeNameAssoc = _List_fromArray(
+	[
+		_Utils_Tuple2($author$project$Common$RendererType$RendererToolbox, 'LoadButton'),
+		_Utils_Tuple2($author$project$Common$RendererType$Renderer3D, 'WebGL'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererProfile, 'WebGL'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererCanvasChart, 'WebGL'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererMap, 'WebGL'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererMultiPane, 'ViewContainer')
+	]);
+var $author$project$Common$Layouts$rendererTypeToString = function (rendererType) {
+	var _v0 = A2(
+		$elm_community$list_extra$List$Extra$find,
+		function (_v1) {
+			var a = _v1.a;
+			return _Utils_eq(a, rendererType);
+		},
+		$author$project$Common$Layouts$renderTypeNameAssoc);
+	if (_v0.$ === 'Just') {
+		var _v2 = _v0.a;
+		var value = _v2.b;
+		return value;
+	} else {
+		return 'unknown renderer';
 	}
 };
 var $author$project$Common$Layouts$viewAsJson = function (view) {
@@ -3231,7 +3267,7 @@ var $author$project$Common$Layouts$viewAsJson = function (view) {
 				_Utils_Tuple2(
 				'html',
 				$elm$json$Json$Encode$string(
-					$author$project$Common$Layouts$rendererHtmlFile(view.rendererType))),
+					$author$project$Common$Layouts$rendererTypeToString(view.rendererType))),
 				_Utils_Tuple2(
 				'width',
 				$elm$json$Json$Encode$float(view.widthPercent)),
@@ -3253,7 +3289,7 @@ var $author$project$Common$Layouts$windowAsJson = function (window) {
 				_Utils_Tuple2(
 				'html',
 				$elm$json$Json$Encode$string(
-					$author$project$Common$Layouts$rendererHtmlFile(window.containerRenderer))),
+					$author$project$Common$Layouts$rendererTypeToString(window.containerRenderer))),
 				_Utils_Tuple2(
 				'width',
 				$elm$json$Json$Encode$int(window.width)),
@@ -3742,12 +3778,6 @@ var $elm$core$Dict$remove = F2(
 			return x;
 		}
 	});
-var $author$project$Common$RendererType$Renderer3D = {$: 'Renderer3D'};
-var $author$project$Common$RendererType$RendererCanvasChart = {$: 'RendererCanvasChart'};
-var $author$project$Common$RendererType$RendererMap = {$: 'RendererMap'};
-var $author$project$Common$RendererType$RendererMultiPane = {$: 'RendererMultiPane'};
-var $author$project$Common$RendererType$RendererProfile = {$: 'RendererProfile'};
-var $author$project$Common$RendererType$RendererToolbox = {$: 'RendererToolbox'};
 var $author$project$Common$RendererType$rendererTypeFromString = function (name) {
 	switch (name) {
 		case 'toolbox':

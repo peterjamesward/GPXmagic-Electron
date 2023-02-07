@@ -2,6 +2,21 @@ module Common.Layouts exposing (..)
 
 import Common.RendererType exposing (RendererType(..))
 import Json.Encode as E
+import List.Extra
+
+
+type LayoutStyle
+    = LayoutSingle
+    | LayoutDrawers
+    | LayoutCupboards
+    | LayoutGrid
+    | LayoutDresser
+
+
+type alias Layout =
+    { layoutStyle : LayoutStyle
+    , renderers : List RendererType
+    }
 
 
 type alias RendererWindow =
@@ -128,34 +143,32 @@ windowOneUpTwoDown =
     { emptyWindow | views = [ paneTop, paneBottomLeft, paneBottomRight ] }
 
 
-rendererHtmlFile : RendererType -> String
-rendererHtmlFile rendererType =
+renderTypeNameAssoc : List ( RendererType, String )
+renderTypeNameAssoc =
     --Yes, this is crucial Electron-level config here.
-    --TODO: Add each type carefully.
-    case rendererType of
-        RendererToolbox ->
-            "LoadButton"
+    [ ( RendererToolbox, "LoadButton" )
+    , ( Renderer3D, "WebGL" )
+    , ( RendererProfile, "WebGL" )
+    , ( RendererCanvasChart, "WebGL" )
+    , ( RendererMap, "WebGL" )
+    , ( RendererMultiPane, "ViewContainer" )
+    ]
 
-        Renderer3D ->
-            "WebGL"
 
-        RendererProfile ->
-            "WebGL"
+rendererTypeToString : RendererType -> String
+rendererTypeToString rendererType =
+    case List.Extra.find (\( a, _ ) -> a == rendererType) renderTypeNameAssoc of
+        Just ( _, value ) ->
+            value
 
-        RendererCanvasChart ->
-            "WebGL"
-
-        RendererMap ->
-            "WebGL"
-
-        RendererMultiPane ->
-            "ViewContainer"
+        Nothing ->
+            "unknown renderer"
 
 
 windowAsJson : RendererWindow -> E.Value
 windowAsJson window =
     E.object
-        [ ( "html", E.string <| rendererHtmlFile window.containerRenderer )
+        [ ( "html", E.string <| rendererTypeToString window.containerRenderer )
         , ( "width", E.int window.width )
         , ( "height", E.int window.height )
         , ( "left", E.int window.left )
@@ -169,9 +182,29 @@ windowAsJson window =
 viewAsJson : RendererView -> E.Value
 viewAsJson view =
     E.object
-        [ ( "html", E.string <| rendererHtmlFile view.rendererType )
+        [ ( "html", E.string <| rendererTypeToString view.rendererType )
         , ( "width", E.float view.widthPercent )
         , ( "height", E.float view.heightPercent )
         , ( "top", E.float view.topPercent )
         , ( "left", E.float view.leftPercent )
         ]
+
+
+layoutStyleNameAssoc : List ( LayoutStyle, String )
+layoutStyleNameAssoc =
+    [ ( LayoutSingle, "LayoutSingle" )
+    , ( LayoutDrawers, "LayoutDrawers" )
+    , ( LayoutCupboards, "LayoutCupboards" )
+    , ( LayoutGrid, "LayoutGrid" )
+    , ( LayoutDresser, "LayoutDresser" )
+    ]
+
+
+layoutStyleToString : LayoutStyle -> String
+layoutStyleToString style =
+    case List.Extra.find (\( a, _ ) -> a == style) layoutStyleNameAssoc of
+        Just ( _, value ) ->
+            value
+
+        Nothing ->
+            "unknown renderer"

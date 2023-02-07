@@ -11,10 +11,15 @@ Route maker will be odd, as always. At least this keeps the complexity in one pr
 ## Next
 
 * Window layout.
-> Change between available layouts. The window should determine the layout.
+ 
+> Protocol change: Just create view container. When ready, it sends desired
+> layout to ServerMain, which will create the views. Each view (as now) registers
+> with ServerMain.
+ 
 > Window state can hold the contexts of any hidden panes, for each renderer used.
 > (The view cannot, since it's a new view when you switch renderers.
 > I guess the key would be something like { window, pane number, renderer }.)
+
 > Now thinking of putting the toolbox back into window, as in v3.
 > (We still get multiple windows, still get process isolation, but reduce focus problem.)
 
