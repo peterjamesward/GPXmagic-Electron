@@ -3277,10 +3277,10 @@ var $author$project$Common$Layouts$viewAsJson = function (view) {
 				'height',
 				$elm$json$Json$Encode$float(view.heightPercent)),
 				_Utils_Tuple2(
-				'top',
+				'x',
 				$elm$json$Json$Encode$float(view.topPercent)),
 				_Utils_Tuple2(
-				'left',
+				'y',
 				$elm$json$Json$Encode$float(view.leftPercent))
 			]));
 };
@@ -3299,10 +3299,10 @@ var $author$project$Common$Layouts$windowAsJson = function (window) {
 				'height',
 				$elm$json$Json$Encode$int(window.height)),
 				_Utils_Tuple2(
-				'left',
+				'x',
 				$elm$json$Json$Encode$int(window.left)),
 				_Utils_Tuple2(
-				'top',
+				'y',
 				$elm$json$Json$Encode$int(window.top)),
 				_Utils_Tuple2(
 				'views',

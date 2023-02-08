@@ -99,7 +99,7 @@ function makeWindow(elmWindowId, windowSpec) {
             height: windowSpec.height,
             x : windowSpec.left,
             y : windowSpec.top,
-            acceptFirstMouse : true,
+            acceptFirstMouse : true, // only works on MacOS, sadly.
             webPreferences: {
                 preload: path.join(__dirname, 'preload.js')
             }
@@ -117,40 +117,21 @@ function makeWindow(elmWindowId, windowSpec) {
 
     // Make any child views
     //TODO: Left and right toolboxes. Reserved left/top are gone away.
+    //TODO: Move the layout maths into Main.elm, this is a dumb servant.
     contentSize = window.getContentSize();
 
-    contentLeft = windowSpec.leftToolbox ? 350 : 30 // leave space for layout menu column
-    contentRight = contentSize[0] - (windowSpec.rightToolbox ? 350 : 5)
-
-    widthPercent = (contentRight - contentLeft) / 100;
-    heightPercent = contentSize[1]  / 100;
     windowSpec.views.map((viewSpec) => { createAndAddView(viewSpec)});
-
-
+    // where ...
     function createAndAddView(viewSpec) {
 
 //        console.log("making view", viewSpec);
 
-        const view = new BrowserView(
-            {
-                width: Math.floor(viewSpec.width * widthPercent),
-                height: Math.floor(viewSpec.height * heightPercent),
-                x :  windowSpec.reservedLeft + Math.floor(viewSpec.left * widthPercent),
-                y : windowSpec.reservedTop + Math.floor(viewSpec.top * heightPercent),
-                webPreferences: {
-                    preload: path.join(__dirname, 'preload.js')
-                }
-            }
-        );
-        window.addBrowserView(view);
-        view.setBounds(
-            {
-                width: Math.floor(viewSpec.width * widthPercent),
-                height: Math.floor(viewSpec.height * heightPercent),
-                x :  windowSpec.reservedLeft + Math.floor(viewSpec.left * widthPercent),
-                y : windowSpec.reservedTop + Math.floor(viewSpec.top * heightPercent),
-            }
-        );
+        // Having viewSpec match the args for new view makes this more concise.
+        viewSpec.webPreferences = { preload: path.join(__dirname, 'preload.js') };
+
+        const view = new BrowserView( viewSpec );
+        window.addBrowserView( view );
+        view.setBounds( viewSpec );
         view.setAutoResize(
             {
                 width: true,
@@ -164,7 +145,7 @@ function makeWindow(elmWindowId, windowSpec) {
         view.webContents.loadURL('file://' + __dirname + '/src/Renderers/' + viewSpec.html + '/Renderer.html');
 
         // Open the devtools.
-        //    view.webContents.openDevTools();
+        view.webContents.openDevTools();
 
         view.webContents.on('close',
             function() {

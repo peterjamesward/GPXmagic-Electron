@@ -159,8 +159,8 @@ windowAsJson window =
         [ ( "html", E.string <| rendererTypeToString window.containerRenderer )
         , ( "width", E.int window.width )
         , ( "height", E.int window.height )
-        , ( "left", E.int window.left )
-        , ( "top", E.int window.top )
+        , ( "x", E.int window.left )
+        , ( "y", E.int window.top )
         , ( "views", E.list viewAsJson window.views )
         , ( "leftToolbox", E.bool window.leftToolboxVisible )
         , ( "rightToolbox", E.bool window.rightToolboxVisible )
@@ -173,8 +173,8 @@ viewAsJson view =
         [ ( "html", E.string <| rendererTypeToString view.rendererType )
         , ( "width", E.float view.widthPercent )
         , ( "height", E.float view.heightPercent )
-        , ( "top", E.float view.topPercent )
-        , ( "left", E.float view.leftPercent )
+        , ( "x", E.float view.topPercent )
+        , ( "y", E.float view.leftPercent )
         ]
 
 
