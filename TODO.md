@@ -12,30 +12,27 @@ Route maker will be odd, as always. At least this keeps the complexity in one pr
 
 * Window layout.
  
-> Why not put the v3 layout into the ViewContainer, with splitters and tools,
-> but use the content area for separate renderers. Then make the tool area also a renderer.
-> Prefer this stepwise approach, and it keeps flexibility and continuity from v3.
-
-> Protocol change: Just create view container. When ready, it sends desired
+> > Protocol change: Just create view container. When ready, it sends desired
 > layout to ServerMain, which will create the views. Each view (as now) registers
 > with ServerMain.
  
-> Window state can hold the contexts of any hidden panes, for each renderer used.
+> Renderer is not "WebGL", it should be view specific. Sharing code comes later.
+
+> Window state can hold the session contexts of any hidden panes, for each renderer used.
 > (The view cannot, since it's a new view when you switch renderers.
 > I guess the key would be something like { window, pane number, renderer }.)
 
+* Hide-able toolboxes (left, right) replace split panes.
 * Send sizes to each pane when window size changes, and initially.
-* Docking toolbox (top, bottom, left, right)
-* Additional toolboxes as required.
 * Window locations and panes stored.
 * Window locations and panes restored.
-* Error handling
-* Graceful failure on large tracks (!)
+* Error handling - always display a meaningful message when possible.
+* Graceful failure on large tracks (exception handling?)
+* Main slider to be distance, not points
 * Zoom, pan 3D view.
-* Change camera mode for 3D (1st, 3rd, Plan)
-* Click detect (index in main process).
+* Click detect (indexes in main process).
 * Display Options at WebWindow/WebView level, with defaults for new views.
-* Pointer update notification (mainly for map which always has full track)
+* Pointer-only update notification (mainly for map which always has full track)
 * Canvas charts (add distance to the broadcast points)
 * Map.
 * WebGL & SVG chart.
@@ -44,7 +41,7 @@ Route maker will be odd, as always. At least this keeps the complexity in one pr
 * Google Street View (with follow Orange).
 * Migrate all Tools, with good code hygiene.
 * Tool show/hide by toolbox, stored and restored.
-* Menu bar to reset tools, change language, metric/imperial, follow dark/light.
+* Menu bar to reset tools, change language, metric/imperial, follow system dark/light.
 * Canvas snapshot buttons
 * electron-build for installers.
 * If all the preload scripts are the same, make it the one.
