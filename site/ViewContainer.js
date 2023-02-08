@@ -11163,13 +11163,8 @@ var $author$project$Renderers$ViewContainer$Renderer$Layout = function (a) {
 var $author$project$Common$Layouts$LayoutCupboards = {$: 'LayoutCupboards'};
 var $author$project$Common$Layouts$LayoutDrawers = {$: 'LayoutDrawers'};
 var $author$project$Common$Layouts$LayoutGrid = {$: 'LayoutGrid'};
-var $author$project$Renderers$ViewContainer$Renderer$NoOp = {$: 'NoOp'};
 var $mdgriffith$elm_ui$Internal$Model$Top = {$: 'Top'};
 var $mdgriffith$elm_ui$Element$alignTop = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$Top);
-var $elm$core$Basics$always = F2(
-	function (a, _v0) {
-		return a;
-	});
 var $smucode$elm_flat_colors$FlatColors$AussiePalette$blurple = A3($mdgriffith$elm_ui$Element$rgb255, 72, 52, 212);
 var $mdgriffith$elm_ui$Internal$Model$Button = {$: 'Button'};
 var $mdgriffith$elm_ui$Internal$Model$Describe = function (a) {
@@ -11445,7 +11440,6 @@ var $feathericons$elm_feather$FeatherIcons$grid = A2(
 				]),
 			_List_Nil)
 		]));
-var $mdgriffith$elm_ui$Element$htmlAttribute = $mdgriffith$elm_ui$Internal$Model$Attr;
 var $feathericons$elm_feather$FeatherIcons$maximize = A2(
 	$feathericons$elm_feather$FeatherIcons$makeBuilder,
 	'maximize',
@@ -11459,134 +11453,6 @@ var $feathericons$elm_feather$FeatherIcons$maximize = A2(
 				]),
 			_List_Nil)
 		]));
-var $mdgriffith$elm_ui$Internal$Model$MoveY = function (a) {
-	return {$: 'MoveY', a: a};
-};
-var $mdgriffith$elm_ui$Internal$Model$TransformComponent = F2(
-	function (a, b) {
-		return {$: 'TransformComponent', a: a, b: b};
-	});
-var $mdgriffith$elm_ui$Internal$Flag$moveY = $mdgriffith$elm_ui$Internal$Flag$flag(26);
-var $mdgriffith$elm_ui$Element$moveDown = function (y) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$TransformComponent,
-		$mdgriffith$elm_ui$Internal$Flag$moveY,
-		$mdgriffith$elm_ui$Internal$Model$MoveY(y));
-};
-var $mdgriffith$elm_ui$Internal$Model$MoveX = function (a) {
-	return {$: 'MoveX', a: a};
-};
-var $mdgriffith$elm_ui$Internal$Flag$moveX = $mdgriffith$elm_ui$Internal$Flag$flag(25);
-var $mdgriffith$elm_ui$Element$moveRight = function (x) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$TransformComponent,
-		$mdgriffith$elm_ui$Internal$Flag$moveX,
-		$mdgriffith$elm_ui$Internal$Model$MoveX(x));
-};
-var $elm$virtual_dom$VirtualDom$Custom = function (a) {
-	return {$: 'Custom', a: a};
-};
-var $elm$html$Html$Events$custom = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$Custom(decoder));
-	});
-var $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$Event = F6(
-	function (keys, button, clientPos, offsetPos, pagePos, screenPos) {
-		return {button: button, clientPos: clientPos, keys: keys, offsetPos: offsetPos, pagePos: pagePos, screenPos: screenPos};
-	});
-var $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$BackButton = {$: 'BackButton'};
-var $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$ErrorButton = {$: 'ErrorButton'};
-var $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$ForwardButton = {$: 'ForwardButton'};
-var $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$MainButton = {$: 'MainButton'};
-var $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$MiddleButton = {$: 'MiddleButton'};
-var $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$SecondButton = {$: 'SecondButton'};
-var $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$buttonFromId = function (id) {
-	switch (id) {
-		case 0:
-			return $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$MainButton;
-		case 1:
-			return $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$MiddleButton;
-		case 2:
-			return $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$SecondButton;
-		case 3:
-			return $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$BackButton;
-		case 4:
-			return $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$ForwardButton;
-		default:
-			return $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$ErrorButton;
-	}
-};
-var $elm$json$Json$Decode$int = _Json_decodeInt;
-var $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$buttonDecoder = A2(
-	$elm$json$Json$Decode$map,
-	$mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$buttonFromId,
-	A2($elm$json$Json$Decode$field, 'button', $elm$json$Json$Decode$int));
-var $elm$json$Json$Decode$float = _Json_decodeFloat;
-var $mpizenberg$elm_pointer_events$Internal$Decode$clientPos = A3(
-	$elm$json$Json$Decode$map2,
-	F2(
-		function (a, b) {
-			return _Utils_Tuple2(a, b);
-		}),
-	A2($elm$json$Json$Decode$field, 'clientX', $elm$json$Json$Decode$float),
-	A2($elm$json$Json$Decode$field, 'clientY', $elm$json$Json$Decode$float));
-var $mpizenberg$elm_pointer_events$Internal$Decode$Keys = F3(
-	function (alt, ctrl, shift) {
-		return {alt: alt, ctrl: ctrl, shift: shift};
-	});
-var $elm$json$Json$Decode$bool = _Json_decodeBool;
-var $elm$json$Json$Decode$map3 = _Json_map3;
-var $mpizenberg$elm_pointer_events$Internal$Decode$keys = A4(
-	$elm$json$Json$Decode$map3,
-	$mpizenberg$elm_pointer_events$Internal$Decode$Keys,
-	A2($elm$json$Json$Decode$field, 'altKey', $elm$json$Json$Decode$bool),
-	A2($elm$json$Json$Decode$field, 'ctrlKey', $elm$json$Json$Decode$bool),
-	A2($elm$json$Json$Decode$field, 'shiftKey', $elm$json$Json$Decode$bool));
-var $elm$json$Json$Decode$map6 = _Json_map6;
-var $mpizenberg$elm_pointer_events$Internal$Decode$offsetPos = A3(
-	$elm$json$Json$Decode$map2,
-	F2(
-		function (a, b) {
-			return _Utils_Tuple2(a, b);
-		}),
-	A2($elm$json$Json$Decode$field, 'offsetX', $elm$json$Json$Decode$float),
-	A2($elm$json$Json$Decode$field, 'offsetY', $elm$json$Json$Decode$float));
-var $mpizenberg$elm_pointer_events$Internal$Decode$pagePos = A3(
-	$elm$json$Json$Decode$map2,
-	F2(
-		function (a, b) {
-			return _Utils_Tuple2(a, b);
-		}),
-	A2($elm$json$Json$Decode$field, 'pageX', $elm$json$Json$Decode$float),
-	A2($elm$json$Json$Decode$field, 'pageY', $elm$json$Json$Decode$float));
-var $mpizenberg$elm_pointer_events$Internal$Decode$screenPos = A3(
-	$elm$json$Json$Decode$map2,
-	F2(
-		function (a, b) {
-			return _Utils_Tuple2(a, b);
-		}),
-	A2($elm$json$Json$Decode$field, 'screenX', $elm$json$Json$Decode$float),
-	A2($elm$json$Json$Decode$field, 'screenY', $elm$json$Json$Decode$float));
-var $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$eventDecoder = A7($elm$json$Json$Decode$map6, $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$Event, $mpizenberg$elm_pointer_events$Internal$Decode$keys, $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$buttonDecoder, $mpizenberg$elm_pointer_events$Internal$Decode$clientPos, $mpizenberg$elm_pointer_events$Internal$Decode$offsetPos, $mpizenberg$elm_pointer_events$Internal$Decode$pagePos, $mpizenberg$elm_pointer_events$Internal$Decode$screenPos);
-var $mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$onWithOptions = F3(
-	function (event, options, tag) {
-		return A2(
-			$elm$html$Html$Events$custom,
-			event,
-			A2(
-				$elm$json$Json$Decode$map,
-				function (ev) {
-					return {
-						message: tag(ev),
-						preventDefault: options.preventDefault,
-						stopPropagation: options.stopPropagation
-					};
-				},
-				$mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$eventDecoder));
-	});
 var $mdgriffith$elm_ui$Internal$Model$PaddingStyle = F5(
 	function (a, b, c, d, e) {
 		return {$: 'PaddingStyle', a: a, b: b, c: c, d: d, e: e};
@@ -11698,7 +11564,10 @@ var $mdgriffith$elm_ui$Element$spacing = function (x) {
 			x,
 			x));
 };
-var $author$project$Renderers$ViewContainer$Renderer$stopProp = {preventDefault: false, stopPropagation: true};
+var $elm$core$Basics$always = F2(
+	function (a, _v0) {
+		return a;
+	});
 var $mdgriffith$elm_ui$Internal$Model$unstyled = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Unstyled, $elm$core$Basics$always);
 var $mdgriffith$elm_ui$Element$html = $mdgriffith$elm_ui$Internal$Model$unstyled;
 var $elm$svg$Svg$Attributes$class = _VirtualDom_attribute('class');
@@ -11793,42 +11662,24 @@ var $author$project$Renderers$ViewContainer$Renderer$modeButtons = A2(
 		[
 			$mdgriffith$elm_ui$Element$alignTop,
 			$mdgriffith$elm_ui$Element$alignLeft,
-			$mdgriffith$elm_ui$Element$moveDown(2),
-			$mdgriffith$elm_ui$Element$moveRight(2),
 			$mdgriffith$elm_ui$Element$Background$color($smucode$elm_flat_colors$FlatColors$FlatUIPalette$clouds),
 			$mdgriffith$elm_ui$Element$Font$size(40),
 			$mdgriffith$elm_ui$Element$padding(2),
 			$mdgriffith$elm_ui$Element$spacing(8),
 			$mdgriffith$elm_ui$Element$Border$width(1),
 			$mdgriffith$elm_ui$Element$Border$rounded(4),
-			$mdgriffith$elm_ui$Element$Border$color($smucode$elm_flat_colors$FlatColors$AussiePalette$blurple),
-			$mdgriffith$elm_ui$Element$htmlAttribute(
-			A3(
-				$mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$onWithOptions,
-				'click',
-				$author$project$Renderers$ViewContainer$Renderer$stopProp,
-				$elm$core$Basics$always($author$project$Renderers$ViewContainer$Renderer$NoOp))),
-			$mdgriffith$elm_ui$Element$htmlAttribute(
-			A3(
-				$mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$onWithOptions,
-				'dblclick',
-				$author$project$Renderers$ViewContainer$Renderer$stopProp,
-				$elm$core$Basics$always($author$project$Renderers$ViewContainer$Renderer$NoOp))),
-			$mdgriffith$elm_ui$Element$htmlAttribute(
-			A3(
-				$mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$onWithOptions,
-				'mousedown',
-				$author$project$Renderers$ViewContainer$Renderer$stopProp,
-				$elm$core$Basics$always($author$project$Renderers$ViewContainer$Renderer$NoOp))),
-			$mdgriffith$elm_ui$Element$htmlAttribute(
-			A3(
-				$mpizenberg$elm_pointer_events$Html$Events$Extra$Mouse$onWithOptions,
-				'mouseup',
-				$author$project$Renderers$ViewContainer$Renderer$stopProp,
-				$elm$core$Basics$always($author$project$Renderers$ViewContainer$Renderer$NoOp)))
+			$mdgriffith$elm_ui$Element$Border$color($smucode$elm_flat_colors$FlatColors$AussiePalette$blurple)
 		]),
 	_List_fromArray(
 		[
+			A2(
+			$mdgriffith$elm_ui$Element$Input$button,
+			_List_Nil,
+			{
+				label: $author$project$Common$ViewPureStyles$useIcon($feathericons$elm_feather$FeatherIcons$maximize),
+				onPress: $elm$core$Maybe$Just(
+					$author$project$Renderers$ViewContainer$Renderer$Layout($author$project$Common$Layouts$LayoutSingle))
+			}),
 			A2(
 			$mdgriffith$elm_ui$Element$Input$button,
 			_List_Nil,
@@ -11852,14 +11703,6 @@ var $author$project$Renderers$ViewContainer$Renderer$modeButtons = A2(
 				label: $author$project$Common$ViewPureStyles$useIcon($feathericons$elm_feather$FeatherIcons$grid),
 				onPress: $elm$core$Maybe$Just(
 					$author$project$Renderers$ViewContainer$Renderer$Layout($author$project$Common$Layouts$LayoutGrid))
-			}),
-			A2(
-			$mdgriffith$elm_ui$Element$Input$button,
-			_List_Nil,
-			{
-				label: $author$project$Common$ViewPureStyles$useIcon($feathericons$elm_feather$FeatherIcons$maximize),
-				onPress: $elm$core$Maybe$Just(
-					$author$project$Renderers$ViewContainer$Renderer$Layout($author$project$Common$Layouts$LayoutSingle))
 			})
 		]));
 var $smucode$elm_flat_colors$FlatColors$FlatUIPalette$peterRiver = A3($mdgriffith$elm_ui$Element$rgb255, 52, 152, 219);

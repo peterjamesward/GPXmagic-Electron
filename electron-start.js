@@ -116,9 +116,14 @@ function makeWindow(elmWindowId, windowSpec) {
     window.webContents.loadURL('file://' + __dirname + '/src/Renderers/' + windowSpec.html + '/Renderer.html');
 
     // Make any child views
+    //TODO: Left and right toolboxes. Reserved left/top are gone away.
     contentSize = window.getContentSize();
-    widthPercent = (contentSize[0] - windowSpec.reservedLeft) / 100;
-    heightPercent = (contentSize[1] - windowSpec.reservedTop) / 100;
+
+    contentLeft = windowSpec.leftToolbox ? 350 : 30 // leave space for layout menu column
+    contentRight = contentSize[0] - (windowSpec.rightToolbox ? 350 : 5)
+
+    widthPercent = (contentRight - contentLeft) / 100;
+    heightPercent = contentSize[1]  / 100;
     windowSpec.views.map((viewSpec) => { createAndAddView(viewSpec)});
 
 

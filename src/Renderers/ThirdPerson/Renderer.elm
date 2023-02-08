@@ -1,4 +1,4 @@
-module Renderers.WebGL.Renderer exposing (Model, Msg, main)
+module Renderers.ThirdPerson.Renderer exposing (Model, Msg, main)
 
 import Angle
 import Browser
@@ -18,7 +18,7 @@ import Markdown
 import Pixels exposing (pixels)
 import Point3d
 import Renderers.LoadButton.IpcStubs as Stubs
-import Renderers.WebGL.SceneBuilder3D as Builder
+import Renderers.ThirdPerson.SceneBuilder3D as Builder
 import Scene3d exposing (Entity, backgroundColor)
 import Viewpoint3d
 
@@ -48,7 +48,7 @@ init _ =
     , Stubs.ipcRendererToMain <|
         E.object
             [ ( "cmd", E.string "hello" )
-            , ( "renderer", E.string "WebGL" )
+            , ( "renderer", E.string "ThirdPerson" )
             ]
     )
 

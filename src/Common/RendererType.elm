@@ -1,6 +1,6 @@
 module Common.RendererType exposing (..)
 
-import Json.Decode as D
+import List.Extra
 
 
 type RendererType
@@ -10,54 +10,33 @@ type RendererType
     | RendererProfile
     | RendererCanvasChart
     | RendererMap
+    | RendererFirstPerson
+
+
+rendererAssocList : List ( RendererType, String )
+rendererAssocList =
+    [ ( RendererToolbox, "Toolbox" )
+    , ( Renderer3D, "ThirdPerson" )
+    , ( RendererProfile, "Profile" )
+    , ( RendererCanvasChart, "Chart" )
+    , ( RendererMap, "Map" )
+    , ( RendererMultiPane, "ViewContainer" )
+    , ( RendererFirstPerson, "FirstPerson" )
+    ]
 
 
 rendererTypeAsString : RendererType -> String
 rendererTypeAsString renderer =
-    case renderer of
-        RendererToolbox ->
-            "toolbox"
+    case List.Extra.find (\( a, _ ) -> a == renderer) rendererAssocList of
+        Just ( a, b ) ->
+            b
 
-        Renderer3D ->
-            "WebGL"
-
-        RendererProfile ->
-            -- Classic WebGL & SVG profile
-            "profile"
-
-        RendererCanvasChart ->
-            -- New style profile
-            "canvas"
-
-        RendererMap ->
-            "map"
-
-        RendererMultiPane ->
-            "ViewContainer"
+        Nothing ->
+            "unknown renderer"
 
 
 rendererTypeFromString : String -> Maybe RendererType
 rendererTypeFromString name =
-    case name of
-        "toolbox" ->
-            Just RendererToolbox
-
-        "WebGL" ->
-            Just Renderer3D
-
-        -- Classic WebGL & SVG profile
-        "profile" ->
-            Just RendererProfile
-
-        -- New style profile
-        "canvas" ->
-            Just RendererCanvasChart
-
-        "map" ->
-            Just RendererMap
-
-        "ViewContainer" ->
-            Just RendererMultiPane
-
-        _ ->
-            Nothing
+    rendererAssocList
+        |> List.Extra.find (\( _, b ) -> b == name)
+        |> Maybe.map Tuple.first

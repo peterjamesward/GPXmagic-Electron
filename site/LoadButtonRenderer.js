@@ -5796,20 +5796,59 @@ var $author$project$Renderers$LoadButton$IpcStubs$loadNewGpx = function (pointsA
 					_Utils_Tuple2('content', pointsAsJSON)
 				])));
 };
+var $elm_community$list_extra$List$Extra$find = F2(
+	function (predicate, list) {
+		find:
+		while (true) {
+			if (!list.b) {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				var first = list.a;
+				var rest = list.b;
+				if (predicate(first)) {
+					return $elm$core$Maybe$Just(first);
+				} else {
+					var $temp$predicate = predicate,
+						$temp$list = rest;
+					predicate = $temp$predicate;
+					list = $temp$list;
+					continue find;
+				}
+			}
+		}
+	});
+var $author$project$Common$RendererType$Renderer3D = {$: 'Renderer3D'};
+var $author$project$Common$RendererType$RendererCanvasChart = {$: 'RendererCanvasChart'};
+var $author$project$Common$RendererType$RendererFirstPerson = {$: 'RendererFirstPerson'};
+var $author$project$Common$RendererType$RendererMap = {$: 'RendererMap'};
+var $author$project$Common$RendererType$RendererMultiPane = {$: 'RendererMultiPane'};
+var $author$project$Common$RendererType$RendererProfile = {$: 'RendererProfile'};
+var $author$project$Common$RendererType$RendererToolbox = {$: 'RendererToolbox'};
+var $author$project$Common$RendererType$rendererAssocList = _List_fromArray(
+	[
+		_Utils_Tuple2($author$project$Common$RendererType$RendererToolbox, 'Toolbox'),
+		_Utils_Tuple2($author$project$Common$RendererType$Renderer3D, 'ThirdPerson'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererProfile, 'Profile'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererCanvasChart, 'Chart'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererMap, 'Map'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererMultiPane, 'ViewContainer'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererFirstPerson, 'FirstPerson')
+	]);
 var $author$project$Common$RendererType$rendererTypeAsString = function (renderer) {
-	switch (renderer.$) {
-		case 'RendererToolbox':
-			return 'toolbox';
-		case 'Renderer3D':
-			return 'WebGL';
-		case 'RendererProfile':
-			return 'profile';
-		case 'RendererCanvasChart':
-			return 'canvas';
-		case 'RendererMap':
-			return 'map';
-		default:
-			return 'ViewContainer';
+	var _v0 = A2(
+		$elm_community$list_extra$List$Extra$find,
+		function (_v1) {
+			var a = _v1.a;
+			return _Utils_eq(a, renderer);
+		},
+		$author$project$Common$RendererType$rendererAssocList);
+	if (_v0.$ === 'Just') {
+		var _v2 = _v0.a;
+		var a = _v2.a;
+		var b = _v2.b;
+		return b;
+	} else {
+		return 'unknown renderer';
 	}
 };
 var $author$project$Renderers$LoadButton$IpcStubs$newView = function (renderer) {
@@ -7840,7 +7879,6 @@ var $author$project$Renderers$LoadButton$Renderer$GpxRequested = {$: 'GpxRequest
 var $author$project$Renderers$LoadButton$Renderer$OpenView = function (a) {
 	return {$: 'OpenView', a: a};
 };
-var $author$project$Common$RendererType$Renderer3D = {$: 'Renderer3D'};
 var $smucode$elm_flat_colors$FlatColors$ChinesePalette$antiFlashWhite = A3($mdgriffith$elm_ui$Element$rgb255, 241, 242, 246);
 var $mdgriffith$elm_ui$Internal$Model$Attr = function (a) {
 	return {$: 'Attr', a: a};

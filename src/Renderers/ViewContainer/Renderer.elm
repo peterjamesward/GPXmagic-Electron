@@ -93,11 +93,11 @@ stopProp =
 
 
 modeButtons =
+    --TODO: If toolbox collapsed, show these in a column.
+    --TODO: else in a row at top of toolbox.
     column
         [ alignTop
         , alignLeft
-        , moveDown 2
-        , moveRight 2
         , Background.color FlatColors.FlatUIPalette.clouds
         , Font.size 40
         , padding 2
@@ -105,12 +105,12 @@ modeButtons =
         , Border.width 1
         , Border.rounded 4
         , Border.color FlatColors.AussiePalette.blurple
-        , htmlAttribute <| Mouse.onWithOptions "click" stopProp (always NoOp)
-        , htmlAttribute <| Mouse.onWithOptions "dblclick" stopProp (always NoOp)
-        , htmlAttribute <| Mouse.onWithOptions "mousedown" stopProp (always NoOp)
-        , htmlAttribute <| Mouse.onWithOptions "mouseup" stopProp (always NoOp)
         ]
         [ Input.button []
+            { onPress = Just <| Layout Layout.LayoutSingle
+            , label = useIcon FeatherIcons.maximize
+            }
+        , Input.button []
             { onPress = Just <| Layout Layout.LayoutCupboards
             , label = useIcon FeatherIcons.columns
             }
@@ -121,10 +121,6 @@ modeButtons =
         , Input.button []
             { onPress = Just <| Layout Layout.LayoutGrid
             , label = useIcon FeatherIcons.grid
-            }
-        , Input.button []
-            { onPress = Just <| Layout Layout.LayoutSingle
-            , label = useIcon FeatherIcons.maximize
             }
         ]
 

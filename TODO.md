@@ -12,17 +12,22 @@ Route maker will be odd, as always. At least this keeps the complexity in one pr
 
 * Window layout.
  
-> > Protocol change: Just create view container. When ready, it sends desired
+> Protocol change: Just create view container. When ready, it sends desired
 > layout to ServerMain, which will create the views. Each view (as now) registers
 > with ServerMain.
  
-> Renderer is not "WebGL", it should be view specific. Sharing code comes later.
-
 > Window state can hold the session contexts of any hidden panes, for each renderer used.
 > (The view cannot, since it's a new view when you switch renderers.
 > I guess the key would be something like { window, pane number, renderer }.)
 
+> It would be neat if, once a renderer is created (for some window) then it is never destroyed
+> only hidden. If user subsequently picks a layout with that renderer, just changing the bounds
+> makes it visible. This avoids refreshing track on display, also avoids map reloads.
+> This is more likely to work if we do the heavy lifting in Main.elm, or perhaps better,
+> in the ViewContainer -- manages its own views, but issues commands to server to resize panes.
+
 * Hide-able toolboxes (left, right) replace split panes.
+* Remove separate toolbox window, keep the renderer.
 * Send sizes to each pane when window size changes, and initially.
 * Window locations and panes stored.
 * Window locations and panes restored.
@@ -44,7 +49,7 @@ Route maker will be odd, as always. At least this keeps the complexity in one pr
 * Menu bar to reset tools, change language, metric/imperial, follow system dark/light.
 * Canvas snapshot buttons
 * electron-build for installers.
-* If all the preload scripts are the same, make it the one.
+* If all the preload scripts and ipcStubs are the same, make it the one.
 
 NB: The 3D views differ only in camera placement, so I see that being nicer.
 

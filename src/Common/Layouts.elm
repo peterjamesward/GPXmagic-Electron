@@ -27,13 +27,13 @@ type alias RendererWindow =
     , top : Int
     , left : Int
     , views : List RendererView
-    , reservedLeft : Int
-    , reservedTop : Int
+    , leftToolboxVisible : Bool
+    , rightToolboxVisible : Bool
     }
 
 
 type alias RendererView =
-    -- Views are positioned relative to their containing window.
+    -- Views are positioned relative to their containing window after toolboxes deducted.
     { rendererType : RendererType
     , widthPercent : Float
     , heightPercent : Float
@@ -42,29 +42,17 @@ type alias RendererView =
     }
 
 
-toolWindow : RendererWindow
-toolWindow =
-    { containerRenderer = RendererToolbox
-    , width = 300
-    , height = 120
-    , top = 0
-    , left = 300
-    , views = []
-    , reservedLeft = 0
-    , reservedTop = 0
-    }
-
-
 emptyWindow : RendererWindow
 emptyWindow =
+    -- v3 compatible with toolbox on right.
     { containerRenderer = RendererMultiPane
     , width = 1000
     , height = 750
     , top = 120 + 28 --TODO: Get the actual title bar height and screen size.
     , left = 0
     , views = []
-    , reservedLeft = 35
-    , reservedTop = 0
+    , leftToolboxVisible = False
+    , rightToolboxVisible = True
     }
 
 
@@ -147,10 +135,10 @@ renderTypeNameAssoc : List ( RendererType, String )
 renderTypeNameAssoc =
     --Yes, this is crucial Electron-level config here.
     [ ( RendererToolbox, "LoadButton" )
-    , ( Renderer3D, "WebGL" )
-    , ( RendererProfile, "WebGL" )
-    , ( RendererCanvasChart, "WebGL" )
-    , ( RendererMap, "WebGL" )
+    , ( Renderer3D, "ThirdPerson" )
+    , ( RendererProfile, "Profile" )
+    , ( RendererCanvasChart, "Chart" )
+    , ( RendererMap, "Map" )
     , ( RendererMultiPane, "ViewContainer" )
     ]
 
@@ -174,8 +162,8 @@ windowAsJson window =
         , ( "left", E.int window.left )
         , ( "top", E.int window.top )
         , ( "views", E.list viewAsJson window.views )
-        , ( "reservedLeft", E.int window.reservedLeft )
-        , ( "reservedTop", E.int window.reservedTop )
+        , ( "leftToolbox", E.bool window.leftToolboxVisible )
+        , ( "rightToolbox", E.bool window.rightToolboxVisible )
         ]
 
 

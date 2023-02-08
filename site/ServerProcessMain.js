@@ -3041,6 +3041,8 @@ var $author$project$Common$DomainModel$elidedEarthPoints = F2(
 				myFoldFn,
 				_List_Nil));
 	});
+var $author$project$Common$RendererType$RendererMultiPane = {$: 'RendererMultiPane'};
+var $author$project$Common$Layouts$emptyWindow = {containerRenderer: $author$project$Common$RendererType$RendererMultiPane, height: 750, left: 0, leftToolboxVisible: false, rightToolboxVisible: true, top: 120 + 28, views: _List_Nil, width: 1000};
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $ianmackenzie$elm_geometry$Geometry$Types$Direction2d = function (a) {
 	return {$: 'Direction2d', a: a};
@@ -3208,6 +3210,7 @@ var $elm$json$Json$Encode$list = F2(
 	});
 var $elm$core$Debug$log = _Debug_log;
 var $elm$json$Json$Encode$int = _Json_wrap;
+var $elm$json$Json$Encode$bool = _Json_wrap;
 var $elm_community$list_extra$List$Extra$find = F2(
 	function (predicate, list) {
 		find:
@@ -3232,16 +3235,15 @@ var $elm_community$list_extra$List$Extra$find = F2(
 var $author$project$Common$RendererType$Renderer3D = {$: 'Renderer3D'};
 var $author$project$Common$RendererType$RendererCanvasChart = {$: 'RendererCanvasChart'};
 var $author$project$Common$RendererType$RendererMap = {$: 'RendererMap'};
-var $author$project$Common$RendererType$RendererMultiPane = {$: 'RendererMultiPane'};
 var $author$project$Common$RendererType$RendererProfile = {$: 'RendererProfile'};
 var $author$project$Common$RendererType$RendererToolbox = {$: 'RendererToolbox'};
 var $author$project$Common$Layouts$renderTypeNameAssoc = _List_fromArray(
 	[
 		_Utils_Tuple2($author$project$Common$RendererType$RendererToolbox, 'LoadButton'),
-		_Utils_Tuple2($author$project$Common$RendererType$Renderer3D, 'WebGL'),
-		_Utils_Tuple2($author$project$Common$RendererType$RendererProfile, 'WebGL'),
-		_Utils_Tuple2($author$project$Common$RendererType$RendererCanvasChart, 'WebGL'),
-		_Utils_Tuple2($author$project$Common$RendererType$RendererMap, 'WebGL'),
+		_Utils_Tuple2($author$project$Common$RendererType$Renderer3D, 'ThirdPerson'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererProfile, 'Profile'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererCanvasChart, 'Chart'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererMap, 'Map'),
 		_Utils_Tuple2($author$project$Common$RendererType$RendererMultiPane, 'ViewContainer')
 	]);
 var $author$project$Common$Layouts$rendererTypeToString = function (rendererType) {
@@ -3306,11 +3308,11 @@ var $author$project$Common$Layouts$windowAsJson = function (window) {
 				'views',
 				A2($elm$json$Json$Encode$list, $author$project$Common$Layouts$viewAsJson, window.views)),
 				_Utils_Tuple2(
-				'reservedLeft',
-				$elm$json$Json$Encode$int(window.reservedLeft)),
+				'leftToolbox',
+				$elm$json$Json$Encode$bool(window.leftToolboxVisible)),
 				_Utils_Tuple2(
-				'reservedTop',
-				$elm$json$Json$Encode$int(window.reservedTop))
+				'rightToolbox',
+				$elm$json$Json$Encode$bool(window.rightToolboxVisible))
 			]));
 };
 var $author$project$ServerProcess$Main$makeNewWindow = F2(
@@ -3778,23 +3780,28 @@ var $elm$core$Dict$remove = F2(
 			return x;
 		}
 	});
+var $author$project$Common$RendererType$RendererFirstPerson = {$: 'RendererFirstPerson'};
+var $author$project$Common$RendererType$rendererAssocList = _List_fromArray(
+	[
+		_Utils_Tuple2($author$project$Common$RendererType$RendererToolbox, 'Toolbox'),
+		_Utils_Tuple2($author$project$Common$RendererType$Renderer3D, 'ThirdPerson'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererProfile, 'Profile'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererCanvasChart, 'Chart'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererMap, 'Map'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererMultiPane, 'ViewContainer'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererFirstPerson, 'FirstPerson')
+	]);
 var $author$project$Common$RendererType$rendererTypeFromString = function (name) {
-	switch (name) {
-		case 'toolbox':
-			return $elm$core$Maybe$Just($author$project$Common$RendererType$RendererToolbox);
-		case 'WebGL':
-			return $elm$core$Maybe$Just($author$project$Common$RendererType$Renderer3D);
-		case 'profile':
-			return $elm$core$Maybe$Just($author$project$Common$RendererType$RendererProfile);
-		case 'canvas':
-			return $elm$core$Maybe$Just($author$project$Common$RendererType$RendererCanvasChart);
-		case 'map':
-			return $elm$core$Maybe$Just($author$project$Common$RendererType$RendererMap);
-		case 'ViewContainer':
-			return $elm$core$Maybe$Just($author$project$Common$RendererType$RendererMultiPane);
-		default:
-			return $elm$core$Maybe$Nothing;
-	}
+	return A2(
+		$elm$core$Maybe$map,
+		$elm$core$Tuple$first,
+		A2(
+			$elm_community$list_extra$List$Extra$find,
+			function (_v0) {
+				var b = _v0.b;
+				return _Utils_eq(b, name);
+			},
+			$author$project$Common$RendererType$rendererAssocList));
 };
 var $author$project$ServerProcess$Main$sendTrackToRenderer = F2(
 	function (pointsAsJson, id) {
@@ -3820,7 +3827,6 @@ var $author$project$ServerProcess$Main$sendToAll = F2(
 				$elm$core$Dict$keys(model.windowsAndViews)));
 	});
 var $elm$json$Json$Decode$string = _Json_decodeString;
-var $author$project$Common$Layouts$toolWindow = {containerRenderer: $author$project$Common$RendererType$RendererToolbox, height: 120, left: 300, reservedLeft: 0, reservedTop: 0, top: 0, views: _List_Nil, width: 300};
 var $author$project$Common$DomainModel$GPXSource = F4(
 	function (longitude, latitude, altitude, timestamp) {
 		return {altitude: altitude, latitude: latitude, longitude: longitude, timestamp: timestamp};
@@ -4264,7 +4270,6 @@ var $author$project$Common$DomainModel$treeFromSourcePoints = function (track) {
 		$elm$core$List$head(track));
 	return A2($author$project$Common$DomainModel$treeFromSourcesWithExistingReference, referencePoint, track);
 };
-var $author$project$Common$Layouts$emptyWindow = {containerRenderer: $author$project$Common$RendererType$RendererMultiPane, height: 750, left: 0, reservedLeft: 35, reservedTop: 0, top: 120 + 28, views: _List_Nil, width: 1000};
 var $author$project$Common$Layouts$paneFull = {heightPercent: 100.0, leftPercent: 0.0, rendererType: $author$project$Common$RendererType$Renderer3D, topPercent: 0.0, widthPercent: 100.0};
 var $author$project$Common$Layouts$paneLeft = _Utils_update(
 	$author$project$Common$Layouts$paneFull,
@@ -4338,7 +4343,7 @@ var $author$project$ServerProcess$Main$update = F2(
 			if (cmd.$ === 'Ok') {
 				switch (cmd.a) {
 					case 'ready':
-						return A2($author$project$ServerProcess$Main$makeNewWindow, $author$project$Common$Layouts$toolWindow, model);
+						return A2($author$project$ServerProcess$Main$makeNewWindow, $author$project$Common$Layouts$emptyWindow, model);
 					case 'newgpx':
 						var rawGpxPoints = A2(
 							$elm$json$Json$Decode$decodeValue,

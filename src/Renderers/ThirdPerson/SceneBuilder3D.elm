@@ -1,4 +1,4 @@
-module Renderers.WebGL.SceneBuilder3D exposing (render3dView)
+module Renderers.ThirdPerson.SceneBuilder3D exposing (render3dView)
 
 import Color exposing (Color, lightOrange)
 import Common.LocalCoords exposing (LocalCoords)
