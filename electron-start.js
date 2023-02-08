@@ -92,19 +92,10 @@ function handleElmMessage(msg) {
 function makeWindow(elmWindowId, windowSpec) {
 
 //    console.log("MAIN:", windowSpec);
+    windowSpec.webPreferences = { preload: path.join(__dirname, 'preload.js') };
+    windowSpec.acceptFirstMouse = true;
 
-    var window = new BrowserWindow(
-        {
-            width: windowSpec.width,
-            height: windowSpec.height,
-            x : windowSpec.left,
-            y : windowSpec.top,
-            acceptFirstMouse : true, // only works on MacOS, sadly.
-            webPreferences: {
-                preload: path.join(__dirname, 'preload.js')
-            }
-        }
-    );
+    var window = new BrowserWindow( windowSpec );
 
     window.on('close',
         function() {
@@ -114,17 +105,19 @@ function makeWindow(elmWindowId, windowSpec) {
 
     // and load the index.html of the app.
     window.webContents.loadURL('file://' + __dirname + '/src/Renderers/' + windowSpec.html + '/Renderer.html');
+};
 
+function childrenStuff() {
     // Make any child views
     //TODO: Left and right toolboxes. Reserved left/top are gone away.
     //TODO: Move the layout maths into Main.elm, this is a dumb servant.
     contentSize = window.getContentSize();
 
-    windowSpec.views.map((viewSpec) => { createAndAddView(viewSpec)});
+    windowSpec.views.map((viewSpec) => { createAndAddView(viewSpec) } );
     // where ...
     function createAndAddView(viewSpec) {
 
-//        console.log("making view", viewSpec);
+        console.log("making view", viewSpec);
 
         // Having viewSpec match the args for new view makes this more concise.
         viewSpec.webPreferences = { preload: path.join(__dirname, 'preload.js') };
@@ -153,5 +146,4 @@ function makeWindow(elmWindowId, windowSpec) {
             }
         );
     };
-
 };
