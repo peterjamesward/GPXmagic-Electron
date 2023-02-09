@@ -10,10 +10,7 @@ port ipcRendererToMain : E.Value -> Cmd msg
 port ipcMainToRenderer : (E.Value -> msg) -> Sub msg
 
 
-newView : RendererType -> Cmd msg
-newView renderer =
-    ipcRendererToMain <|
-        E.object
-            [ ( "cmd", E.string "newview" )
-            , ( "renderer", E.string <| RendererType.rendererTypeAsString renderer )
-            ]
+port sendViewMessage : E.Value -> Cmd msg
+
+
+port receiveViewMessage : (E.Value -> msg) -> Sub msg

@@ -11,20 +11,8 @@ Route maker will be odd, as always. At least this keeps the complexity in one pr
 ## Next
 
 * Window layout.
- 
-> Protocol change: Just create view container. When ready, it sends desired
-> layout to ServerMain, which will create the views. Each view (as now) registers
-> with ServerMain.
- 
-> Window state can hold the session contexts of any hidden panes, for each renderer used.
-> (The view cannot, since it's a new view when you switch renderers.
-> I guess the key would be something like { window, pane number, renderer }.)
 
-> It would be neat if, once a renderer is created (for some window) then it is never destroyed
-> only hidden. If user subsequently picks a layout with that renderer, just changing the bounds
-> makes it visible. This avoids refreshing track on display, also avoids map reloads.
-> This is more likely to work if we do the heavy lifting in Main.elm, or perhaps better,
-> in the ViewContainer -- manages its own views, but issues commands to server to resize panes.
+> !! Use a different IPC channel for client -> Electron messages that do not need Main. 
 
 * Hide-able toolboxes (left, right) replace split panes.
 * Remove separate toolbox window, keep the renderer.

@@ -48,14 +48,9 @@ init _ =
     ( { backgroundColour = FlatColors.FlatUIPalette.clouds
       , layout = Layout.LayoutSingle
       }
-    , Stubs.ipcRendererToMain <|
+    , Stubs.sendViewMessage <|
         E.object
-            [ ( "cmd", E.string "container" )
-            , ( "renderer", E.string "ViewContainer" )
-
-            -- On this occasion, we know our own size. Just ask for the panel contents.
-            , ( "new", E.list Layout.newViewCmdAsJson Layout.initViewCmd )
-            ]
+            [ ( "new", E.list Layout.newViewCmdAsJson Layout.initViewCmd ) ]
     )
 
 

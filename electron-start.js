@@ -58,6 +58,9 @@ app.on('ready',
             elmPorts.fromJavascript.send( elmMessage );
 
         });
+
+        // Handle view updates without server side Elm.
+        ipcMain.on( 'viewMessage', handleViewMessage );
     }
 );
 
@@ -70,13 +73,6 @@ function handleElmMessage(msg) {
     switch (msg.cmd) {
         case 'ElmReady':
             console.log("Elm is ready.");
-            break;
-
-        case 'container':
-            // Message will contain "new", "move" and "switch" commands.
-            if (msg.new != undefined) makeNewViews(msg.sender, msg.new);
-            if (msg.move != undefined) moveViews(msg.sender, msg.move);
-            if (msg.switch != undefined) switchView(msg.sender, msg.switch); //singular!
             break;
 
         case 'newwindow':
@@ -114,10 +110,19 @@ function makeWindow(elmWindowId, windowSpec) {
     window.webContents.loadURL('file://' + __dirname + '/src/Renderers/' + windowSpec.html + '/Renderer.html');
 };
 
+function handleViewMessage ( event, msg ) {
+        // Message will contain "new", "move" and "switch" commands.
+        if (msg.new != undefined) makeNewViews(event.sender.id, msg.new);
+        if (msg.move != undefined) moveViews(event.sender.id, msg.move);
+        if (msg.switch != undefined) switchView(event.sender.id, msg.switch); //singular!
+
+};
+
+//TODO: Dict Int ViewSpec (if we were in Elm)
+
 function makeNewViews(windowId, newViewCmds) {
-    // Make any child views
-    //TODO: Left and right toolboxes. Reserved left/top are gone away.
-    //TODO: Move the layout maths into Main.elm, this is a dumb servant.
+
+    // Make child views
     const window = BrowserWindow.fromId(windowId);
 
     newViewCmds.map((newViewCmd) => { createAndAddView(newViewCmd) } );
@@ -129,6 +134,7 @@ function makeNewViews(windowId, newViewCmds) {
         // Having viewSpec match the args for new view makes this more concise.
         newViewCmd.webPreferences = { preload: path.join(__dirname, 'preload.js') };
 
+        //TODO: Tell the ew view how big it is.
         const view = new BrowserView( newViewCmd );
         window.addBrowserView( view );
         view.setBounds( newViewCmd );

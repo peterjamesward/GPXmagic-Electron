@@ -9,8 +9,14 @@ var responseFn;
 contextBridge.exposeInMainWorld('gpxMagicAPI', {
     // Each renderer injects its response function here. This will be called
     // when the main process sends a message, see the `ipcRenderer.on` function below.
-    setResponseFn: (f) => responseFn = f,
+//    setResponseFn: (f) => responseFn = f,
+
+    // IPC channel from client Elm to server Elm
     sendToServer: (content) => ipcRenderer.send('elmMessage', content),
-    fromServer: (callback) => ipcRenderer.on('fromServer', callback)
+    fromServer: (callback) => ipcRenderer.on('fromServer', callback),
+
+    // Channel from client Elm to server Javascript to control views
+    sendViewMessage: (content) => ipcRenderer.send('viewMessage', content),
+    viewMessageResp: (callback) => ipcRenderer.on('viewResponse', content)
 })
 

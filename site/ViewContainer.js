@@ -5234,7 +5234,6 @@ var $author$project$Common$Layouts$initViewCmd = _List_fromArray(
 		$author$project$Common$Layouts$rightToolbox,
 		A2($author$project$Common$Layouts$newViewCmd, $author$project$Common$Layouts$defaultViewContainer, $author$project$Common$Layouts$paneFull)
 	]);
-var $author$project$Renderers$ViewContainer$IpcStubs$ipcRendererToMain = _Platform_outgoingPort('ipcRendererToMain', $elm$core$Basics$identity);
 var $elm$json$Json$Encode$list = F2(
 	function (func, entries) {
 		return _Json_wrap(
@@ -5330,19 +5329,14 @@ var $author$project$Common$Layouts$newViewCmdAsJson = function (view) {
 				$elm$json$Json$Encode$int(view.top))
 			]));
 };
+var $author$project$Renderers$ViewContainer$IpcStubs$sendViewMessage = _Platform_outgoingPort('sendViewMessage', $elm$core$Basics$identity);
 var $author$project$Renderers$ViewContainer$Renderer$init = function (_v0) {
 	return _Utils_Tuple2(
 		{backgroundColour: $smucode$elm_flat_colors$FlatColors$FlatUIPalette$clouds, layout: $author$project$Common$Layouts$LayoutSingle},
-		$author$project$Renderers$ViewContainer$IpcStubs$ipcRendererToMain(
+		$author$project$Renderers$ViewContainer$IpcStubs$sendViewMessage(
 			$elm$json$Json$Encode$object(
 				_List_fromArray(
 					[
-						_Utils_Tuple2(
-						'cmd',
-						$elm$json$Json$Encode$string('container')),
-						_Utils_Tuple2(
-						'renderer',
-						$elm$json$Json$Encode$string('ViewContainer')),
 						_Utils_Tuple2(
 						'new',
 						A2($elm$json$Json$Encode$list, $author$project$Common$Layouts$newViewCmdAsJson, $author$project$Common$Layouts$initViewCmd))
