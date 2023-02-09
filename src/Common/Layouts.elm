@@ -243,7 +243,7 @@ windowOneUpTwoDown =
 renderTypeNameAssoc : List ( RendererType, String )
 renderTypeNameAssoc =
     --Yes, this is crucial Electron-level config here.
-    [ ( RendererToolbox, "LoadButton" )
+    [ ( RendererToolbox, "Toolbox" )
     , ( Renderer3D, "ThirdPerson" )
     , ( RendererProfile, "Profile" )
     , ( RendererCanvasChart, "Chart" )

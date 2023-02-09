@@ -3250,7 +3250,7 @@ var $author$project$Common$RendererType$RendererProfile = {$: 'RendererProfile'}
 var $author$project$Common$RendererType$RendererToolbox = {$: 'RendererToolbox'};
 var $author$project$Common$Layouts$renderTypeNameAssoc = _List_fromArray(
 	[
-		_Utils_Tuple2($author$project$Common$RendererType$RendererToolbox, 'LoadButton'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererToolbox, 'Toolbox'),
 		_Utils_Tuple2($author$project$Common$RendererType$Renderer3D, 'ThirdPerson'),
 		_Utils_Tuple2($author$project$Common$RendererType$RendererProfile, 'Profile'),
 		_Utils_Tuple2($author$project$Common$RendererType$RendererCanvasChart, 'Chart'),

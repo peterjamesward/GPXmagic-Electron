@@ -145,7 +145,7 @@ function makeNewViews(windowId, newViewCmds) {
         view.webContents.loadURL('file://' + __dirname + '/src/Renderers/' + newViewCmd.html + '/Renderer.html');
 
         // Open the devtools.
-        view.webContents.openDevTools();
+//        view.webContents.openDevTools();
 
         view.webContents.on('close',
             function() {
