@@ -1,4 +1,4 @@
-module Renderers.LoadButton.GpxParser exposing
+module Common.GpxParser exposing
     ( asRegex
     , parseSegments
     , parseTrackName

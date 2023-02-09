@@ -42,8 +42,8 @@ type alias RendererView =
     }
 
 
-emptyWindow : RendererWindow
-emptyWindow =
+defaultViewContainer : RendererWindow
+defaultViewContainer =
     -- v3 compatible with toolbox on right.
     { containerRenderer = RendererMultiPane
     , width = 1000
@@ -108,27 +108,27 @@ paneBottomRight =
 
 windowSinglePane : RendererWindow
 windowSinglePane =
-    { emptyWindow | views = [ paneFull ] }
+    { defaultViewContainer | views = [ paneFull ] }
 
 
 windowCupboards : RendererWindow
 windowCupboards =
-    { emptyWindow | views = [ paneLeft, paneRight ] }
+    { defaultViewContainer | views = [ paneLeft, paneRight ] }
 
 
 windowDrawers : RendererWindow
 windowDrawers =
-    { emptyWindow | views = [ paneTop, paneBottom ] }
+    { defaultViewContainer | views = [ paneTop, paneBottom ] }
 
 
 windowGrid : RendererWindow
 windowGrid =
-    { emptyWindow | views = [ paneTopLeft, paneTopRight, paneBottomLeft, paneBottomRight ] }
+    { defaultViewContainer | views = [ paneTopLeft, paneTopRight, paneBottomLeft, paneBottomRight ] }
 
 
 windowOneUpTwoDown : RendererWindow
 windowOneUpTwoDown =
-    { emptyWindow | views = [ paneTop, paneBottomLeft, paneBottomRight ] }
+    { defaultViewContainer | views = [ paneTop, paneBottomLeft, paneBottomRight ] }
 
 
 renderTypeNameAssoc : List ( RendererType, String )

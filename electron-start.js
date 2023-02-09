@@ -74,7 +74,7 @@ function handleElmMessage(msg) {
 
         case 'track':
             // Send track to specified window only.
-            console.log("MAIN: Sending track ", msg.target);
+//            console.log("MAIN: Sending track ", msg.target);
             webContents.fromId(msg.target).send('fromServer', msg);
             break;
 

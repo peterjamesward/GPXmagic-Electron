@@ -1,6 +1,7 @@
-module Renderers.LoadButton.Renderer exposing (Model, Msg, main)
+module Renderers.Toolbox.Renderer exposing (Model, Msg, main)
 
 import Browser
+import Common.GpxParser as GpxParser
 import Common.GpxPoint as GpxPoint exposing (gpxPointAsJSON)
 import Common.RendererType as RendererType exposing (RendererType(..))
 import Element exposing (..)
@@ -13,8 +14,7 @@ import FlatColors.ChinesePalette
 import FlatColors.FlatUIPalette
 import Html exposing (Html, div)
 import Json.Encode as E
-import Renderers.LoadButton.GpxParser as GpxParser
-import Renderers.LoadButton.IpcStubs as Stubs
+import Renderers.Toolbox.IpcStubs as Stubs
 import Task
 import Time
 

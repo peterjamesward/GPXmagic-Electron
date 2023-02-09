@@ -1,4 +1,4 @@
-port module Renderers.LoadButton.IpcStubs exposing (..)
+port module Renderers.Toolbox.IpcStubs exposing (..)
 
 import Common.RendererType as RendererType exposing (RendererType)
 import Json.Encode as E

@@ -1,4 +1,4 @@
-port module Renderers.WebGL.IpcStubs exposing (..)
+port module Renderers.ThirdPerson.IpcStubs exposing (..)
 
 import Json.Encode as E
 

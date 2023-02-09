@@ -13,9 +13,8 @@ import FlatColors.AussiePalette
 import FlatColors.ChinesePalette
 import FlatColors.FlatUIPalette
 import Html exposing (Html)
-import Html.Events.Extra.Mouse as Mouse
 import Json.Encode as E
-import Renderers.LoadButton.IpcStubs as Stubs
+import Renderers.ViewContainer.IpcStubs as Stubs
 
 
 type Msg

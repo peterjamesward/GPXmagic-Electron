@@ -17,7 +17,7 @@ import Length
 import Markdown
 import Pixels exposing (pixels)
 import Point3d
-import Renderers.LoadButton.IpcStubs as Stubs
+import Renderers.ThirdPerson.IpcStubs as Stubs
 import Renderers.ThirdPerson.SceneBuilder3D as Builder
 import Scene3d exposing (Entity, backgroundColor)
 import Viewpoint3d

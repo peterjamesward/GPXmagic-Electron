@@ -2881,6 +2881,8 @@ var $author$project$ServerProcess$Main$subscriptions = function (_v0) {
 };
 var $elm$json$Json$Decode$succeed = _Json_succeed;
 var $elm$json$Json$Decode$decodeValue = _Json_run;
+var $author$project$Common$RendererType$RendererMultiPane = {$: 'RendererMultiPane'};
+var $author$project$Common$Layouts$defaultViewContainer = {containerRenderer: $author$project$Common$RendererType$RendererMultiPane, height: 750, left: 0, leftToolboxVisible: false, rightToolboxVisible: true, top: 120 + 28, views: _List_Nil, width: 1000};
 var $elm$core$Basics$pi = _Basics_pi;
 var $ianmackenzie$elm_units$Quantity$Quantity = function (a) {
 	return {$: 'Quantity', a: a};
@@ -3041,8 +3043,6 @@ var $author$project$Common$DomainModel$elidedEarthPoints = F2(
 				myFoldFn,
 				_List_Nil));
 	});
-var $author$project$Common$RendererType$RendererMultiPane = {$: 'RendererMultiPane'};
-var $author$project$Common$Layouts$emptyWindow = {containerRenderer: $author$project$Common$RendererType$RendererMultiPane, height: 750, left: 0, leftToolboxVisible: false, rightToolboxVisible: true, top: 120 + 28, views: _List_Nil, width: 1000};
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $ianmackenzie$elm_geometry$Geometry$Types$Direction2d = function (a) {
 	return {$: 'Direction2d', a: a};
@@ -4290,7 +4290,7 @@ var $author$project$Common$Layouts$paneBottomRight = _Utils_update(
 	$author$project$Common$Layouts$paneTopRight,
 	{topPercent: 50.0});
 var $author$project$Common$Layouts$windowGrid = _Utils_update(
-	$author$project$Common$Layouts$emptyWindow,
+	$author$project$Common$Layouts$defaultViewContainer,
 	{
 		views: _List_fromArray(
 			[$author$project$Common$Layouts$paneTopLeft, $author$project$Common$Layouts$paneTopRight, $author$project$Common$Layouts$paneBottomLeft, $author$project$Common$Layouts$paneBottomRight])
@@ -4343,7 +4343,7 @@ var $author$project$ServerProcess$Main$update = F2(
 			if (cmd.$ === 'Ok') {
 				switch (cmd.a) {
 					case 'ready':
-						return A2($author$project$ServerProcess$Main$makeNewWindow, $author$project$Common$Layouts$emptyWindow, model);
+						return A2($author$project$ServerProcess$Main$makeNewWindow, $author$project$Common$Layouts$defaultViewContainer, model);
 					case 'newgpx':
 						var rawGpxPoints = A2(
 							$elm$json$Json$Decode$decodeValue,

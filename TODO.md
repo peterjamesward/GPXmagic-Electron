@@ -50,6 +50,7 @@ Route maker will be odd, as always. At least this keeps the complexity in one pr
 * Canvas snapshot buttons
 * electron-build for installers.
 * If all the preload scripts and ipcStubs are the same, make it the one.
+* Layout tool to provide drag and drop or like to rearrange panes within container.
 
 NB: The 3D views differ only in camera placement, so I see that being nicer.
 

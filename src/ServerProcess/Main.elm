@@ -3,7 +3,7 @@ port module ServerProcess.Main exposing (main)
 import Angle
 import Common.DomainModel as DomainModel exposing (GPXSource, earthPointAsJson)
 import Common.GpxPoint as GpxPoint exposing (GpxPoint)
-import Common.Layouts exposing (RendererWindow, emptyWindow, windowAsJson, windowGrid)
+import Common.Layouts exposing (RendererWindow, defaultViewContainer, windowAsJson, windowGrid)
 import Common.RendererType as RendererType exposing (RendererType(..))
 import Dict exposing (Dict)
 import Direction2d
@@ -98,7 +98,7 @@ update msg model =
                 Ok "ready" ->
                     --The Electron server is ready to execute our instructions.
                     --Begin by making a main window; this will become our toolbox, probably.
-                    makeNewWindow emptyWindow model
+                    makeNewWindow defaultViewContainer model
 
                 Ok "newgpx" ->
                     let
