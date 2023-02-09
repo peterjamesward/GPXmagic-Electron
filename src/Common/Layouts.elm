@@ -141,6 +141,16 @@ leftToolbox =
     }
 
 
+contentArea : NewViewCmd
+contentArea =
+    { rendererType = Renderer3D
+    , left = leftToolbox.left + leftToolbox.width
+    , top = 0
+    , width = emptyLayout.width - leftToolbox.width - rightToolbox.width
+    , height = emptyLayout.height
+    }
+
+
 rightToolbox : NewViewCmd
 rightToolbox =
     { rendererType = RendererToolbox

@@ -10,13 +10,12 @@ Route maker will be odd, as always. At least this keeps the complexity in one pr
 
 ## Next
 
-* Window layout.
-
-> !! Use a different IPC channel for client -> Electron messages that do not need Main. 
-
+* Send sizes to each pane when window size changes
 * Hide-able toolboxes (left, right) replace split panes.
-* Remove separate toolbox window, keep the renderer.
-* Send sizes to each pane when window size changes, and initially.
+* Change layout with more views.
+* Change layout with fewer views (saving the renderer)
+* Switch renderer.
+* Layout tool to provide drag and drop or likewise to rearrange panes within container, saved named layout.
 * Window locations and panes stored.
 * Window locations and panes restored.
 * Error handling - always display a meaningful message when possible.
@@ -35,10 +34,10 @@ Route maker will be odd, as always. At least this keeps the complexity in one pr
 * Migrate all Tools, with good code hygiene.
 * Tool show/hide by toolbox, stored and restored.
 * Menu bar to reset tools, change language, metric/imperial, follow system dark/light.
+* File Open, Save As on menu
 * Canvas snapshot buttons
-* electron-build for installers.
+* electron-builder or electron-forge for installers.
 * If all the preload scripts and ipcStubs are the same, make it the one.
-* Layout tool to provide drag and drop or like to rearrange panes within container.
 
 NB: The 3D views differ only in camera placement, so I see that being nicer.
 

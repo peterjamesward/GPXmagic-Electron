@@ -7135,6 +7135,13 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
+var $author$project$Common$RendererType$Renderer3D = {$: 'Renderer3D'};
+var $author$project$Common$RendererType$RendererMultiPane = {$: 'RendererMultiPane'};
+var $author$project$Common$Layouts$emptyLayout = {containerRenderer: $author$project$Common$RendererType$RendererMultiPane, height: 750, left: 0, leftToolboxVisible: false, rightToolboxVisible: false, top: 120 + 28, views: _List_Nil, width: 1000};
+var $author$project$Common$RendererType$RendererToolbox = {$: 'RendererToolbox'};
+var $author$project$Common$Layouts$leftToolbox = {height: $author$project$Common$Layouts$emptyLayout.height, left: $author$project$Common$Layouts$emptyLayout.left, rendererType: $author$project$Common$RendererType$RendererToolbox, top: 0, width: 300};
+var $author$project$Common$Layouts$rightToolbox = {height: $author$project$Common$Layouts$emptyLayout.height, left: $author$project$Common$Layouts$emptyLayout.width - 300, rendererType: $author$project$Common$RendererType$RendererToolbox, top: 0, width: 300};
+var $author$project$Common$Layouts$contentArea = {height: $author$project$Common$Layouts$emptyLayout.height, left: $author$project$Common$Layouts$leftToolbox.left + $author$project$Common$Layouts$leftToolbox.width, rendererType: $author$project$Common$RendererType$Renderer3D, top: 0, width: ($author$project$Common$Layouts$emptyLayout.width - $author$project$Common$Layouts$leftToolbox.width) - $author$project$Common$Layouts$rightToolbox.width};
 var $author$project$Renderers$ThirdPerson$IpcStubs$ipcRendererToMain = _Platform_outgoingPort('ipcRendererToMain', $elm$core$Basics$identity);
 var $elm$json$Json$Encode$object = function (pairs) {
 	return _Json_wrap(
@@ -7152,7 +7159,7 @@ var $elm$json$Json$Encode$object = function (pairs) {
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Renderers$ThirdPerson$Renderer$init = function (_v0) {
 	return _Utils_Tuple2(
-		{scene: _List_Nil},
+		{scene: _List_Nil, viewInfo: $author$project$Common$Layouts$contentArea},
 		$author$project$Renderers$ThirdPerson$IpcStubs$ipcRendererToMain(
 			$elm$json$Json$Encode$object(
 				_List_fromArray(
@@ -7227,6 +7234,91 @@ var $ianmackenzie$elm_units$Quantity$Quantity = function (a) {
 var $ianmackenzie$elm_units$Length$meters = function (numMeters) {
 	return $ianmackenzie$elm_units$Quantity$Quantity(numMeters);
 };
+var $author$project$Common$Layouts$NewViewCmd = F5(
+	function (rendererType, width, height, top, left) {
+		return {height: height, left: left, rendererType: rendererType, top: top, width: width};
+	});
+var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $elm$json$Json$Decode$map5 = _Json_map5;
+var $elm_community$list_extra$List$Extra$find = F2(
+	function (predicate, list) {
+		find:
+		while (true) {
+			if (!list.b) {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				var first = list.a;
+				var rest = list.b;
+				if (predicate(first)) {
+					return $elm$core$Maybe$Just(first);
+				} else {
+					var $temp$predicate = predicate,
+						$temp$list = rest;
+					predicate = $temp$predicate;
+					list = $temp$list;
+					continue find;
+				}
+			}
+		}
+	});
+var $elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return $elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $author$project$Common$RendererType$RendererCanvasChart = {$: 'RendererCanvasChart'};
+var $author$project$Common$RendererType$RendererMap = {$: 'RendererMap'};
+var $author$project$Common$RendererType$RendererProfile = {$: 'RendererProfile'};
+var $author$project$Common$Layouts$renderTypeNameAssoc = _List_fromArray(
+	[
+		_Utils_Tuple2($author$project$Common$RendererType$RendererToolbox, 'Toolbox'),
+		_Utils_Tuple2($author$project$Common$RendererType$Renderer3D, 'ThirdPerson'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererProfile, 'Profile'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererCanvasChart, 'Chart'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererMap, 'Map'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererMultiPane, 'ViewContainer')
+	]);
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var $author$project$Common$Layouts$rendererStringToType = function (rendererName) {
+	return A2(
+		$elm$core$Maybe$withDefault,
+		$author$project$Common$RendererType$RendererToolbox,
+		A2(
+			$elm$core$Maybe$map,
+			$elm$core$Tuple$first,
+			A2(
+				$elm_community$list_extra$List$Extra$find,
+				function (_v0) {
+					var b = _v0.b;
+					return _Utils_eq(b, rendererName);
+				},
+				$author$project$Common$Layouts$renderTypeNameAssoc)));
+};
+var $elm$json$Json$Decode$string = _Json_decodeString;
+var $author$project$Common$Layouts$newCmdDecoder = A6(
+	$elm$json$Json$Decode$map5,
+	$author$project$Common$Layouts$NewViewCmd,
+	A2(
+		$elm$json$Json$Decode$map,
+		$author$project$Common$Layouts$rendererStringToType,
+		A2($elm$json$Json$Decode$field, 'html', $elm$json$Json$Decode$string)),
+	A2($elm$json$Json$Decode$field, 'width', $elm$json$Json$Decode$int),
+	A2($elm$json$Json$Decode$field, 'height', $elm$json$Json$Decode$int),
+	A2($elm$json$Json$Decode$field, 'x', $elm$json$Json$Decode$int),
+	A2($elm$json$Json$Decode$field, 'y', $elm$json$Json$Decode$int));
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $avh4$elm_color$Color$RgbaSpace = F4(
@@ -7558,100 +7650,13 @@ var $author$project$Renderers$ThirdPerson$SceneBuilder3D$render3dView = function
 		$ianmackenzie$elm_3d_scene$Scene3d$Material$color($avh4$elm_color$Color$black));
 	return A2($elm$core$List$map, renderPoint, points);
 };
-var $elm$json$Json$Decode$string = _Json_decodeString;
-var $author$project$Common$Layouts$RendererView = F5(
-	function (rendererType, widthPercent, heightPercent, topPercent, leftPercent) {
-		return {heightPercent: heightPercent, leftPercent: leftPercent, rendererType: rendererType, topPercent: topPercent, widthPercent: widthPercent};
-	});
-var $elm$json$Json$Decode$map5 = _Json_map5;
-var $author$project$Common$RendererType$RendererToolbox = {$: 'RendererToolbox'};
-var $elm_community$list_extra$List$Extra$find = F2(
-	function (predicate, list) {
-		find:
-		while (true) {
-			if (!list.b) {
-				return $elm$core$Maybe$Nothing;
-			} else {
-				var first = list.a;
-				var rest = list.b;
-				if (predicate(first)) {
-					return $elm$core$Maybe$Just(first);
-				} else {
-					var $temp$predicate = predicate,
-						$temp$list = rest;
-					predicate = $temp$predicate;
-					list = $temp$list;
-					continue find;
-				}
-			}
-		}
-	});
-var $elm$core$Maybe$map = F2(
-	function (f, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return $elm$core$Maybe$Just(
-				f(value));
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
-var $author$project$Common$RendererType$Renderer3D = {$: 'Renderer3D'};
-var $author$project$Common$RendererType$RendererCanvasChart = {$: 'RendererCanvasChart'};
-var $author$project$Common$RendererType$RendererMap = {$: 'RendererMap'};
-var $author$project$Common$RendererType$RendererMultiPane = {$: 'RendererMultiPane'};
-var $author$project$Common$RendererType$RendererProfile = {$: 'RendererProfile'};
-var $author$project$Common$Layouts$renderTypeNameAssoc = _List_fromArray(
-	[
-		_Utils_Tuple2($author$project$Common$RendererType$RendererToolbox, 'Toolbox'),
-		_Utils_Tuple2($author$project$Common$RendererType$Renderer3D, 'ThirdPerson'),
-		_Utils_Tuple2($author$project$Common$RendererType$RendererProfile, 'Profile'),
-		_Utils_Tuple2($author$project$Common$RendererType$RendererCanvasChart, 'Chart'),
-		_Utils_Tuple2($author$project$Common$RendererType$RendererMap, 'Map'),
-		_Utils_Tuple2($author$project$Common$RendererType$RendererMultiPane, 'ViewContainer')
-	]);
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
-var $author$project$Common$Layouts$rendererStringToType = function (rendererName) {
-	return A2(
-		$elm$core$Maybe$withDefault,
-		$author$project$Common$RendererType$RendererToolbox,
-		A2(
-			$elm$core$Maybe$map,
-			$elm$core$Tuple$first,
-			A2(
-				$elm_community$list_extra$List$Extra$find,
-				function (_v0) {
-					var b = _v0.b;
-					return _Utils_eq(b, rendererName);
-				},
-				$author$project$Common$Layouts$renderTypeNameAssoc)));
-};
-var $author$project$Common$Layouts$viewDecoder = A6(
-	$elm$json$Json$Decode$map5,
-	$author$project$Common$Layouts$RendererView,
-	A2(
-		$elm$json$Json$Decode$map,
-		$author$project$Common$Layouts$rendererStringToType,
-		A2($elm$json$Json$Decode$field, 'html', $elm$json$Json$Decode$string)),
-	A2($elm$json$Json$Decode$field, 'width', $elm$json$Json$Decode$float),
-	A2($elm$json$Json$Decode$field, 'height', $elm$json$Json$Decode$float),
-	A2($elm$json$Json$Decode$field, 'x', $elm$json$Json$Decode$float),
-	A2($elm$json$Json$Decode$field, 'y', $elm$json$Json$Decode$float));
 var $author$project$Renderers$ThirdPerson$Renderer$update = F2(
 	function (msg, model) {
 		if (msg.$ === 'MessageFromViewControl') {
 			var jsonMessage = msg.a;
 			var viewInfo = A2(
 				$elm$json$Json$Decode$decodeValue,
-				A2($elm$json$Json$Decode$field, 'bounds', $author$project$Common$Layouts$viewDecoder),
+				A2($elm$json$Json$Decode$field, 'bounds', $author$project$Common$Layouts$newCmdDecoder),
 				jsonMessage);
 			var cmd = A2(
 				$elm$json$Json$Decode$decodeValue,
@@ -7664,7 +7669,11 @@ var $author$project$Renderers$ThirdPerson$Renderer$update = F2(
 			if ((cmd.$ === 'Ok') && (cmd.a === 'bounds')) {
 				if (viewInfo.$ === 'Ok') {
 					var viewSpec = viewInfo.a;
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{viewInfo: viewSpec}),
+						$elm$core$Platform$Cmd$none);
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
@@ -15540,8 +15549,8 @@ var $author$project$Renderers$ThirdPerson$Renderer$view = function (model) {
 					camera: camera,
 					clipDepth: $ianmackenzie$elm_units$Length$meters(1),
 					dimensions: _Utils_Tuple2(
-						$ianmackenzie$elm_units$Pixels$pixels(800),
-						$ianmackenzie$elm_units$Pixels$pixels(600)),
+						$ianmackenzie$elm_units$Pixels$pixels(model.viewInfo.width),
+						$ianmackenzie$elm_units$Pixels$pixels(model.viewInfo.height)),
 					entities: model.scene,
 					shadows: false,
 					sunlightDirection: $ianmackenzie$elm_geometry$Direction3d$negativeZ,

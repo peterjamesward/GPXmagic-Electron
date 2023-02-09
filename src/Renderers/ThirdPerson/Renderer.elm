@@ -31,7 +31,9 @@ type Msg
 
 type alias Model =
     -- Note we don't need a copy of the GPX here!
-    { scene : List (Entity LocalCoords) }
+    { scene : List (Entity LocalCoords)
+    , viewInfo : Layouts.NewViewCmd
+    }
 
 
 main : Program () Model Msg
@@ -46,7 +48,9 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { scene = [] }
+    ( { scene = []
+      , viewInfo = Layouts.contentArea
+      }
     , Stubs.ipcRendererToMain <|
         E.object
             [ ( "cmd", E.string "hello" )
@@ -64,7 +68,7 @@ update msg model =
                     D.decodeValue (D.field "cmd" D.string) jsonMessage
 
                 viewInfo =
-                    D.decodeValue (D.field "bounds" Layouts.viewDecoder) jsonMessage
+                    D.decodeValue (D.field "bounds" Layouts.newCmdDecoder) jsonMessage
 
                 _ =
                     Debug.log "VIEW" ( cmd, viewInfo )
@@ -73,7 +77,9 @@ update msg model =
                 Ok "bounds" ->
                     case viewInfo of
                         Ok viewSpec ->
-                            ( model, Cmd.none )
+                            ( { model | viewInfo = viewSpec }
+                            , Cmd.none
+                            )
 
                         Err _ ->
                             ( model, Cmd.none )
@@ -166,7 +172,10 @@ view model =
             html <|
                 Scene3d.sunny
                     { camera = camera
-                    , dimensions = ( pixels 800, pixels 600 )
+                    , dimensions =
+                        ( pixels model.viewInfo.width
+                        , pixels model.viewInfo.height
+                        )
                     , background = backgroundColor Color.lightBlue
                     , clipDepth = Length.meters 1
                     , entities = model.scene
