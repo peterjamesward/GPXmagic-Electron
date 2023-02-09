@@ -5197,8 +5197,8 @@ var $author$project$Common$Layouts$paneFull = {heightPercent: 100.0, leftPercent
 var $author$project$Common$Layouts$defaultViewContainer = {
 	containerRenderer: $author$project$Common$RendererType$RendererMultiPane,
 	height: 750,
-	left: 0,
-	leftToolboxVisible: false,
+	left: 300,
+	leftToolboxVisible: true,
 	rightToolboxVisible: true,
 	top: 120 + 28,
 	views: _List_fromArray(

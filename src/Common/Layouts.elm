@@ -158,9 +158,9 @@ defaultViewContainer =
     , width = 1000
     , height = 750
     , top = 120 + 28 --TODO: Get the actual title bar height and screen size.
-    , left = 0
+    , left = 300
     , views = [ paneFull ]
-    , leftToolboxVisible = False
+    , leftToolboxVisible = True
     , rightToolboxVisible = True
     }
 
