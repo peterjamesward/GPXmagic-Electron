@@ -1,6 +1,7 @@
 module Common.Layouts exposing (..)
 
 import Common.RendererType exposing (RendererType(..))
+import Json.Decode as D
 import Json.Encode as E
 import List.Extra
 
@@ -42,6 +43,114 @@ type alias RendererView =
     }
 
 
+type alias NewViewCmd =
+    -- Electron main will use this to create a new view.
+    { rendererType : RendererType
+    , width : Int
+    , height : Int
+    , top : Int
+    , left : Int
+    }
+
+
+type alias MoveViewCmd =
+    -- Electron main will use this to reposition an existing view
+    { viewRef : Int
+    , width : Int
+    , height : Int
+    , top : Int
+    , left : Int
+    }
+
+
+type alias SwitchViewCmd =
+    -- Electron main will use this to change renderer for an existing view
+    { viewRef : Int
+    , renderer : RendererType
+    }
+
+
+initViewCmd : List NewViewCmd
+initViewCmd =
+    --Me, trying to bootstrap this currently ungainly process.
+    [ leftToolbox
+    , rightToolbox
+    , newViewCmd defaultViewContainer paneFull
+    ]
+
+
+newViewCmd : RendererWindow -> RendererView -> NewViewCmd
+newViewCmd window view =
+    let
+        ( left, right ) =
+            ( if window.leftToolboxVisible then
+                300
+
+              else
+                30
+            , if window.rightToolboxVisible then
+                window.width - 300
+
+              else
+                window.width - 30
+            )
+
+        ( contentWidthPercent, contentHeightPercent ) =
+            ( toFloat (right - left) / 100
+            , toFloat window.height / 100
+            )
+
+        ( viewLeft, viewWidth ) =
+            ( left + (truncate <| contentWidthPercent * view.leftPercent)
+            , truncate <| contentWidthPercent * view.widthPercent
+            )
+
+        ( viewTop, viewHeight ) =
+            ( truncate <| contentHeightPercent * view.topPercent
+            , truncate <| contentHeightPercent * view.heightPercent
+            )
+    in
+    { rendererType = view.rendererType
+    , left = viewLeft
+    , top = viewTop
+    , width = viewWidth
+    , height = viewHeight
+    }
+
+
+emptyLayout : RendererWindow
+emptyLayout =
+    { containerRenderer = RendererMultiPane
+    , width = 1000
+    , height = 750
+    , top = 120 + 28 --TODO: Get the actual title bar height and screen size.
+    , left = 0
+    , views = []
+    , leftToolboxVisible = False
+    , rightToolboxVisible = False
+    }
+
+
+leftToolbox : NewViewCmd
+leftToolbox =
+    { rendererType = RendererToolbox
+    , left = emptyLayout.left
+    , top = 0
+    , width = 300
+    , height = emptyLayout.height
+    }
+
+
+rightToolbox : NewViewCmd
+rightToolbox =
+    { rendererType = RendererToolbox
+    , left = emptyLayout.width - 300
+    , top = 0
+    , width = 300
+    , height = emptyLayout.height
+    }
+
+
 defaultViewContainer : RendererWindow
 defaultViewContainer =
     -- v3 compatible with toolbox on right.
@@ -50,7 +159,7 @@ defaultViewContainer =
     , height = 750
     , top = 120 + 28 --TODO: Get the actual title bar height and screen size.
     , left = 0
-    , views = []
+    , views = [ paneFull ]
     , leftToolboxVisible = False
     , rightToolboxVisible = True
     }
@@ -153,6 +262,14 @@ rendererTypeToString rendererType =
             "unknown renderer"
 
 
+rendererStringToType : String -> RendererType
+rendererStringToType rendererName =
+    --TODO: Have a error renderer as default.
+    List.Extra.find (\( _, b ) -> b == rendererName) renderTypeNameAssoc
+        |> Maybe.map Tuple.first
+        |> Maybe.withDefault RendererToolbox
+
+
 windowAsJson : RendererWindow -> E.Value
 windowAsJson window =
     E.object
@@ -167,6 +284,18 @@ windowAsJson window =
         ]
 
 
+windowDecoder =
+    D.map8 RendererWindow
+        (D.map rendererStringToType <| D.field "html" D.string)
+        (D.field "width" D.int)
+        (D.field "height" D.int)
+        (D.field "x" D.int)
+        (D.field "y" D.int)
+        (D.field "views" (D.list viewDecoder))
+        (D.field "leftToolbox" D.bool)
+        (D.field "rightToolbox" D.bool)
+
+
 viewAsJson : RendererView -> E.Value
 viewAsJson view =
     E.object
@@ -176,6 +305,53 @@ viewAsJson view =
         , ( "x", E.float view.topPercent )
         , ( "y", E.float view.leftPercent )
         ]
+
+
+newViewCmdAsJson : NewViewCmd -> E.Value
+newViewCmdAsJson view =
+    E.object
+        [ ( "html", E.string <| rendererTypeToString view.rendererType )
+        , ( "width", E.int view.width )
+        , ( "height", E.int view.height )
+        , ( "x", E.int view.left )
+        , ( "y", E.int view.top )
+        ]
+
+
+viewDecoder =
+    D.map5 RendererView
+        (D.map rendererStringToType <| D.field "html" D.string)
+        (D.field "width" D.float)
+        (D.field "height" D.float)
+        (D.field "x" D.float)
+        (D.field "y" D.float)
+
+
+newCmdDecoder =
+    D.map5 NewViewCmd
+        -- Electron main will use this to create a new view.
+        (D.map rendererStringToType <| D.field "html" D.string)
+        (D.field "width" D.int)
+        (D.field "height" D.int)
+        (D.field "x" D.int)
+        (D.field "y" D.int)
+
+
+moveCmdDecoder =
+    D.map5 MoveViewCmd
+        -- Electron main will use this to reposition an existing view
+        (D.field "view" D.int)
+        (D.field "width" D.int)
+        (D.field "height" D.int)
+        (D.field "x" D.int)
+        (D.field "y" D.int)
+
+
+switchCmdDecoder =
+    D.map2 SwitchViewCmd
+        -- Electron main will use this to change renderer for an existing view
+        (D.field "view" D.int)
+        (D.map rendererStringToType <| D.field "html" D.string)
 
 
 layoutStyleNameAssoc : List ( LayoutStyle, String )

@@ -10,7 +10,6 @@ import Element.Font as Font
 import Element.Input as Input exposing (button)
 import FeatherIcons
 import FlatColors.AussiePalette
-import FlatColors.ChinesePalette
 import FlatColors.FlatUIPalette
 import Html exposing (Html)
 import Json.Encode as E
@@ -44,13 +43,18 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
+    --We send the description of how the views should be arranged, as only the
+    --electron main process can actually create them.
     ( { backgroundColour = FlatColors.FlatUIPalette.clouds
       , layout = Layout.LayoutSingle
       }
     , Stubs.ipcRendererToMain <|
         E.object
-            [ ( "cmd", E.string "hello" )
+            [ ( "cmd", E.string "container" )
             , ( "renderer", E.string "ViewContainer" )
+
+            -- On this occasion, we know our own size. Just ask for the panel contents.
+            , ( "new", E.list Layout.newViewCmdAsJson Layout.initViewCmd )
             ]
     )
 
@@ -70,25 +74,13 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    let
-        buttonStyles =
-            [ padding 5
-            , Background.color FlatColors.ChinesePalette.antiFlashWhite
-            , Border.color FlatColors.FlatUIPalette.peterRiver
-            , Border.width 2
-            ]
-    in
     layout
         [ Background.color model.backgroundColour
         , centerY
-        , alignLeft
+        , centerX
         ]
     <|
-        modeButtons
-
-
-stopProp =
-    { stopPropagation = True, preventDefault = False }
+        text "Container ready"
 
 
 modeButtons =

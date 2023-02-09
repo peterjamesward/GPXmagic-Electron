@@ -3,7 +3,7 @@ port module ServerProcess.Main exposing (main)
 import Angle
 import Common.DomainModel as DomainModel exposing (GPXSource, earthPointAsJson)
 import Common.GpxPoint as GpxPoint exposing (GpxPoint)
-import Common.Layouts exposing (RendererWindow, defaultViewContainer, windowAsJson, windowGrid)
+import Common.Layouts as Layout exposing (RendererWindow, defaultViewContainer, windowAsJson, windowGrid)
 import Common.RendererType as RendererType exposing (RendererType(..))
 import Dict exposing (Dict)
 import Direction2d
@@ -97,8 +97,13 @@ update msg model =
             case cmd of
                 Ok "ready" ->
                     --The Electron server is ready to execute our instructions.
-                    --Begin by making a main window; this will become our toolbox, probably.
+                    --Begin by making a main window.
                     makeNewWindow defaultViewContainer model
+
+                Ok "container" ->
+                    --A container window is ready and attached is the view layout it wants.
+                    --TODO: This means we traverse inbound and outbound ports needlessly.
+                    ( model, toJavascript jsonMessage )
 
                 Ok "newgpx" ->
                     let
@@ -213,7 +218,7 @@ makeNewWindow : RendererWindow -> Model -> ( Model, Cmd Msg )
 makeNewWindow window model =
     let
         newWindowCommand =
-            --Try passing the track to send to the new window only.
+            --TODO: Send the track to send to the new window only.
             toJavascript <|
                 E.object
                     [ ( "cmd", E.string "newwindow" )

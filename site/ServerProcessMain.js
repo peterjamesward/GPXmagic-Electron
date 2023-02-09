@@ -2882,7 +2882,19 @@ var $author$project$ServerProcess$Main$subscriptions = function (_v0) {
 var $elm$json$Json$Decode$succeed = _Json_succeed;
 var $elm$json$Json$Decode$decodeValue = _Json_run;
 var $author$project$Common$RendererType$RendererMultiPane = {$: 'RendererMultiPane'};
-var $author$project$Common$Layouts$defaultViewContainer = {containerRenderer: $author$project$Common$RendererType$RendererMultiPane, height: 750, left: 0, leftToolboxVisible: false, rightToolboxVisible: true, top: 120 + 28, views: _List_Nil, width: 1000};
+var $author$project$Common$RendererType$Renderer3D = {$: 'Renderer3D'};
+var $author$project$Common$Layouts$paneFull = {heightPercent: 100.0, leftPercent: 0.0, rendererType: $author$project$Common$RendererType$Renderer3D, topPercent: 0.0, widthPercent: 100.0};
+var $author$project$Common$Layouts$defaultViewContainer = {
+	containerRenderer: $author$project$Common$RendererType$RendererMultiPane,
+	height: 750,
+	left: 0,
+	leftToolboxVisible: false,
+	rightToolboxVisible: true,
+	top: 120 + 28,
+	views: _List_fromArray(
+		[$author$project$Common$Layouts$paneFull]),
+	width: 1000
+};
 var $elm$core$Basics$pi = _Basics_pi;
 var $ianmackenzie$elm_units$Quantity$Quantity = function (a) {
 	return {$: 'Quantity', a: a};
@@ -3232,7 +3244,6 @@ var $elm_community$list_extra$List$Extra$find = F2(
 			}
 		}
 	});
-var $author$project$Common$RendererType$Renderer3D = {$: 'Renderer3D'};
 var $author$project$Common$RendererType$RendererCanvasChart = {$: 'RendererCanvasChart'};
 var $author$project$Common$RendererType$RendererMap = {$: 'RendererMap'};
 var $author$project$Common$RendererType$RendererProfile = {$: 'RendererProfile'};
@@ -4270,7 +4281,6 @@ var $author$project$Common$DomainModel$treeFromSourcePoints = function (track) {
 		$elm$core$List$head(track));
 	return A2($author$project$Common$DomainModel$treeFromSourcesWithExistingReference, referencePoint, track);
 };
-var $author$project$Common$Layouts$paneFull = {heightPercent: 100.0, leftPercent: 0.0, rendererType: $author$project$Common$RendererType$Renderer3D, topPercent: 0.0, widthPercent: 100.0};
 var $author$project$Common$Layouts$paneLeft = _Utils_update(
 	$author$project$Common$Layouts$paneFull,
 	{widthPercent: 50.0});
@@ -4338,12 +4348,16 @@ var $author$project$ServerProcess$Main$update = F2(
 			$elm$core$Debug$log,
 			'CMD',
 			_Utils_Tuple2(cmd, senderId));
-		_v2$5:
+		_v2$6:
 		while (true) {
 			if (cmd.$ === 'Ok') {
 				switch (cmd.a) {
 					case 'ready':
 						return A2($author$project$ServerProcess$Main$makeNewWindow, $author$project$Common$Layouts$defaultViewContainer, model);
+					case 'container':
+						return _Utils_Tuple2(
+							model,
+							$author$project$ServerProcess$Main$toJavascript(jsonMessage));
 					case 'newgpx':
 						var rawGpxPoints = A2(
 							$elm$json$Json$Decode$decodeValue,
@@ -4425,10 +4439,10 @@ var $author$project$ServerProcess$Main$update = F2(
 							return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 						}
 					default:
-						break _v2$5;
+						break _v2$6;
 				}
 			} else {
-				break _v2$5;
+				break _v2$6;
 			}
 		}
 		return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);

@@ -68,6 +68,17 @@ function handleElmMessage(msg) {
 //    console.log("OUTBOUND MAPPING", windowsElmToElectron, msg.target);
 
     switch (msg.cmd) {
+        case 'ElmReady':
+            console.log("Elm is ready.");
+            break;
+
+        case 'container':
+            // Message will contain "new", "move" and "switch" commands.
+            if (msg.new != undefined) makeNewViews(msg.sender, msg.new);
+            if (msg.move != undefined) moveViews(msg.sender, msg.move);
+            if (msg.switch != undefined) switchView(msg.sender, msg.switch); //singular!
+            break;
+
         case 'newwindow':
             makeWindow(msg.id, msg.window);
             break;
@@ -76,10 +87,6 @@ function handleElmMessage(msg) {
             // Send track to specified window only.
 //            console.log("MAIN: Sending track ", msg.target);
             webContents.fromId(msg.target).send('fromServer', msg);
-            break;
-
-        case 'ElmReady':
-            console.log("Elm is ready.");
             break;
 
         default:
@@ -107,35 +114,35 @@ function makeWindow(elmWindowId, windowSpec) {
     window.webContents.loadURL('file://' + __dirname + '/src/Renderers/' + windowSpec.html + '/Renderer.html');
 };
 
-function childrenStuff() {
+function makeNewViews(windowId, newViewCmds) {
     // Make any child views
     //TODO: Left and right toolboxes. Reserved left/top are gone away.
     //TODO: Move the layout maths into Main.elm, this is a dumb servant.
-    contentSize = window.getContentSize();
+    const window = BrowserWindow.fromId(windowId);
 
-    windowSpec.views.map((viewSpec) => { createAndAddView(viewSpec) } );
+    newViewCmds.map((newViewCmd) => { createAndAddView(newViewCmd) } );
     // where ...
-    function createAndAddView(viewSpec) {
+    function createAndAddView(newViewCmd) {
 
-        console.log("making view", viewSpec);
+        console.log("making view", newViewCmd);
 
         // Having viewSpec match the args for new view makes this more concise.
-        viewSpec.webPreferences = { preload: path.join(__dirname, 'preload.js') };
+        newViewCmd.webPreferences = { preload: path.join(__dirname, 'preload.js') };
 
-        const view = new BrowserView( viewSpec );
+        const view = new BrowserView( newViewCmd );
         window.addBrowserView( view );
-        view.setBounds( viewSpec );
-        view.setAutoResize(
-            {
-                width: true,
-                height: true,
-                horizontal : true,
-                vertical : true
-            }
-        );
+        view.setBounds( newViewCmd );
+//        view.setAutoResize(
+//            {
+//                width: true,
+//                height: true,
+//                horizontal : true,
+//                vertical : true
+//            }
+//        );
 
         // and load the index.html of the view.
-        view.webContents.loadURL('file://' + __dirname + '/src/Renderers/' + viewSpec.html + '/Renderer.html');
+        view.webContents.loadURL('file://' + __dirname + '/src/Renderers/' + newViewCmd.html + '/Renderer.html');
 
         // Open the devtools.
         view.webContents.openDevTools();
