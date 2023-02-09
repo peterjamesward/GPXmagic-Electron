@@ -7168,14 +7168,19 @@ var $author$project$Renderers$ThirdPerson$Renderer$init = function (_v0) {
 var $author$project$Renderers$ThirdPerson$Renderer$MessageFromMainProcess = function (a) {
 	return {$: 'MessageFromMainProcess', a: a};
 };
+var $author$project$Renderers$ThirdPerson$Renderer$MessageFromViewControl = function (a) {
+	return {$: 'MessageFromViewControl', a: a};
+};
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$json$Json$Decode$value = _Json_decodeValue;
 var $author$project$Renderers$ThirdPerson$IpcStubs$ipcMainToRenderer = _Platform_incomingPort('ipcMainToRenderer', $elm$json$Json$Decode$value);
+var $author$project$Renderers$ThirdPerson$IpcStubs$receiveViewMessage = _Platform_incomingPort('receiveViewMessage', $elm$json$Json$Decode$value);
 var $author$project$Renderers$ThirdPerson$Renderer$subscriptions = function (_v0) {
 	return $elm$core$Platform$Sub$batch(
 		_List_fromArray(
 			[
-				$author$project$Renderers$ThirdPerson$IpcStubs$ipcMainToRenderer($author$project$Renderers$ThirdPerson$Renderer$MessageFromMainProcess)
+				$author$project$Renderers$ThirdPerson$IpcStubs$ipcMainToRenderer($author$project$Renderers$ThirdPerson$Renderer$MessageFromMainProcess),
+				$author$project$Renderers$ThirdPerson$IpcStubs$receiveViewMessage($author$project$Renderers$ThirdPerson$Renderer$MessageFromViewControl)
 			]));
 };
 var $elm$json$Json$Decode$decodeValue = _Json_run;
@@ -7554,42 +7559,154 @@ var $author$project$Renderers$ThirdPerson$SceneBuilder3D$render3dView = function
 	return A2($elm$core$List$map, renderPoint, points);
 };
 var $elm$json$Json$Decode$string = _Json_decodeString;
+var $author$project$Common$Layouts$RendererView = F5(
+	function (rendererType, widthPercent, heightPercent, topPercent, leftPercent) {
+		return {heightPercent: heightPercent, leftPercent: leftPercent, rendererType: rendererType, topPercent: topPercent, widthPercent: widthPercent};
+	});
+var $elm$json$Json$Decode$map5 = _Json_map5;
+var $author$project$Common$RendererType$RendererToolbox = {$: 'RendererToolbox'};
+var $elm_community$list_extra$List$Extra$find = F2(
+	function (predicate, list) {
+		find:
+		while (true) {
+			if (!list.b) {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				var first = list.a;
+				var rest = list.b;
+				if (predicate(first)) {
+					return $elm$core$Maybe$Just(first);
+				} else {
+					var $temp$predicate = predicate,
+						$temp$list = rest;
+					predicate = $temp$predicate;
+					list = $temp$list;
+					continue find;
+				}
+			}
+		}
+	});
+var $elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return $elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $author$project$Common$RendererType$Renderer3D = {$: 'Renderer3D'};
+var $author$project$Common$RendererType$RendererCanvasChart = {$: 'RendererCanvasChart'};
+var $author$project$Common$RendererType$RendererMap = {$: 'RendererMap'};
+var $author$project$Common$RendererType$RendererMultiPane = {$: 'RendererMultiPane'};
+var $author$project$Common$RendererType$RendererProfile = {$: 'RendererProfile'};
+var $author$project$Common$Layouts$renderTypeNameAssoc = _List_fromArray(
+	[
+		_Utils_Tuple2($author$project$Common$RendererType$RendererToolbox, 'Toolbox'),
+		_Utils_Tuple2($author$project$Common$RendererType$Renderer3D, 'ThirdPerson'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererProfile, 'Profile'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererCanvasChart, 'Chart'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererMap, 'Map'),
+		_Utils_Tuple2($author$project$Common$RendererType$RendererMultiPane, 'ViewContainer')
+	]);
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var $author$project$Common$Layouts$rendererStringToType = function (rendererName) {
+	return A2(
+		$elm$core$Maybe$withDefault,
+		$author$project$Common$RendererType$RendererToolbox,
+		A2(
+			$elm$core$Maybe$map,
+			$elm$core$Tuple$first,
+			A2(
+				$elm_community$list_extra$List$Extra$find,
+				function (_v0) {
+					var b = _v0.b;
+					return _Utils_eq(b, rendererName);
+				},
+				$author$project$Common$Layouts$renderTypeNameAssoc)));
+};
+var $author$project$Common$Layouts$viewDecoder = A6(
+	$elm$json$Json$Decode$map5,
+	$author$project$Common$Layouts$RendererView,
+	A2(
+		$elm$json$Json$Decode$map,
+		$author$project$Common$Layouts$rendererStringToType,
+		A2($elm$json$Json$Decode$field, 'html', $elm$json$Json$Decode$string)),
+	A2($elm$json$Json$Decode$field, 'width', $elm$json$Json$Decode$float),
+	A2($elm$json$Json$Decode$field, 'height', $elm$json$Json$Decode$float),
+	A2($elm$json$Json$Decode$field, 'x', $elm$json$Json$Decode$float),
+	A2($elm$json$Json$Decode$field, 'y', $elm$json$Json$Decode$float));
 var $author$project$Renderers$ThirdPerson$Renderer$update = F2(
 	function (msg, model) {
-		var jsonMessage = msg.a;
-		var cmd = A2(
-			$elm$json$Json$Decode$decodeValue,
-			A2($elm$json$Json$Decode$field, 'cmd', $elm$json$Json$Decode$string),
-			jsonMessage);
-		var _v1 = A2($elm$core$Debug$log, 'CMD', cmd);
-		if ((cmd.$ === 'Ok') && (cmd.a === 'track')) {
-			var points = A2(
+		if (msg.$ === 'MessageFromViewControl') {
+			var jsonMessage = msg.a;
+			var viewInfo = A2(
 				$elm$json$Json$Decode$decodeValue,
-				A2(
-					$elm$json$Json$Decode$field,
-					'track',
-					$elm$json$Json$Decode$list($author$project$Renderers$ThirdPerson$Renderer$localPointDecoder)),
+				A2($elm$json$Json$Decode$field, 'bounds', $author$project$Common$Layouts$viewDecoder),
 				jsonMessage);
-			if (points.$ === 'Ok') {
-				var somePoints = points.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							scene: $author$project$Renderers$ThirdPerson$SceneBuilder3D$render3dView(
-								A2(
-									$elm$core$List$map,
-									$ianmackenzie$elm_geometry$Point3d$fromRecord($ianmackenzie$elm_units$Length$meters),
-									somePoints))
-						}),
-					$elm$core$Platform$Cmd$none);
+			var cmd = A2(
+				$elm$json$Json$Decode$decodeValue,
+				A2($elm$json$Json$Decode$field, 'cmd', $elm$json$Json$Decode$string),
+				jsonMessage);
+			var _v1 = A2(
+				$elm$core$Debug$log,
+				'VIEW',
+				_Utils_Tuple2(cmd, viewInfo));
+			if ((cmd.$ === 'Ok') && (cmd.a === 'bounds')) {
+				if (viewInfo.$ === 'Ok') {
+					var viewSpec = viewInfo.a;
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
 			} else {
-				var _v4 = A2($elm$core$Debug$log, 'NO POINTS ', _Utils_Tuple0);
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			}
 		} else {
-			var _v5 = A2($elm$core$Debug$log, 'CMD?? ', cmd);
-			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			var jsonMessage = msg.a;
+			var cmd = A2(
+				$elm$json$Json$Decode$decodeValue,
+				A2($elm$json$Json$Decode$field, 'cmd', $elm$json$Json$Decode$string),
+				jsonMessage);
+			var _v4 = A2($elm$core$Debug$log, 'CMD', cmd);
+			if ((cmd.$ === 'Ok') && (cmd.a === 'track')) {
+				var points = A2(
+					$elm$json$Json$Decode$decodeValue,
+					A2(
+						$elm$json$Json$Decode$field,
+						'track',
+						$elm$json$Json$Decode$list($author$project$Renderers$ThirdPerson$Renderer$localPointDecoder)),
+					jsonMessage);
+				if (points.$ === 'Ok') {
+					var somePoints = points.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								scene: $author$project$Renderers$ThirdPerson$SceneBuilder3D$render3dView(
+									A2(
+										$elm$core$List$map,
+										$ianmackenzie$elm_geometry$Point3d$fromRecord($ianmackenzie$elm_units$Length$meters),
+										somePoints))
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					var _v7 = A2($elm$core$Debug$log, 'NO POINTS ', _Utils_Tuple0);
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			} else {
+				var _v8 = A2($elm$core$Debug$log, 'CMD?? ', cmd);
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			}
 		}
 	});
 var $author$project$Common$About$aboutText = '\n# GPXmagic App v4 pre-release\n\n## Acknowledgements\n\n* Thanks to all those who\'ve provided support, comments, bug reports, and help along the way.\n\n* Thanks to RGT for the Magic Roads concept and an excellent indoor cycling platform.\n\n* Thanks to David Ogle for discussion and contribution to the UI design.\n\n## Legal guff\n\nCompatible with Strava, for the purpose of loading route and segment data.\n\nGPXmagicV4 is open source at https://github.com/boxingpepperjumpy/GPXmagicV4\n\nContains many libraries under various licence terms, all of which are available in source\nform via https://package.elm-lang.org.\n\nMap component provided by MapBox.com.\n\nLand use data courtesy of Open Street Map via the Overpass API.\n\nIcons from www.flaticon.com/free-icons/.';
@@ -7834,15 +7951,6 @@ var $mdgriffith$elm_ui$Internal$Model$transformClass = function (transform) {
 				'tfrm-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(tx) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(ty) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(tz) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(sx) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(sy) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(sz) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(ox) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(oy) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(oz) + ('-' + $mdgriffith$elm_ui$Internal$Model$floatClass(angle))))))))))))))))))));
 	}
 };
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
 var $mdgriffith$elm_ui$Internal$Model$getStyleName = function (style) {
 	switch (style.$) {
 		case 'Shadows':
@@ -8165,16 +8273,6 @@ var $mdgriffith$elm_ui$Internal$Model$formatBoxShadow = function (shadow) {
 					$mdgriffith$elm_ui$Internal$Model$formatColor(shadow.color))
 				])));
 };
-var $elm$core$Maybe$map = F2(
-	function (f, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return $elm$core$Maybe$Just(
-				f(value));
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
 var $elm$core$Tuple$mapFirst = F2(
 	function (func, _v0) {
 		var x = _v0.a;

@@ -42,7 +42,6 @@ app.setAboutPanelOptions({
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
-// TODO: Move window management into Elm, make this a mere servant.
 app.on('ready',
 
     function() {
@@ -66,9 +65,6 @@ app.on('ready',
 
 // Collect and act on messages from Elm port on server.
 function handleElmMessage(msg) {
-
-//    console.log('MAIN: Message from Elm', msg)
-//    console.log("OUTBOUND MAPPING", windowsElmToElectron, msg.target);
 
     switch (msg.cmd) {
         case 'ElmReady':
@@ -99,6 +95,13 @@ function makeWindow(elmWindowId, windowSpec) {
     windowSpec.acceptFirstMouse = true;
 
     var window = new BrowserWindow( windowSpec );
+
+    // We must tell a window how big it is. Send it the spec!
+    window.webContents.send('viewResponse',
+        { "cmd" : "bounds"
+        , "bounds" : windowSpec
+        }
+    );
 
     window.on('close',
         function() {

@@ -21,3 +21,11 @@ gpxMagicAPI.fromServer(
         app.ports.ipcMainToRenderer.send(value);
     }
 );
+
+// Similarly for view-related messages
+gpxMagicAPI.viewMessageResp(
+    (_event, value) => {
+        console.log(value);
+        app.ports.receiveViewMessage.send(value);
+    }
+);

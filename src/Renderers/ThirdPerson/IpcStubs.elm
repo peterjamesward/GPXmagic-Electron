@@ -9,6 +9,9 @@ port ipcRendererToMain : E.Value -> Cmd msg
 port ipcMainToRenderer : (E.Value -> msg) -> Sub msg
 
 
+port receiveViewMessage : (E.Value -> msg) -> Sub msg
+
+
 
 --loadNewGpx : E.Value -> Cmd msg
 --loadNewGpx pointsAsJSON =

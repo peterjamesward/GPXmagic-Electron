@@ -5,6 +5,7 @@ import Browser
 import Camera3d
 import Color
 import Common.About as About
+import Common.Layouts as Layouts
 import Common.LocalCoords exposing (LocalCoords)
 import Direction2d
 import Direction3d exposing (negativeZ, positiveZ)
@@ -25,6 +26,7 @@ import Viewpoint3d
 
 type Msg
     = MessageFromMainProcess E.Value
+    | MessageFromViewControl E.Value
 
 
 type alias Model =
@@ -56,6 +58,29 @@ init _ =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        MessageFromViewControl jsonMessage ->
+            let
+                cmd =
+                    D.decodeValue (D.field "cmd" D.string) jsonMessage
+
+                viewInfo =
+                    D.decodeValue (D.field "bounds" Layouts.viewDecoder) jsonMessage
+
+                _ =
+                    Debug.log "VIEW" ( cmd, viewInfo )
+            in
+            case cmd of
+                Ok "bounds" ->
+                    case viewInfo of
+                        Ok viewSpec ->
+                            ( model, Cmd.none )
+
+                        Err _ ->
+                            ( model, Cmd.none )
+
+                _ ->
+                    ( model, Cmd.none )
+
         MessageFromMainProcess jsonMessage ->
             let
                 cmd =
@@ -154,4 +179,6 @@ view model =
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.batch
-        [ Stubs.ipcMainToRenderer MessageFromMainProcess ]
+        [ Stubs.ipcMainToRenderer MessageFromMainProcess
+        , Stubs.receiveViewMessage MessageFromViewControl
+        ]
