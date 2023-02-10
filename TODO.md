@@ -1,5 +1,7 @@
 
-# WIP
+# PARKED
+
+Yes, I'm shelving this for now. It looks promising but there's far too much effort going into window shuffling and I don't see much benefit for the users. Maybe there's an easier way of spinning up a second (slave) window. I'm going back to properly packaging v3.10 and then rethink.
 
 ## Electron PoC
 
